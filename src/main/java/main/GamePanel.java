@@ -3,28 +3,56 @@ package main;
 import inputs.KeyboardInputs;
 import inputs.MouseInputs;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.util.Random;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class GamePanel extends JPanel {
 
     private MouseInputs mouseInputs;
-    private float xDelta = 100, yDelta = 100;
-    private float xDir = 0.01f, yDir = 0.01f;
-    private int frames = 0;
-    private long lastCheck = 0;
-    private Color color = new Color(10, 20, 90);
-    private Random random;
+    private int xDelta = 100, yDelta = 100;
+
+    private BufferedImage img;
 
     GamePanel() {
         mouseInputs = new MouseInputs(this);
 
-        random = new Random();
+        importImage();
+        loadAnimations();
 
+        setPanelSize();
         addKeyListener(new KeyboardInputs(this));
         addMouseListener(mouseInputs);
         addMouseMotionListener(mouseInputs);
+    }
+
+    private void loadAnimations() {
+    }
+
+    private void importImage() {
+        InputStream is = getClass().getResourceAsStream("/Player/idle/Warrior_Idle_1.png");
+
+        try {
+            img = ImageIO.read(is);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void setPanelSize() {
+        Dimension size = new Dimension(1280, 800);
+        setMinimumSize(size);
+        setPreferredSize(size);
+        setMaximumSize(size);
     }
 
     public void changeXDelta(int value) {
@@ -40,43 +68,12 @@ public class GamePanel extends JPanel {
         this.xDelta = x;
     }
 
+    // < Paint Component >
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        updateRectangle();
-        g.setColor(color);
-        g.fillRect((int)xDelta, (int)yDelta, 200, 50);
+        g.drawImage(img, xDelta, yDelta, 128, 88, null);
 
-        frames++;
-        if (System.currentTimeMillis() - lastCheck >= 1000) {
-            lastCheck = System.currentTimeMillis();
-            System.out.println("FPS: " + frames);
-            frames = 0;
-        }
-
-        repaint();
     }
 
-    private void updateRectangle() {
-        xDelta += xDir;
-        if(xDelta > 400 || xDelta < 0) {
-            xDir*=-1;
-            color = getRndColor();
-        }
-
-        yDelta += yDir;
-        if(yDelta > 400 || yDelta < 0) {
-            yDir*=-1;
-            color = getRndColor();
-
-        }
-    }
-
-    private Color getRndColor() {
-        int r = random.nextInt(255),
-                b = random.nextInt(255),
-                g = random.nextInt(255);
-
-        return new Color(r,g,b);
-    }
 }

@@ -13,8 +13,6 @@ public class KeyboardInputs implements KeyListener {
         this.gamePanel = gamePanel;
     }
 
-
-
     @Override
     public void keyTyped(KeyEvent e) {
 
