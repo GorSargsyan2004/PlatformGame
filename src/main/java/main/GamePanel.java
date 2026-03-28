@@ -1,27 +1,26 @@
 package main;
 
+import animations.Animation;
+import animations.Direction;
+import entities.Player;
 import inputs.KeyboardInputs;
 import inputs.MouseInputs;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
+import java.awt.geom.Point2D;
 
 public class GamePanel extends JPanel {
 
     private MouseInputs mouseInputs;
-    private int xDelta = 100, yDelta = 100;
+    private Player player;
 
-    private BufferedImage img;
+    private Animation anim;
 
     GamePanel() {
-        mouseInputs = new MouseInputs(this);
+        player = new Player(100, 20, new Point2D.Double(500.0, 500.0));
 
-        importImage();
-        loadAnimations();
+        mouseInputs = new MouseInputs(this);
 
         setPanelSize();
         addKeyListener(new KeyboardInputs(this));
@@ -29,24 +28,7 @@ public class GamePanel extends JPanel {
         addMouseMotionListener(mouseInputs);
     }
 
-    private void loadAnimations() {
-    }
 
-    private void importImage() {
-        InputStream is = getClass().getResourceAsStream("/Player/idle/Warrior_Idle_1.png");
-
-        try {
-            img = ImageIO.read(is);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     private void setPanelSize() {
         Dimension size = new Dimension(1280, 800);
@@ -55,25 +37,15 @@ public class GamePanel extends JPanel {
         setMaximumSize(size);
     }
 
-    public void changeXDelta(int value) {
-        this.xDelta += value;
-    }
-
-    public void changeYDelta(int value) {
-        this.yDelta += value;
-    }
-
-    public void setRectPos(int x, int y) {
-        this.yDelta = y;
-        this.xDelta = x;
-    }
-
     // < Paint Component >
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        g.drawImage(img, xDelta, yDelta, 128, 88, null);
-
+        player.update();
+        player.drawPlayer(g);
     }
 
+    public Player getPlayer() {
+        return player;
+    }
 }
