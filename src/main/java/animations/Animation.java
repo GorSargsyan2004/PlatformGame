@@ -146,4 +146,18 @@ public class Animation {
         if (dir == Direction.RIGHT) return images[aniIndex];
         return flippedImages[aniIndex];
     }
+
+    public boolean isAnimationCompleted() {
+        if (aniIndex == quantity-1) return true;
+        return false;
+    }
+
+    public void reset() {
+        aniTick = 0;
+        aniIndex = 0;
+    }
+
+    public void increaseSpeed(int value) {
+        this.aniSpeed = Game.FPS_SET / (quantity + 2 + value);
+    }
 }

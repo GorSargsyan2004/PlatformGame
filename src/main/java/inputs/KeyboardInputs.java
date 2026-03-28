@@ -28,6 +28,12 @@ public class KeyboardInputs implements KeyListener {
             case KeyEvent.VK_D:
                 gamePanel.getPlayer().setRight(true);
                 break;
+            case KeyEvent.VK_SPACE:
+                gamePanel.getPlayer().setAttack(true);
+                break;
+            case KeyEvent.VK_W:
+                gamePanel.getPlayer().setJump(true);
+                break;
         }
     }
 
