@@ -26,7 +26,7 @@ public class Animation {
         this.quantity = quantity;
         this.dist = dist;
         aniTick = 0;
-        aniSpeed = Game.FPS_SET / (quantity+2);
+        aniSpeed = Game.UPS_SET / (quantity+2);
         loadAnimation();
         loadFlippedAnimation();
     }
@@ -69,7 +69,7 @@ public class Animation {
             this.height = images[0].getHeight();
 
             this.aniTick = 0;
-            this.aniSpeed = Game.FPS_SET / (quantity + 2);
+            this.aniSpeed = Game.UPS_SET / (quantity + 2);
 
             loadFlippedAnimation();
         } else {
@@ -157,7 +157,7 @@ public class Animation {
         aniIndex = 0;
     }
 
-    public void increaseSpeed(int value) {
-        this.aniSpeed = Game.FPS_SET / (quantity + 2 + value);
+    public void modifySpeed(int value) {
+        this.aniSpeed = Game.UPS_SET / (quantity + 2 + value);
     }
 }
