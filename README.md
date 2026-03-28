@@ -38,7 +38,7 @@ PlatformGame
           └── resources
 ```
 
-![Warrior_Idle_1.png](src/main/resources/Player/idle/Warrior_Idle_1.png) The Player
+![Warrior_Idle_1.png](src/main/resources/Player/Idle/Warrior_Idle_1.png) The Player
 
 ---
 ### Monsters
