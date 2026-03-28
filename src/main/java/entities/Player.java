@@ -25,8 +25,9 @@ public class Player extends Entity {
     private double jumpSpeed = -2.5;
     private double floorY = 0.0;
 
-    public Player(int health, int damage, Point2D.Double pos) {
-        super(health, damage, pos);
+    public Player(int health, int damage, Point2D.Double pos, double movementSpeed) {
+        super(health, damage, pos, movementSpeed);
+
 
         String[] anims = {"Run", "Idle", "Jump", "UptoFall", "Fall", "Crouch", "Hurt-Effect", "Attack", "Dash-Attack"};
         animations = new Animation[anims.length];
@@ -34,10 +35,11 @@ public class Player extends Entity {
         for (int i = 0; i < animations.length; i++)
             animations[i] = new Animation("/Player/"+anims[i]+"/","Warrior_"+anims[i]+"_");
 
-        animations[JUMP].increaseSpeed(1);
-        animations[UP_TO_FALL].increaseSpeed(1);
-        animations[FALL].increaseSpeed(1);
-        animations[CROUCH].increaseSpeed(4);
+//        animations[RUN].modifySpeed(-2);
+        animations[JUMP].modifySpeed(1);
+        animations[UP_TO_FALL].modifySpeed(1);
+        animations[FALL].modifySpeed(1);
+        animations[CROUCH].modifySpeed(5);
 
         currentAnim = animations[IDLE];
         currentDir = Direction.RIGHT;
@@ -96,8 +98,8 @@ public class Player extends Entity {
             // Player is flying through the air
 
             // Allow left/right movement while in the air
-            if (leftPressed) { pos.x -= 2.0; currentDir = Direction.LEFT; }
-            if (rightPressed) { pos.x += 2.0; currentDir = Direction.RIGHT; }
+            if (leftPressed) { pos.x -= movementSpeed; currentDir = Direction.LEFT; }
+            if (rightPressed) { pos.x += movementSpeed; currentDir = Direction.RIGHT; }
 
             // Pick the animation based strictly on the current velocity
             if (ySpeed < -0.5) {
@@ -111,11 +113,11 @@ public class Player extends Entity {
         else {
             // Player is safely on the ground and not crouching
             if (leftPressed && !rightPressed) {
-                pos.x -= 2.0;
+                pos.x -= movementSpeed;
                 currentAnim = animations[RUN];
                 currentDir = Direction.LEFT;
             } else if (rightPressed && !leftPressed) {
-                pos.x += 2.0;
+                pos.x += movementSpeed;
                 currentAnim = animations[RUN];
                 currentDir = Direction.RIGHT;
             } else {

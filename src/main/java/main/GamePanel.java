@@ -1,7 +1,6 @@
 package main;
 
 import animations.Animation;
-import animations.Direction;
 import entities.Player;
 import inputs.KeyboardInputs;
 import inputs.MouseInputs;
@@ -18,7 +17,7 @@ public class GamePanel extends JPanel {
     private Animation anim;
 
     GamePanel() {
-        player = new Player(100, 20, new Point2D.Double(500.0, 500.0));
+        player = new Player(100, 20, new Point2D.Double(500.0, 500.0), 1.5);
 
         mouseInputs = new MouseInputs(this);
 
@@ -41,8 +40,12 @@ public class GamePanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        player.update();
         player.drawPlayer(g);
+    }
+
+    // < Update Game >
+    public void updateGame() {
+        player.update();
     }
 
     public Player getPlayer() {
