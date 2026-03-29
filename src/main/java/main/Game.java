@@ -20,12 +20,12 @@ public class Game implements Runnable{
     public static final int FPS_SET = 120;
     public static final int UPS_SET = 200;
 
-    public final static int TILES_DEFAULT_SIZE = 32;
-    public final static float SCALE = 1.0f;
-    public final static int TILES_IN_WIDTH = 24;
+    public final static int TILES_DEFAULT_SIZE = 24;
+    public final static float SCALE = 1.5f;
+    public final static int TILES_IN_WIDTH = 48;
     public final static int TILES_IN_HEIGHT = 24;
     public final static int TILES_SIZE = (int)(TILES_DEFAULT_SIZE * SCALE);
-    public final static int GAME_WIDTH = TILES_SIZE * (TILES_IN_WIDTH * 2);
+    public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
     public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
 
 
@@ -39,7 +39,7 @@ public class Game implements Runnable{
     }
 
     private void initClasses() {
-        player = new Player(100, 20, new Point2D.Double(500.0, 500.0), 1.5);
+        player = new Player(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), 1.5);
         levelManager = new LevelManager(this);
     }
 

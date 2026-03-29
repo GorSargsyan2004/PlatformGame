@@ -11,7 +11,6 @@ import static utils.Constants.PlayerConstants.*;
 
 public class Player extends Entity {
 
-    private Animation[] animations;
     private Animation currentAnim;
     private Direction currentDir;
 
@@ -27,7 +26,6 @@ public class Player extends Entity {
 
     public Player(int health, int damage, Point2D.Double pos, double movementSpeed) {
         super(health, damage, pos, movementSpeed);
-
 
         String[] anims = {"Run", "Idle", "Jump", "UptoFall", "Fall", "Crouch", "Hurt-Effect", "Attack", "Dash-Attack"};
         animations = new Animation[anims.length];
