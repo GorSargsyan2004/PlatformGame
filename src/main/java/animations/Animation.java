@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 import main.Game;
 
+import static utils.LoadSave.getSave;
+
 public class Animation {
     private int aniTick, aniIndex, aniSpeed;
     private int width, height, quantity, x, y, dist;
@@ -41,22 +43,12 @@ public class Animation {
 
         while (true) {
             String currentPath = folderPath + pattern + index + ".png";
-            InputStream is = getClass().getResourceAsStream(currentPath);
+            BufferedImage img = getSave(currentPath);
 
-            if (is == null) break;
+            if (img == null) break;
 
-            try {
-                BufferedImage img = ImageIO.read(is);
-                tempImages.add(img);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to read image at: " + currentPath, e);
-            } finally {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            tempImages.add(img);
+
             index++;
         }
 
@@ -111,17 +103,7 @@ public class Animation {
     private void importImage(String path) {
         InputStream is = getClass().getResourceAsStream(path);
 
-        try {
-            source = ImageIO.read(is);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        source = getSave(path);
     }
 
     public int getHeight() {

@@ -22,7 +22,7 @@ public class Player extends Entity {
 
     private double ySpeed = 0;
     private double gravity = 0.04;
-    private double jumpSpeed = -2.5;
+    private double jumpSpeed = -3.5;
     private double floorY = 0.0;
 
     public Player(int health, int damage, Point2D.Double pos, double movementSpeed) {

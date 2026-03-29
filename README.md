@@ -1,4 +1,5 @@
-# 🎮 Platform Game 
+# 🎮 Platform Game
+_(working with the name of the game)_
 
 ## A 2D game where the task is to survive as long as possible and get scores. The best score will be recorded.
 
@@ -27,13 +28,13 @@ PlatformGame
           │    │   └── Player.java
           │    ├── inputs 
           │    │   ├── KeyboardInputs.javats
-          │    │   └── MouseInputs.java KeyboardInputs.java
+          │    │   └── MouseInputs.java
           │    ├── main MouseInputs.java
           │    │   ├── Game.java
-          │    │   ├── GameAlgorithm.javaGame.java    
-          │    │   ├── GamePanel.javaGameAlgorithm.java    
-          │    │   ├── GameWindow.javaGamePanel.java
-          │    │   └── MainClass.javaGameWindow.java
+          │    │   ├── GameAlgorithm.java  
+          │    │   ├── GamePanel.javaGame 
+          │    │   ├── GameWindow.java
+          │    │   └── MainClass.java
           │    ├── score_recorder
           │    │    └── ScoreRecorder.java
           │    └── utils

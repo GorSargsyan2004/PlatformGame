@@ -1,23 +1,22 @@
 package main;
 
-import animations.Animation;
 import entities.Player;
 import inputs.KeyboardInputs;
 import inputs.MouseInputs;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Point2D;
+
+import static main.Game.GAME_HEIGHT;
+import static main.Game.GAME_WIDTH;
 
 public class GamePanel extends JPanel {
 
     private MouseInputs mouseInputs;
-    private Player player;
+    private Game game;
 
-    private Animation anim;
-
-    GamePanel() {
-        player = new Player(100, 20, new Point2D.Double(500.0, 500.0), 1.5);
+    GamePanel(Game game) {
+        this.game = game;
 
         mouseInputs = new MouseInputs(this);
 
@@ -27,10 +26,8 @@ public class GamePanel extends JPanel {
         addMouseMotionListener(mouseInputs);
     }
 
-
-
     private void setPanelSize() {
-        Dimension size = new Dimension(1280, 800);
+        Dimension size = new Dimension(GAME_WIDTH, GAME_HEIGHT);
         setMinimumSize(size);
         setPreferredSize(size);
         setMaximumSize(size);
@@ -40,15 +37,11 @@ public class GamePanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        player.drawPlayer(g);
-    }
-
-    // < Update Game >
-    public void updateGame() {
-        player.update();
+        game.player.drawPlayer(g);
+        game.levelManager.draw(g);
     }
 
     public Player getPlayer() {
-        return player;
+        return game.player;
     }
 }

@@ -1,6 +1,5 @@
 package inputs;
 
-import animations.Direction;
 import main.GamePanel;
 
 import java.awt.event.KeyEvent;
