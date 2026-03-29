@@ -1,10 +1,13 @@
 package entities;
 
+import animations.Animation;
+
 import java.awt.geom.Point2D;
 
 public class Entity {
     private int health;
     private int damage;
+    protected Animation[] animations;
     public Point2D.Double pos;
     public double movementSpeed;
 
