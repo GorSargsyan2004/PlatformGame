@@ -1,4 +1,4 @@
-# 🎮 Platform Game 
+# 🎮 Platform Game _(we are working with the name of the game)_
 
 ## A 2D game where the task is to survive as long as possible and get scores. The best score will be recorded.
 
