@@ -1,6 +1,7 @@
 package main;
 
 import entities.Player;
+import gamestates.Gamestate;
 import inputs.KeyboardInputs;
 import inputs.MouseInputs;
 
@@ -36,12 +37,17 @@ public class GamePanel extends JPanel {
     // < Paint Component >
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-
-        game.levelManager.draw(g);
-        game.player.drawPlayer(g);
+        switch (Gamestate.state) {
+            case PLAYING -> {
+                game.getPlaying().draw(g);
+            }
+            case MENU -> {
+                game.getMenu().draw(g);
+            }
+        }
     }
 
-    public Player getPlayer() {
-        return game.player;
+    public Game getGame() {
+        return game;
     }
 }

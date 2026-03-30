@@ -32,16 +32,16 @@ public class HelpMethods {
         if (y < 0 || y >= Game.GAME_HEIGHT)
             return true;
 
-        double xIndex = x / Game.TILES_SIZE;
-        double yIndex = y / Game.TILES_SIZE;
+        int xIndex = (int) (x / Game.TILES_SIZE);
+        int yIndex = (int) (y / Game.TILES_SIZE);
 
-        int value = lvlData[(int) yIndex][(int) xIndex];
+        if (xIndex < 0 || xIndex >= Game.TILES_IN_WIDTH || yIndex < 0 || yIndex >= Game.TILES_IN_HEIGHT)
+            return true;
+
+        int value = lvlData[yIndex][xIndex];
 
         if (value == LoadSave.BLANK_TILE_ID || IsSlope(value))
             return false;
-
-        if (value < 0 || value >= Game.TILES_IN_WIDTH * Game.TILES_IN_HEIGHT)
-            return true;
 
         return true;
     }
@@ -75,25 +75,29 @@ public class HelpMethods {
 
     public static float GetEntityXPosNextToWall(Rectangle2D.Float hitBox, float xSpeed) {
         if (xSpeed > 0) {
-            // Moving Right
-            int currentTile = (int) ((hitBox.x + hitBox.width) / Game.TILES_SIZE);
-            return currentTile * Game.TILES_SIZE - hitBox.width;
+            // Moving Right: Snap to the left edge of the blocking tile
+            int targetTile = (int) ( (hitBox.x + hitBox.width + xSpeed - 0.01f) / Game.TILES_SIZE);
+            float snapX = targetTile * Game.TILES_SIZE - hitBox.width - 0.01f;
+            return Math.max(hitBox.x, snapX);
         } else {
-            // Moving Left
-            int currentTile = (int) (hitBox.x / Game.TILES_SIZE);
-            return (currentTile + 1) * Game.TILES_SIZE;
+            // Moving Left: Snap to the right edge of the blocking tile
+            int targetTile = (int) ((hitBox.x + xSpeed) / Game.TILES_SIZE);
+            float snapX = (targetTile + 1) * Game.TILES_SIZE;
+            return Math.min(hitBox.x, snapX);
         }
     }
 
     public static float GetEntityYPosUnderRoofOrAboveFloor(Rectangle2D.Float hitBox, float ySpeed) {
         if (ySpeed > 0) {
-            // Falling
-            int currentTile = (int) ((hitBox.y + hitBox.height) / Game.TILES_SIZE);
-            return currentTile * Game.TILES_SIZE - hitBox.height;
+            // Falling: Snap to the top edge of the blocking tile
+            int targetTile = (int) ((hitBox.y + hitBox.height + ySpeed - 0.01f) / Game.TILES_SIZE);
+            float snapY = targetTile * Game.TILES_SIZE - hitBox.height - 0.01f;
+            return Math.max(hitBox.y, snapY);
         } else {
-            // Jumping/Hitting Roof
-            int currentTile = (int) (hitBox.y / Game.TILES_SIZE);
-            return (currentTile + 1) * Game.TILES_SIZE;
+            // Jumping/Hitting Roof: Snap to the bottom edge of the blocking tile
+            int targetTile = (int) ((hitBox.y + ySpeed) / Game.TILES_SIZE);
+            float snapY = (targetTile + 1) * Game.TILES_SIZE;
+            return Math.min(hitBox.y, snapY);
         }
     }
 }

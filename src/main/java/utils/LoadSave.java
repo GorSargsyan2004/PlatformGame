@@ -18,6 +18,8 @@ public class LoadSave {
     public static final String BACKGROUND_LAYER_1 = "/Level/background/background_layer_1.png";
     public static final String BACKGROUND_LAYER_2 = "/Level/background/background_layer_2.png";
     public static final String BACKGROUND_LAYER_3 = "/Level/background/background_layer_3.png";
+    public static final String MENU_BUTTONS = "/Menu/Buttons/";
+    public static final String MENU_BACKGROUND = "/Menu/menu_background.png";
 
     public static BufferedImage getSave(String path) {
         InputStream is = LoadSave.class.getResourceAsStream(path);

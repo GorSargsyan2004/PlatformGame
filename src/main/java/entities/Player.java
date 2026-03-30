@@ -2,8 +2,6 @@ package entities;
 
 import animations.Animation;
 import animations.Direction;
-import main.Game;
-import utils.HelpMethods;
 
 import java.awt.*;
 import java.awt.geom.Point2D;

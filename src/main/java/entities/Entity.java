@@ -126,6 +126,7 @@ public class Entity {
 
     protected Pair<Animation, Direction> run(Animation currentAnim, Direction currentDir, int RUN, int IDLE, float SCALE) {
         float xSpeed = 0;
+        Direction lastDir = currentDir;
         if (leftPressed && !rightPressed) {
             xSpeed = -(float)movementSpeed;
             currentDir = Direction.LEFT;
@@ -134,9 +135,19 @@ public class Entity {
             currentDir = Direction.RIGHT;
         }
 
+        // Keep hitbox position stable when turning
+        if (lastDir != currentDir) {
+            float oldHitboxX = hitBox.x;
+            updateHitbox(currentDir, currentAnim, SCALE);
+            float diff = hitBox.x - oldHitboxX;
+            pos.x -= diff;
+            updateHitbox(currentDir, currentAnim, SCALE);
+        }
+
         if (xSpeed != 0) {
             float nextX = hitBox.x + xSpeed;
             float nextY = hitBox.y;
+            // ... (rest of the method unchanged)
 
             // If on slope, calculate the new target Y to keep the player on the surface
             if (onSlope) {
@@ -184,14 +195,33 @@ public class Entity {
         return Pair.of(currentAnim, currentDir);
     }
 
+    protected void updateHitbox(Direction currentDir, Animation currentAnim, float SCALE) {
+        if (currentDir == Direction.RIGHT) {
+            hitBox.x = (float) pos.x + xDrawOffset;
+        } else {
+            hitBox.x = (float) pos.x + (currentAnim.getWidth() * SCALE - xDrawOffset - hitBox.width);
+        }
+        hitBox.y = (float)pos.y + yDrawOffset;
+    }
+
     protected Pair<Animation, Direction> jump(Animation currentAnim, Direction currentDir, int JUMP, int UP_TO_FALL, int FALL, float SCALE) {
         float xSpeed = 0;
+        Direction lastDir = currentDir;
         if (leftPressed && !rightPressed) {
             xSpeed = -(float)movementSpeed;
             currentDir = Direction.LEFT;
         } else if (rightPressed && !leftPressed) {
             xSpeed = (float)movementSpeed;
             currentDir = Direction.RIGHT;
+        }
+
+        // Keep hitbox position stable when turning
+        if (lastDir != currentDir) {
+            float oldHitboxX = hitBox.x;
+            updateHitbox(currentDir, currentAnim, SCALE);
+            float diff = hitBox.x - oldHitboxX;
+            pos.x -= diff;
+            updateHitbox(currentDir, currentAnim, SCALE);
         }
 
         if (xSpeed != 0) {
