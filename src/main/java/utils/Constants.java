@@ -1,5 +1,7 @@
 package utils;
 
+import main.Game;
+
 public class Constants {
 
     public static class PlayerConstants {
@@ -13,5 +15,14 @@ public class Constants {
         public static final int ATTACK = 7;
         public static final int DASH_ATTACK = 8;
 
+    }
+
+    public static class UI {
+        public static class Buttons {
+            public static final int B_WIDTH_DEFAULT = 144;
+            public static final int B_HEIGHT_DEFAULT = 72;
+            public static final int B_WIDTH = (int) (B_WIDTH_DEFAULT * Game.SCALE);
+            public static final int B_HEIGHT = (int) (B_HEIGHT_DEFAULT * Game.SCALE);
+        }
     }
 }

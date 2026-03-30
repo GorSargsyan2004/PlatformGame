@@ -129,6 +129,11 @@ public class Animation {
         return flippedImages[aniIndex];
     }
 
+    public BufferedImage getAnimationImageAt(int index, Direction dir) {
+        if (dir == Direction.RIGHT) return images[index];
+        return flippedImages[index];
+    }
+
     public boolean isAnimationCompleted() {
         if (aniIndex == quantity-1) return true;
         return false;

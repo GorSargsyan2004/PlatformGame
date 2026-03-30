@@ -1,6 +1,9 @@
 package main;
 
 import entities.Player;
+import gamestates.Gamestate;
+import gamestates.Menu;
+import gamestates.Playing;
 import levels.LevelManager;
 
 import java.awt.geom.Point2D;
@@ -11,10 +14,9 @@ public class Game implements Runnable{
     private GameWindow gameWindow;
     private GamePanel gamePanel;
     private Thread gameThread;
-    protected LevelManager levelManager;
 
-    // ENTITIES
-    protected Player player;
+    private Playing playing;
+    private Menu menu;
 
     // CONSTANTS
     public static final int FPS_SET = 120;
@@ -39,17 +41,29 @@ public class Game implements Runnable{
     }
 
     private void initClasses() {
-        // Loading the level
-        levelManager = new LevelManager(this);
-        int[][] lvlData = levelManager.getCurrentLevel().getLevelData();
-
-        // Entities
-        player = new Player(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), 1.5, lvlData);
+        menu = new Menu(this);
+        playing = new Playing(this);
     }
 
     private void update() {
-        player.update();
-        levelManager.update();
+        switch (Gamestate.state) {
+            case PLAYING -> {
+                playing.update();
+            }
+            case MENU -> {
+                menu.update();
+            }
+            case QUIT -> {
+                System.exit(0);
+            }
+        }
+    }
+
+    public Menu getMenu() {
+        return menu;
+    }
+    public Playing getPlaying() {
+        return playing;
     }
 
     private void startGameLoop() {
