@@ -112,6 +112,12 @@ public class LevelEditor extends JFrame {
         JButton saveButton = new JButton("Save map.png");
         saveButton.addActionListener(e -> saveMap());
 
+        JButton loadButton = new JButton("Load map.png");
+        loadButton.addActionListener(e -> {
+            loadMap();
+            canvas.repaint();
+        });
+
         JButton clearButton = new JButton("Clear (Set all to 4)");
         clearButton.addActionListener(e -> {
             initMapData();
@@ -122,6 +128,7 @@ public class LevelEditor extends JFrame {
         controlPanel.add(idSpinner);
         controlPanel.add(Box.createHorizontalStrut(20));
         controlPanel.add(clearButton);
+        controlPanel.add(loadButton);
         controlPanel.add(saveButton);
 
         // 5. Layout assembly
@@ -180,6 +187,31 @@ public class LevelEditor extends JFrame {
 
                 g.setColor(new Color(255, 255, 255, 30));
                 g.drawRect(x, y, TILE_SIZE, TILE_SIZE);
+            }
+        }
+    }
+
+    private void loadMap() {
+        JFileChooser fileChooser = new JFileChooser(".");
+        fileChooser.setDialogTitle("Select map.png to load");
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            try {
+                BufferedImage img = ImageIO.read(file);
+                if (img.getWidth() != TILES_IN_WIDTH || img.getHeight() != TILES_IN_HEIGHT) {
+                    JOptionPane.showMessageDialog(this, "Map dimensions must be " + TILES_IN_WIDTH + "x" + TILES_IN_HEIGHT + " pixels.", "Dimension Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                for (int y = 0; y < TILES_IN_HEIGHT; y++) {
+                    for (int x = 0; x < TILES_IN_WIDTH; x++) {
+                        Color color = new Color(img.getRGB(x, y));
+                        mapData[y][x] = color.getRed();
+                    }
+                }
+                JOptionPane.showMessageDialog(this, "Map loaded successfully!");
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Failed to load map: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
