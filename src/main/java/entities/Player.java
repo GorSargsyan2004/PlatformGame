@@ -2,9 +2,12 @@ package entities;
 
 import animations.Animation;
 import animations.Direction;
+import main.Game;
+import utils.HelpMethods;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import static utils.Constants.PlayerConstants.*;
@@ -14,18 +17,10 @@ public class Player extends Entity {
     private Animation currentAnim;
     private Direction currentDir;
 
-    // Physics & State Variables
-    private boolean leftPressed, rightPressed, attack;
-    private boolean inAir = false;
-    private boolean landing = false;
+    private static final float SCALE = 2.0f;
 
-    private double ySpeed = 0;
-    private double gravity = 0.04;
-    private double jumpSpeed = -3.5;
-    private double floorY = 0.0;
-
-    public Player(int health, int damage, Point2D.Double pos, double movementSpeed) {
-        super(health, damage, pos, movementSpeed);
+    public Player(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
+        super(health, damage, pos, movementSpeed, lvlData);
 
         String[] anims = {"Run", "Idle", "Jump", "UptoFall", "Fall", "Crouch", "Hurt-Effect", "Attack", "Dash-Attack"};
         animations = new Animation[anims.length];
@@ -33,7 +28,6 @@ public class Player extends Entity {
         for (int i = 0; i < animations.length; i++)
             animations[i] = new Animation("/Player/"+anims[i]+"/","Warrior_"+anims[i]+"_");
 
-//        animations[RUN].modifySpeed(-2);
         animations[JUMP].modifySpeed(1);
         animations[UP_TO_FALL].modifySpeed(1);
         animations[FALL].modifySpeed(1);
@@ -41,6 +35,18 @@ public class Player extends Entity {
 
         currentAnim = animations[IDLE];
         currentDir = Direction.RIGHT;
+
+        entityHeight = (int)(32 * SCALE);
+        entityWidth = (int)(16 * SCALE);
+
+        xDrawOffset = (int)(18 * SCALE);
+        yDrawOffset = (int)(10 * SCALE);
+        initHitbox();
+    }
+
+    @Override
+    protected void initHitbox() {
+        hitBox = new Rectangle2D.Float((float)pos.x + xDrawOffset, (float)pos.y + yDrawOffset, entityWidth, entityHeight);
     }
 
     public void setLeft(boolean left) { this.leftPressed = left; }
@@ -50,7 +56,6 @@ public class Player extends Entity {
         if (jump && !inAir && !landing) {
             this.inAir = true;
             this.ySpeed = this.jumpSpeed;
-            this.floorY = pos.y;
         }
     }
 
@@ -59,77 +64,69 @@ public class Player extends Entity {
         if (attack && inAir) attack = false;
         if (landing && attack) attack = false;
         if (attack) {
-            currentAnim = animations[ATTACK];
-            currentAnim.updateAnimationTick();
-            if (currentAnim.isAnimationCompleted()){
-                attack = false;
-                currentAnim.reset();
-            }
+            attack();
             return;
         }
 
         // 2. Physics & Gravity Update
-        if (inAir) {
-            pos.y += ySpeed;
-            ySpeed += gravity;
-
-            // Check if we hit the floor we jumped from
-            if (pos.y >= floorY && ySpeed > 0) {
-                pos.y = floorY;
-                inAir = false;
-                landing = true;
-                ySpeed = 0;
-                animations[CROUCH].reset();
-            }
-        }
+        physicsUpdate();
 
         // 3. Movement & Animation Selection
         if (landing) {
             // Player just hit the ground. Play crouch and freeze movement.
-            currentAnim = animations[CROUCH];
-            if (currentAnim.isAnimationCompleted()) {
-                landing = false;
-                currentAnim.reset();
-            }
+            landing();
         }
         else if (inAir) {
             // Player is flying through the air
-
-            // Allow left/right movement while in the air
-            if (leftPressed) { pos.x -= movementSpeed; currentDir = Direction.LEFT; }
-            if (rightPressed) { pos.x += movementSpeed; currentDir = Direction.RIGHT; }
-
-            // Pick the animation based strictly on the current velocity
-            if (ySpeed < -0.5) {
-                currentAnim = animations[JUMP];
-            } else if (ySpeed >= -0.5 && ySpeed < 0.5) {
-                currentAnim = animations[UP_TO_FALL];
-            } else {
-                currentAnim = animations[FALL];
-            }
+            var pair = jump(currentAnim, currentDir, JUMP, UP_TO_FALL, FALL, SCALE);
+            currentAnim = pair.value0();
+            currentDir = pair.value1();
         }
         else {
-            // Player is safely on the ground and not crouching
-            if (leftPressed && !rightPressed) {
-                pos.x -= movementSpeed;
-                currentAnim = animations[RUN];
-                currentDir = Direction.LEFT;
-            } else if (rightPressed && !leftPressed) {
-                pos.x += movementSpeed;
-                currentAnim = animations[RUN];
-                currentDir = Direction.RIGHT;
-            } else {
-                currentAnim = animations[IDLE];
-            }
+            // Player is safely on the ground (or slope) and not crouching
+            var pair = run(currentAnim, currentDir, RUN, IDLE, SCALE);
+            currentAnim = pair.value0();
+            currentDir = pair.value1();
         }
 
-        // Always tick the animation forward
         currentAnim.updateAnimationTick();
+        updateHitbox();
+    }
+
+    @Override
+    protected void updateHitbox() {
+        if (currentDir == Direction.RIGHT) {
+            hitBox.x = (float) pos.x + xDrawOffset;
+        } else {
+            hitBox.x = (float) pos.x + (currentAnim.getWidth() * SCALE - xDrawOffset - hitBox.width);
+        }
+        hitBox.y = (float)pos.y + yDrawOffset;
     }
 
     public void drawPlayer(Graphics g) {
         BufferedImage imageToDraw = currentAnim.getAnimationImage(currentDir);
         g.drawImage(imageToDraw, (int)pos.x, (int)pos.y,
-                currentAnim.getWidth()*2, currentAnim.getHeight()*2, null);
+                (int)(currentAnim.getWidth()*SCALE), (int)(currentAnim.getHeight()*SCALE), null);
+
+        // FOr debugging the hitBox
+//        drawHitbox(g);
+    }
+
+    private void attack() {
+        currentAnim = animations[ATTACK];
+        currentAnim.updateAnimationTick();
+        if (currentAnim.isAnimationCompleted()){
+            attack = false;
+            currentAnim.reset();
+        }
+    }
+
+    private void landing() {
+        currentAnim = animations[CROUCH];
+        if (currentAnim.isAnimationCompleted()) {
+            landing = false;
+            currentAnim.reset();
+        }
     }
 }
+

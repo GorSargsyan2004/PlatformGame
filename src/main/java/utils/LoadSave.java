@@ -15,6 +15,9 @@ public class LoadSave {
     public static final String LEVEL_ATLAS = "/Level/oak_woods_tileset.png";
     public static final String LEVEL_DATA = "/Level/map.png";
     public static final int BLANK_TILE_ID = 4;
+    public static final String BACKGROUND_LAYER_1 = "/Level/background/background_layer_1.png";
+    public static final String BACKGROUND_LAYER_2 = "/Level/background/background_layer_2.png";
+    public static final String BACKGROUND_LAYER_3 = "/Level/background/background_layer_3.png";
 
     public static BufferedImage getSave(String path) {
         InputStream is = LoadSave.class.getResourceAsStream(path);

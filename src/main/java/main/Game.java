@@ -39,8 +39,12 @@ public class Game implements Runnable{
     }
 
     private void initClasses() {
-        player = new Player(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), 1.5);
+        // Loading the level
         levelManager = new LevelManager(this);
+        int[][] lvlData = levelManager.getCurrentLevel().getLevelData();
+
+        // Entities
+        player = new Player(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), 1.5, lvlData);
     }
 
     private void update() {
