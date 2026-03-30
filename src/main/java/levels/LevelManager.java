@@ -14,6 +14,7 @@ import static utils.LoadSave.getSave;
 public class LevelManager {
 
     private BufferedImage[] levelSprite;
+    private BufferedImage[] backgroundLayers;
     private Game game;
     private Level levelOne;
 
@@ -23,7 +24,15 @@ public class LevelManager {
     public LevelManager(Game game) {
         this.game = game;
         importSprites();
+        loadBackgroundLayers();
         levelOne = new Level(LoadSave.getLevelData());
+    }
+
+    private void loadBackgroundLayers() {
+        backgroundLayers = new BufferedImage[3];
+        backgroundLayers[0] = getSave(LoadSave.BACKGROUND_LAYER_1);
+        backgroundLayers[1] = getSave(LoadSave.BACKGROUND_LAYER_2);
+        backgroundLayers[2] = getSave(LoadSave.BACKGROUND_LAYER_3);
     }
 
     private void importSprites() {
@@ -38,6 +47,14 @@ public class LevelManager {
     }
 
     public void draw(Graphics g) {
+        // Draw Background Layers
+        for (BufferedImage img : backgroundLayers) {
+            if (img != null) {
+                g.drawImage(img, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+            }
+        }
+
+        // Draw Level Tiles
         for (int j = 0; j < Game.TILES_IN_HEIGHT; j++) {
             for (int i = 0; i < Game.TILES_IN_WIDTH; i++) {
                 int index = levelOne.getSpriteIndex(i, j);
