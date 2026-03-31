@@ -8,6 +8,8 @@ import utils.HelpMethods;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+
 import io.arxila.javatuples.Pair;
 
 import static utils.Constants.PlayerConstants.*;
@@ -28,6 +30,9 @@ public class Entity {
     protected double gravity = 0.04;
     protected double jumpSpeed = -3.5;
 
+    protected Animation currentAnim;
+    protected Direction currentDir;
+
     protected static float scale = Game.SCALE;
 
     protected float xDrawOffset;
@@ -45,8 +50,10 @@ public class Entity {
         this.pos = pos;
         this.movementSpeed = movementSpeed;
         this.lvlData = lvlData;
+    }
 
-        this.hitBox = null;
+    protected void initHitbox(float xDrawOffset, float yDrawOffset) {
+        hitBox = new Rectangle2D.Float((float)pos.x + xDrawOffset, (float)pos.y + yDrawOffset, entityWidth, entityHeight);
     }
 
     protected void drawHitbox(Graphics g) {
@@ -55,15 +62,38 @@ public class Entity {
         g.drawRect((int)hitBox.x, (int)hitBox.y, (int)hitBox.width, (int)hitBox.height);
     }
 
-    protected void initHitbox() {
-        hitBox = null;
+    protected void updateHitbox_() {
+        if (currentDir == Direction.RIGHT) {
+            hitBox.x = (float) pos.x + xDrawOffset;
+        } else {
+            hitBox.x = (float) pos.x + (currentAnim.getWidth() * scale - xDrawOffset - hitBox.width);
+        }
+        hitBox.y = (float)pos.y + yDrawOffset;
     }
-
-    public void update() {}
 
     protected void updateHitbox() {
         hitBox.x = (int)pos.x;
         hitBox.y = (int)pos.y;
+    }
+
+    protected void attack(int ATTACK) {
+        currentAnim = animations[ATTACK];
+        currentAnim.updateAnimationTick();
+        if (currentAnim.isAnimationCompleted()){
+            attack = false;
+            currentAnim.reset();
+        }
+    }
+
+    public void update() {}
+
+    public void draw(Graphics g) {
+        BufferedImage imageToDraw = currentAnim.getAnimationImage(currentDir);
+        g.drawImage(imageToDraw, (int)pos.x, (int)pos.y,
+                (int)(currentAnim.getWidth()*scale), (int)(currentAnim.getHeight()*scale), null);
+
+        // FOr debugging the hitBox
+//        drawHitbox(g);
     }
 
     protected void physicsUpdate() {
@@ -257,5 +287,15 @@ public class Entity {
         }
 
         return Pair.of(currentAnim, currentDir);
+    }
+
+    public void setLeft(boolean left) { this.leftPressed = left; }
+    public void setRight(boolean right) { this.rightPressed = right; }
+    public void setAttack(boolean attack) { this.attack = attack; }
+    public void setJump(boolean jump) {
+        if (jump && !inAir && !landing) {
+            this.inAir = true;
+            this.ySpeed = this.jumpSpeed;
+        }
     }
 }

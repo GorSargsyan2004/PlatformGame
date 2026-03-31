@@ -14,7 +14,14 @@ public class Constants {
         public static final int HURT = 6;
         public static final int ATTACK = 7;
         public static final int DASH_ATTACK = 8;
+    }
 
+    public static class SkeletonConstants {
+        public static final int WALK = 0;
+        public static final int IDLE = 1;
+        public static final int DEATH = 2;
+        public static final int TAKE_HIT = 3;
+        public static final int ATTACK = 4;
     }
 
     public static class UI {

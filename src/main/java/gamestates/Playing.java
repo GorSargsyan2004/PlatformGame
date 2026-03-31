@@ -1,6 +1,7 @@
 package gamestates;
 
 import entities.Player;
+import entities.Skeleton;
 import levels.LevelManager;
 import main.Game;
 
@@ -17,6 +18,7 @@ public class Playing extends State implements Statemethods{
 
     // ENTITIES
     private Player player;
+    private Skeleton skeleton;
 
     public Playing(Game game) {
         super(game);
@@ -29,19 +31,22 @@ public class Playing extends State implements Statemethods{
         int[][] lvlData = levelManager.getCurrentLevel().getLevelData();
 
         // Entities
-        player = new Player(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), Game.SCALE, lvlData);
+//        player = new Player(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), Game.SCALE, lvlData);
+        skeleton = new Skeleton(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), Game.SCALE, lvlData);
     }
 
     @Override
     public void update() {
         levelManager.update();
-        player.update();
+//        player.update();
+        skeleton.update();
     }
 
     @Override
     public void draw(Graphics g) {
         levelManager.draw(g);
-        player.drawPlayer(g);
+        skeleton.draw(g);
+//        player.draw(g);
     }
 
     @Override

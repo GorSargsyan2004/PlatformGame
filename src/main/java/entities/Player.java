@@ -12,23 +12,20 @@ import static utils.Constants.PlayerConstants.*;
 
 public class Player extends Entity {
 
-    private Animation currentAnim;
-    private Direction currentDir;
-
-    private static final float SCALE = scale + 0.5f;
-
     public Player(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
         super(health, damage, pos, movementSpeed, lvlData);
 
+        this.scale += 0.05f;
+        
         initAnimations();
 
-        this.entityHeight = (int)(32 * SCALE);
-        this.entityWidth = (int)(16 * SCALE);
+        this.entityHeight = (int)(32 * scale);
+        this.entityWidth = (int)(16 * scale);
 
-        this.xDrawOffset = (int)(18 * SCALE);
-        this.yDrawOffset = (int)(10 * SCALE);
+        this.xDrawOffset = (int)(18 * scale);
+        this.yDrawOffset = (int)(10 * scale);
 
-        initHitbox();
+        initHitbox(xDrawOffset, yDrawOffset);
     }
 
     private void initAnimations() {
@@ -48,20 +45,7 @@ public class Player extends Entity {
         currentDir = Direction.RIGHT;
     }
 
-    @Override
-    protected void initHitbox() {
-        hitBox = new Rectangle2D.Float((float)pos.x + xDrawOffset, (float)pos.y + yDrawOffset, entityWidth, entityHeight);
-    }
-
-    public void setLeft(boolean left) { this.leftPressed = left; }
-    public void setRight(boolean right) { this.rightPressed = right; }
-    public void setAttack(boolean attack) { this.attack = attack; }
-    public void setJump(boolean jump) {
-        if (jump && !inAir && !landing) {
-            this.inAir = true;
-            this.ySpeed = this.jumpSpeed;
-        }
-    }
+    
 
     @Override
     public void update() {
@@ -69,7 +53,7 @@ public class Player extends Entity {
         if (attack && inAir) attack = false;
         if (landing && attack) attack = false;
         if (attack) {
-            attack();
+            attack(ATTACK);
             return;
         }
 
@@ -83,48 +67,21 @@ public class Player extends Entity {
         }
         else if (inAir) {
             // Player is flying through the air
-            var pair = jump(currentAnim, currentDir, JUMP, UP_TO_FALL, FALL, SCALE);
+            var pair = jump(currentAnim, currentDir, JUMP, UP_TO_FALL, FALL, scale);
             currentAnim = pair.value0();
             currentDir = pair.value1();
         }
         else {
             // Player is safely on the ground (or slope) and not crouching
-            var pair = run(currentAnim, currentDir, RUN, IDLE, SCALE);
+            var pair = run(currentAnim, currentDir, RUN, IDLE, scale);
             currentAnim = pair.value0();
             currentDir = pair.value1();
         }
 
         currentAnim.updateAnimationTick();
-        updateHitbox();
+        updateHitbox_();
     }
-
-    @Override
-    protected void updateHitbox() {
-        if (currentDir == Direction.RIGHT) {
-            hitBox.x = (float) pos.x + xDrawOffset;
-        } else {
-            hitBox.x = (float) pos.x + (currentAnim.getWidth() * SCALE - xDrawOffset - hitBox.width);
-        }
-        hitBox.y = (float)pos.y + yDrawOffset;
-    }
-
-    public void drawPlayer(Graphics g) {
-        BufferedImage imageToDraw = currentAnim.getAnimationImage(currentDir);
-        g.drawImage(imageToDraw, (int)pos.x, (int)pos.y,
-                (int)(currentAnim.getWidth()*SCALE), (int)(currentAnim.getHeight()*SCALE), null);
-
-        // FOr debugging the hitBox
-//        drawHitbox(g);
-    }
-
-    private void attack() {
-        currentAnim = animations[ATTACK];
-        currentAnim.updateAnimationTick();
-        if (currentAnim.isAnimationCompleted()){
-            attack = false;
-            currentAnim.reset();
-        }
-    }
+    
 
     private void landing() {
         currentAnim = animations[CROUCH];
