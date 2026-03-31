@@ -29,7 +29,7 @@ public class Playing extends State implements Statemethods{
         int[][] lvlData = levelManager.getCurrentLevel().getLevelData();
 
         // Entities
-        player = new Player(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), 1.5, lvlData);
+        player = new Player(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), Game.SCALE, lvlData);
     }
 
     @Override

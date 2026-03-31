@@ -15,12 +15,25 @@ public class Player extends Entity {
     private Animation currentAnim;
     private Direction currentDir;
 
-    private static final float SCALE = 2.0f;
+    private static final float SCALE = scale + 0.5f;
 
     public Player(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
         super(health, damage, pos, movementSpeed, lvlData);
 
+        initAnimations();
+
+        this.entityHeight = (int)(32 * SCALE);
+        this.entityWidth = (int)(16 * SCALE);
+
+        this.xDrawOffset = (int)(18 * SCALE);
+        this.yDrawOffset = (int)(10 * SCALE);
+
+        initHitbox();
+    }
+
+    private void initAnimations() {
         String[] anims = {"Run", "Idle", "Jump", "UptoFall", "Fall", "Crouch", "Hurt-Effect", "Attack", "Dash-Attack"};
+
         animations = new Animation[anims.length];
 
         for (int i = 0; i < animations.length; i++)
@@ -33,13 +46,6 @@ public class Player extends Entity {
 
         currentAnim = animations[IDLE];
         currentDir = Direction.RIGHT;
-
-        entityHeight = (int)(32 * SCALE);
-        entityWidth = (int)(16 * SCALE);
-
-        xDrawOffset = (int)(18 * SCALE);
-        yDrawOffset = (int)(10 * SCALE);
-        initHitbox();
     }
 
     @Override
@@ -57,6 +63,7 @@ public class Player extends Entity {
         }
     }
 
+    @Override
     public void update() {
         // 1. Attack Logic (Action Locking)
         if (attack && inAir) attack = false;

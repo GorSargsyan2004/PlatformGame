@@ -2,6 +2,7 @@ package entities;
 
 import animations.Animation;
 import animations.Direction;
+import main.Game;
 import utils.HelpMethods;
 
 import java.awt.*;
@@ -26,6 +27,8 @@ public class Entity {
     protected double ySpeed = 0;
     protected double gravity = 0.04;
     protected double jumpSpeed = -3.5;
+
+    protected static float scale = Game.SCALE;
 
     protected float xDrawOffset;
     protected float yDrawOffset;
@@ -55,6 +58,8 @@ public class Entity {
     protected void initHitbox() {
         hitBox = null;
     }
+
+    public void update() {}
 
     protected void updateHitbox() {
         hitBox.x = (int)pos.x;
