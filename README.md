@@ -17,29 +17,44 @@ PlatformGame
 ├── pom.xml
 └── src
     └── main
-          ├── java
-          │    ├── animation
-          │    │   ├── Animation.java 
-          │    │   └── Direction.java
-          │    ├── entities 
-          │    │   ├── Aid.java Enemy.java
-          │    │   ├── Enemy.java 
-          │    │   ├── Entity.java 
-          │    │   └── Player.java
-          │    ├── inputs 
-          │    │   ├── KeyboardInputs.javats
-          │    │   └── MouseInputs.java
-          │    ├── main MouseInputs.java
-          │    │   ├── Game.java
-          │    │   ├── GameAlgorithm.java  
-          │    │   ├── GamePanel.javaGame 
-          │    │   ├── GameWindow.java
-          │    │   └── MainClass.java
-          │    ├── score_recorder
-          │    │    └── ScoreRecorder.java
-          │    └── utils
-          │         └── Constants.java
-          └── resources
+        ├── java
+        │   ├── animations
+        │   │   ├── Animation.java
+        │   │   └── Direction.java
+        │   ├── entities
+        │   │   ├── Enemy.java
+        │   │   ├── EnemyManager.java
+        │   │   ├── Entity.java
+        │   │   ├── Player.java
+        │   │   └── Skeleton.java
+        │   ├── gamestates
+        │   │   ├── Gamestate.java
+        │   │   ├── Menu.java
+        │   │   ├── Playing.java
+        │   │   ├── State.java
+        │   │   └── Statemethods.java
+        │   ├── inputs
+        │   │   ├── KeyboardInputs.java
+        │   │   └── MouseInputs.java
+        │   ├── levels
+        │   │   ├── Level.java
+        │   │   └── LevelManager.java
+        │   ├── main
+        │   │   ├── Game.java
+        │   │   ├── GameAlgorithm.java
+        │   │   ├── GamePanel.java
+        │   │   ├── GameWindow.java
+        │   │   └── MainClass.java
+        │   ├── score_recorder
+        │   │   └── ScoreRecorder.java
+        │   ├── ui
+        │   │   └── MenuButton.java
+        │   └── utils
+        │       ├── Constants.java
+        │       ├── HelpMethods.java
+        │       ├── LevelEditor.java
+        │       └── LoadSave.java
+        └── resources
 ```
 
 ![Warrior_Idle_1.png](src/main/resources/Player/Idle/Warrior_Idle_1.png) The Player
