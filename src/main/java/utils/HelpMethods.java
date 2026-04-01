@@ -27,16 +27,18 @@ public class HelpMethods {
     }
 
     private static boolean IsSolid(double x, double y, int[][] lvlData) {
-        if (x < 0 || x >= Game.GAME_WIDTH)
-            return true;
         if (y < 0 || y >= Game.GAME_HEIGHT)
             return true;
+
+        // If outside the level horizontally, it's not a "solid tile"
+        if (x < 0 || x >= Game.GAME_WIDTH)
+            return false;
 
         int xIndex = (int) (x / Game.TILES_SIZE);
         int yIndex = (int) (y / Game.TILES_SIZE);
 
         if (xIndex < 0 || xIndex >= Game.TILES_IN_WIDTH || yIndex < 0 || yIndex >= Game.TILES_IN_HEIGHT)
-            return true;
+            return false;
 
         int value = lvlData[yIndex][xIndex];
 

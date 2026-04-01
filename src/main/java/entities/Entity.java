@@ -10,9 +10,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import io.arxila.javatuples.Pair;
 
-import static utils.Constants.PlayerConstants.*;
-
-public class Entity {
+public abstract class Entity {
     private int health;
     private int damage;
     protected Animation[] animations;
@@ -35,6 +33,8 @@ public class Entity {
 
     protected int entityWidth;
     protected int entityHeight;
+
+    protected boolean canWalkOffScreen = true;
 
     public Point2D.Double pos;
     public double movementSpeed;
@@ -66,7 +66,17 @@ public class Entity {
         hitBox.y = (int)pos.y;
     }
 
-    protected void physicsUpdate() {
+    public void setLeft(boolean left) { this.leftPressed = left; }
+    public void setRight(boolean right) { this.rightPressed = right; }
+    public void setAttack(boolean attack) { this.attack = attack; }
+    public void setJump(boolean jump) {
+        if (jump && !inAir && !landing) {
+            this.inAir = true;
+            this.ySpeed = this.jumpSpeed;
+        }
+    }
+
+    protected void physicsUpdate(int crouchIndex) {
         // SLOPE LOGIC (Check ground below feet)
         float xCheck = hitBox.x + hitBox.width / 2;
         float yCheck = hitBox.y + hitBox.height;
@@ -118,7 +128,7 @@ public class Entity {
                     // Only trigger landing animation if fall was significant (impact speed > 2.5)
                     if (ySpeed > 2.5) {
                         landing = true;
-                        animations[utils.Constants.PlayerConstants.CROUCH].reset();
+                        animations[crouchIndex].reset();
                     }
                     inAir = false;
                     ySpeed = 0;
@@ -181,6 +191,11 @@ public class Entity {
                 canMove = utils.HelpMethods.CanMoveHereOnSlope(new Point2D.Double(nextX, nextY), hitBox.width, hitBox.height, lvlData);
             } else {
                 canMove = utils.HelpMethods.CanMoveHere(new Point2D.Double(nextX, nextY), hitBox.width, hitBox.height, lvlData);
+            }
+
+            if (canMove && !canWalkOffScreen) {
+                if (nextX < 0 || nextX + hitBox.width > Game.GAME_WIDTH)
+                    canMove = false;
             }
 
             if (canMove) {

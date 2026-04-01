@@ -1,6 +1,9 @@
 package gamestates;
 
+import animations.Direction;
+import entities.EnemyManager;
 import entities.Player;
+import entities.Skeleton;
 import levels.LevelManager;
 import main.Game;
 
@@ -14,6 +17,7 @@ import static main.Game.TILES_SIZE;
 
 public class Playing extends State implements Statemethods{
     private LevelManager levelManager;
+    private EnemyManager em;
 
     // ENTITIES
     private Player player;
@@ -26,22 +30,28 @@ public class Playing extends State implements Statemethods{
     private void initClasses() {
         // Loading the level
         levelManager = new LevelManager(game);
-        int[][] lvlData = levelManager.getCurrentLevel().getLevelData();
+
+        // TEMPORARY
+        em = new EnemyManager(this);
+        em.summonSkeleton(Direction.LEFT);
+        em.summonSkeleton(Direction.RIGHT);
 
         // Entities
-        player = new Player(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), Game.SCALE, lvlData);
+        player = new Player(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), Game.SCALE, getLevelData());
     }
 
     @Override
     public void update() {
         levelManager.update();
         player.update();
+        em.update();
     }
 
     @Override
     public void draw(Graphics g) {
         levelManager.draw(g);
-        player.drawPlayer(g);
+        player.draw(g);
+        em.draw(g);
     }
 
     @Override
@@ -95,5 +105,13 @@ public class Playing extends State implements Statemethods{
                 player.setRight(false);
                 break;
         }
+    }
+
+    public int[][] getLevelData() {
+        return levelManager.getCurrentLevel().getLevelData();
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 }
