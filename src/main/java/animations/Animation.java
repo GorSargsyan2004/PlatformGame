@@ -72,7 +72,7 @@ public class Animation {
     private void loadAnimation() {
         importImage(path);
         assert source != null;
-        source = source.getSubimage(x, y, source.getWidth()-2*x, height);
+        source = source.getSubimage(x, y, source.getWidth()-x, height);
 
         images = new BufferedImage[quantity];
         for (int i = 0; i < quantity; i++) {

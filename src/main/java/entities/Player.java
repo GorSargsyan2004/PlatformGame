@@ -15,10 +15,12 @@ public class Player extends Entity {
     private Animation currentAnim;
     private Direction currentDir;
 
-    private static final float SCALE = scale + 0.5f;
+    private static final float SCALE = scale + 0.3f;
 
     public Player(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
         super(health, damage, pos, movementSpeed, lvlData);
+
+        this.canWalkOffScreen = false;
 
         initAnimations();
 
@@ -32,7 +34,7 @@ public class Player extends Entity {
     }
 
     private void initAnimations() {
-        String[] anims = {"Run", "Idle", "Jump", "UptoFall", "Fall", "Crouch", "Hurt-Effect", "Attack", "Dash-Attack"};
+        String[] anims = {"Run", "Idle", "Jump", "UptoFall", "Fall", "Crouch", "Hurt-Effect", "Attack", "Dash-Attack", "Death"};
 
         animations = new Animation[anims.length];
 
@@ -53,16 +55,6 @@ public class Player extends Entity {
         hitBox = new Rectangle2D.Float((float)pos.x + xDrawOffset, (float)pos.y + yDrawOffset, entityWidth, entityHeight);
     }
 
-    public void setLeft(boolean left) { this.leftPressed = left; }
-    public void setRight(boolean right) { this.rightPressed = right; }
-    public void setAttack(boolean attack) { this.attack = attack; }
-    public void setJump(boolean jump) {
-        if (jump && !inAir && !landing) {
-            this.inAir = true;
-            this.ySpeed = this.jumpSpeed;
-        }
-    }
-
     @Override
     public void update() {
         // 1. Attack Logic (Action Locking)
@@ -74,7 +66,7 @@ public class Player extends Entity {
         }
 
         // 2. Physics & Gravity Update
-        physicsUpdate();
+        physicsUpdate(CROUCH);
 
         // 3. Movement & Animation Selection
         if (landing) {
@@ -108,7 +100,7 @@ public class Player extends Entity {
         hitBox.y = (float)pos.y + yDrawOffset;
     }
 
-    public void drawPlayer(Graphics g) {
+    public void draw(Graphics g) {
         BufferedImage imageToDraw = currentAnim.getAnimationImage(currentDir);
         g.drawImage(imageToDraw, (int)pos.x, (int)pos.y,
                 (int)(currentAnim.getWidth()*SCALE), (int)(currentAnim.getHeight()*SCALE), null);
