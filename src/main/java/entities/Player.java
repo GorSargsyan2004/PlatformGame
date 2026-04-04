@@ -2,6 +2,8 @@ package entities;
 
 import animations.Animation;
 import animations.Direction;
+import main.Game;
+import utils.LoadSave;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -14,12 +16,28 @@ public class Player extends Entity {
     private static final float SCALE = scale + 0.3f;
     private EnemyManager enemyManager;
 
+    // Status Bar UI
+    private BufferedImage statusBarImg;
+
+    private int statusBarWidth = (int) (192 * scale);
+    private int statusBarHeight = (int) (58 * scale);
+    private int statusBarX = (int) (10 * scale);
+    private int statusBarY = (int) (10 * scale);
+
+    private int healthBarWidth = (int) (150 * scale);
+    private int healthBarHeight = (int) (4 * scale);
+    private int healthBarXStart = (int) (34 * scale);
+    private int healthBarYStart = (int) (14 * scale);
+
+    private int maxHealth;
+    private int healthWidth = healthBarWidth;
+
     public Player(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData, EnemyManager enemyManager) {
         super(health, damage, pos, movementSpeed, lvlData);
         this.enemyManager = enemyManager;
-
-        this.attackDistance = (int) (20 * SCALE);
-
+        this.maxHealth = health;
+        this.attackDistance = (int) (25 * SCALE);
+        this.statusBarImg = LoadSave.getSave(LoadSave.STATUS_BAR);
         this.canWalkOffScreen = false;
 
         initAnimations();
@@ -57,7 +75,16 @@ public class Player extends Entity {
 
     @Override
     public void update() {
-        // 1. Action Locking
+        updateHealthBar();
+
+        // Player is dead, no other updates are needed
+        if (isDead) return;
+        if (health <= 0) {
+            dead(animations[DEATH]);
+            return;
+        }
+
+        // Action Locking
         if (attack && inAir) {
             attack = false;
             attackChecked = false;
@@ -67,7 +94,13 @@ public class Player extends Entity {
             attackChecked = false;
         }
         
-        // 2. State Selection
+        // State Selection
+        if (checkForTakingHit()) {
+            takeHit(animations[HURT]);
+            updateHitbox();
+            return;
+        }
+
         if (isHurt) {
             currentAnim.updateAnimationTick();
             if (currentAnim.isAnimationCompleted()) {
@@ -78,22 +111,16 @@ public class Player extends Entity {
             return;
         }
 
-        if (checkForTakingHit()) {
-            takeHit(animations[HURT]);
-            updateHitbox();
-            return;
-        }
-
         if (attack) {
             attack(animations[ATTACK]);
             updateHitbox();
             return;
         }
 
-        // 3. Physics & Gravity Update
+        // Physics & Gravity Update
         physicsUpdate(CROUCH);
 
-        // 4. Movement & Animation Selection
+        // Movement & Animation Selection
         if (landing) {
             // Player just hit the ground. Play crouch and freeze movement.
             landing(animations[CROUCH]);
@@ -113,6 +140,10 @@ public class Player extends Entity {
 
         currentAnim.updateAnimationTick();
         updateHitbox();
+    }
+
+    private void updateHealthBar() {
+        healthWidth = (int) ((health / (float)maxHealth) * healthBarWidth);
     }
 
     @Override
@@ -154,8 +185,20 @@ public class Player extends Entity {
         g.drawImage(imageToDraw, (int)pos.x, (int)pos.y,
                 (int)(currentAnim.getWidth()*SCALE), (int)(currentAnim.getHeight()*SCALE), null);
 
+        drawUI(g);
+
         // FOr debugging the hitBox
 //        drawHitbox(g);
+    }
+
+    private void drawUI(Graphics g) {
+        g.drawImage(statusBarImg, statusBarX, statusBarY, statusBarWidth, statusBarHeight, null);
+        g.setColor(Color.RED);
+        g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
+    }
+
+    public boolean isDead() {
+        return isDead;
     }
 }
 

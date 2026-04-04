@@ -34,6 +34,8 @@ public abstract class Enemy extends Entity{
     }
 
     protected void chase(Entity player) {
+        if (player.isDead) return;
+
         if (isIdle || attack) {
             setLeft(false);
             setRight(false);
@@ -45,8 +47,8 @@ public abstract class Enemy extends Entity{
             setRight(false);
             if (timePlayerInRange == 0) {
                 timePlayerInRange = System.currentTimeMillis();
-                if (!player.isBeingAttacked()) player.takeHit(this);
-            } else if (System.currentTimeMillis() - timePlayerInRange >= 200) {
+                if (!player.isAttackedBy(this)) player.takeHit(this);
+            } else if (System.currentTimeMillis() - timePlayerInRange >= 1000) {
                 setAttack(true);
                 timePlayerInRange = 0;
             }
