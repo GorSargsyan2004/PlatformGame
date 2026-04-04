@@ -27,6 +27,10 @@ public class EnemyManager {
         for (Skeleton skeleton : skeletons) {
             skeleton.update();
             skeleton.chase(playing.getPlayer());
+            if (skeleton.isDead) {
+                skeletons.remove(skeleton);
+                break;
+            }
         }
     }
 

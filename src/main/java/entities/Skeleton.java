@@ -16,7 +16,7 @@ public class Skeleton extends Enemy{
     public Skeleton(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
         super(health, damage, pos, movementSpeed, lvlData);
 
-        this.attackDistance = (int) (15 * SCALE);
+        this.attackDistance = (int) (20 * SCALE);
 
         this.entityHeight = 50;
         this.entityWidth = 40;
@@ -49,18 +49,23 @@ public class Skeleton extends Enemy{
 
     @Override
     public void update() {
-        // 1. Action Locking & State Reset
+        if (health <= 0) {
+            dead(animations[DEATH]);
+            return;
+        }
+
+        // Action Locking & State Reset
         if (attack && (inAir || landing)) attack = false;
 
-        // 2. State Selection
-        if (isHurt) {
+        // State Selection
+        if (checkForTakingHit()) {
+            takeHit(animations[TAKE_HIT]);
+        } else if (isHurt) {
             currentAnim.updateAnimationTick();
             if (currentAnim.isAnimationCompleted()) {
                 isHurt = false;
                 currentAnim.reset();
             }
-        } else if (checkForTakingHit()) {
-            takeHit(animations[TAKE_HIT]);
         } else if (isIdle) {
             idle(animations[IDLE]);
         } else if (attack) {
@@ -81,12 +86,12 @@ public class Skeleton extends Enemy{
             currentDir = pair.value1();
         }
 
-        // 3. Physics & Gravity Update
+        // Physics & Gravity Update
         if (!isOutOfBorders(currentAnim.getWidth()) && !isIdle && !attack && !isHurt) {
             physicsUpdate(TAKE_HIT);
         }
 
-        // 4. Update Visuals
+        // Update Visuals
         boolean alreadyUpdated = (isIdle || attack || landing || isHurt);
         if (!alreadyUpdated) {
             currentAnim.updateAnimationTick();

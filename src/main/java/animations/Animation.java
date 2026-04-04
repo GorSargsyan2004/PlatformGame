@@ -147,6 +147,10 @@ public class Animation {
         completed = false;
     }
 
+    public void setIndexToLastFrame() {
+        aniIndex = images.length-1;
+    }
+
     public void modifySpeed(int value) {
         this.aniSpeed = Game.UPS_SET / (quantity + 2 + value);
     }

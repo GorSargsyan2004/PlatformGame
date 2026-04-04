@@ -12,7 +12,6 @@ import java.util.ArrayList;
 
 import io.arxila.javatuples.Pair;
 
-
 public abstract class Entity {
     protected int health;
     protected int damage;
@@ -30,6 +29,7 @@ public abstract class Entity {
     protected boolean onSlope = false;
     protected boolean isIdle = false;
     protected boolean isHurt = false;
+    protected boolean isDead = false;
     protected double ySpeed = 0;
     protected double gravity = 0.04;
     protected double jumpSpeed = -3.5;
@@ -107,7 +107,7 @@ public abstract class Entity {
         boolean hitTaken = false;
         for (int i = attackers.size() - 1; i >= 0; i--) {
             Entity attacker = attackers.get(i);
-            if (isInAttackRange(attacker, this)) {
+            if (isInAttackRange(attacker, this) && !attacker.isDead) {
                 if (System.currentTimeMillis() - attackersTimeAttackedInMillis.get(i) >= 1000) {
                     changeHealth(-attacker.damage);
                     attackers.remove(i);
@@ -123,13 +123,15 @@ public abstract class Entity {
     }
 
     protected void takeHit(Animation takeHit) {
-        attack = false;
-        isIdle = false;
-        attackChecked = false;
-        
-        // Reset all animations to ensure a clean start for the takeHit animation
-        for (Animation anim : animations)
-            if (anim != null) anim.reset();
+        if (currentAnim != takeHit) {
+            attack = false;
+            isIdle = false;
+            attackChecked = false;
+            
+            // Reset all animations to ensure a clean start for the takeHit animation
+            for (Animation anim : animations)
+                if (anim != null && !isDead) anim.reset();
+        }
 
         isHurt = true;
         currentAnim = takeHit;
@@ -160,6 +162,15 @@ public abstract class Entity {
         }
     }
 
+    protected void dead(Animation deadAnimation) {
+        currentAnim = deadAnimation;
+        currentAnim.updateAnimationTick();
+        if (currentAnim.isAnimationCompleted()){
+            isDead = true;
+            currentAnim.setIndexToLastFrame();
+        }
+    }
+
     protected boolean isInAttackRange(Entity attacker, Entity attacked) {
         Rectangle2D.Float a = attacker.hitBox;
         Rectangle2D.Float b = attacked.hitBox;
@@ -183,6 +194,10 @@ public abstract class Entity {
 
     protected boolean isBeingAttacked() {
         return !attackers.isEmpty();
+    }
+
+    protected boolean isAttackedBy(Entity entity) {
+        return attackers.contains(entity);
     }
 
     protected void landing(Animation landingAnimation) {
