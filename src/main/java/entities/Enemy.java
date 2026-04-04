@@ -7,8 +7,7 @@ import main.Game;
 import java.awt.geom.Point2D;
 
 public abstract class Enemy extends Entity{
-    protected Animation currentAnim;
-    protected Direction currentDir;
+    protected long timePlayerInRange = 0;
 
     Enemy (int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
         super(health, damage, pos, movementSpeed, lvlData);
@@ -34,17 +33,32 @@ public abstract class Enemy extends Entity{
         }
     }
 
-    protected void chase(Player player) {
+    protected void chase(Entity player) {
+        if (isIdle || attack) {
+            setLeft(false);
+            setRight(false);
+            return;
+        }
+
+        if (isInAttackRange(this, player)) {
+            setLeft(false);
+            setRight(false);
+            if (timePlayerInRange == 0) {
+                timePlayerInRange = System.currentTimeMillis();
+                if (!player.isBeingAttacked()) player.takeHit(this);
+            } else if (System.currentTimeMillis() - timePlayerInRange >= 200) {
+                setAttack(true);
+                timePlayerInRange = 0;
+            }
+            return;
+        } else {
+            timePlayerInRange = 0;
+        }
+
         if ( (hitBox.x > player.hitBox.x - 100 && hitBox.x < player.hitBox.x + 100) &&
                 (hitBox.y > player.hitBox.y + 50 && hitBox.y < player.hitBox.y + 100) &&
                 (!player.inAir)) {
             setJump(true);
-        }
-
-        if (hitBox.x > player.hitBox.x - 20 && hitBox.x < player.hitBox.x + 20) {
-            setLeft(false);
-            setRight(false);
-            return;
         }
 
         if (player.hitBox.x > hitBox.x) {
@@ -54,5 +68,38 @@ public abstract class Enemy extends Entity{
             setRight(false);
             setLeft(true);
         }
+        }
+
+    @Override
+    protected void attack(Animation attackAnimation) {
+        currentAnim = attackAnimation;
+        currentAnim.updateAnimationTick();
+        if (currentAnim.isAnimationCompleted()){
+            attack = false;
+            isIdle = true;
+            currentAnim.reset();
+        }
+    }
+
+    @Override
+    protected boolean checkForTakingHit() {
+        if (!isBeingAttacked()) return false;
+
+        for (int i = 0; i < attackers.size(); i++) {
+            Entity attacker = attackers.get(i);
+            if (isInAttackRange(attacker, this)) {
+                if (System.currentTimeMillis() - attackersTimeAttackedInMillis.get(i) >= 100) {
+                    changeHealth(-attacker.damage);
+                    attackers.remove(i);
+                    attackersTimeAttackedInMillis.remove(i);
+                    return true;
+                }
+            } else if (System.currentTimeMillis() - attackersTimeAttackedInMillis.get(i) >= 100) {
+                attackers.remove(i);
+                attackersTimeAttackedInMillis.remove(i);
+                return false;
+            }
+        }
+        return false;
     }
 }

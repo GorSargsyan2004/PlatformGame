@@ -16,6 +16,8 @@ public class Skeleton extends Enemy{
     public Skeleton(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
         super(health, damage, pos, movementSpeed, lvlData);
 
+        this.attackDistance = (int) (15 * SCALE);
+
         this.entityHeight = 50;
         this.entityWidth = 40;
 
@@ -47,17 +49,28 @@ public class Skeleton extends Enemy{
 
     @Override
     public void update() {
-        // 1. Movement Logic (Off-screen or AI)
-        if (isOutOfBorders(currentAnim.getWidth())) {
+        // 1. Action Locking & State Reset
+        if (attack && (inAir || landing)) attack = false;
+
+        // 2. State Selection
+        if (isHurt) {
+            currentAnim.updateAnimationTick();
+            if (currentAnim.isAnimationCompleted()) {
+                isHurt = false;
+                currentAnim.reset();
+            }
+        } else if (checkForTakingHit()) {
+            takeHit(animations[TAKE_HIT]);
+        } else if (isIdle) {
+            idle(animations[IDLE]);
+        } else if (attack) {
+            attack(animations[ATTACK]);
+        } else if (isOutOfBorders(currentAnim.getWidth())) {
             updateFromCorners(animations[WALK]);
-            // RESET PHYSICS while out of borders to prevent falling
             ySpeed = 0;
             inAir = false;
-        } else if (attack) {
-            attack();
-            return;
         } else if (landing) {
-            landing();
+            landing(animations[SHIELD]);
         } else if (inAir) {
             var pair = jump(currentAnim, currentDir, WALK, WALK, WALK, SCALE);
             currentAnim = pair.value0();
@@ -68,12 +81,17 @@ public class Skeleton extends Enemy{
             currentDir = pair.value1();
         }
 
-        // 2. Physics & Gravity Update (Only if not handled by updateFromCorners)
-        if (!isOutOfBorders(currentAnim.getWidth())) {
+        // 3. Physics & Gravity Update
+        if (!isOutOfBorders(currentAnim.getWidth()) && !isIdle && !attack && !isHurt) {
             physicsUpdate(TAKE_HIT);
         }
 
-        currentAnim.updateAnimationTick();
+        // 4. Update Visuals
+        boolean alreadyUpdated = (isIdle || attack || landing || isHurt);
+        if (!alreadyUpdated) {
+            currentAnim.updateAnimationTick();
+        }
+
         updateHitbox();
     }
 
@@ -92,24 +110,7 @@ public class Skeleton extends Enemy{
         g.drawImage(imageToDraw, (int)pos.x, (int)pos.y,
                 (int)(currentAnim.getWidth()*SCALE), (int)(currentAnim.getHeight()*SCALE), null);
 
-        // FOr debugging the hitBox
+        // For debugging the hitBox
 //        drawHitbox(g);
-    }
-
-    private void attack() {
-        currentAnim = animations[ATTACK];
-        currentAnim.updateAnimationTick();
-        if (currentAnim.isAnimationCompleted()){
-            attack = false;
-            currentAnim.reset();
-        }
-    }
-
-    private void landing() {
-        currentAnim = animations[SHIELD];
-        if (currentAnim.isAnimationCompleted()) {
-            landing = false;
-            currentAnim.reset();
-        }
     }
 }

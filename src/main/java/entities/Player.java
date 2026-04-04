@@ -11,14 +11,14 @@ import java.awt.image.BufferedImage;
 import static utils.Constants.PlayerConstants.*;
 
 public class Player extends Entity {
-
-    private Animation currentAnim;
-    private Direction currentDir;
-
     private static final float SCALE = scale + 0.3f;
+    private EnemyManager enemyManager;
 
-    public Player(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
+    public Player(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData, EnemyManager enemyManager) {
         super(health, damage, pos, movementSpeed, lvlData);
+        this.enemyManager = enemyManager;
+
+        this.attackDistance = (int) (20 * SCALE);
 
         this.canWalkOffScreen = false;
 
@@ -57,21 +57,46 @@ public class Player extends Entity {
 
     @Override
     public void update() {
-        // 1. Attack Logic (Action Locking)
-        if (attack && inAir) attack = false;
-        if (landing && attack) attack = false;
-        if (attack) {
-            attack();
+        // 1. Action Locking
+        if (attack && inAir) {
+            attack = false;
+            attackChecked = false;
+        }
+        if (landing && attack) {
+            attack = false;
+            attackChecked = false;
+        }
+        
+        // 2. State Selection
+        if (isHurt) {
+            currentAnim.updateAnimationTick();
+            if (currentAnim.isAnimationCompleted()) {
+                isHurt = false;
+                currentAnim.reset();
+            }
+            updateHitbox();
             return;
         }
 
-        // 2. Physics & Gravity Update
+        if (checkForTakingHit()) {
+            takeHit(animations[HURT]);
+            updateHitbox();
+            return;
+        }
+
+        if (attack) {
+            attack(animations[ATTACK]);
+            updateHitbox();
+            return;
+        }
+
+        // 3. Physics & Gravity Update
         physicsUpdate(CROUCH);
 
-        // 3. Movement & Animation Selection
+        // 4. Movement & Animation Selection
         if (landing) {
             // Player just hit the ground. Play crouch and freeze movement.
-            landing();
+            landing(animations[CROUCH]);
         }
         else if (inAir) {
             // Player is flying through the air
@@ -91,6 +116,30 @@ public class Player extends Entity {
     }
 
     @Override
+    protected void attack(Animation attackAnimation) {
+        if (!attackChecked) {
+            checkAttack();
+            attackChecked = true;
+        }
+        currentAnim = attackAnimation;
+        currentAnim.updateAnimationTick();
+        if (currentAnim.isAnimationCompleted()){
+            attack = false;
+            isIdle = true;
+            attackChecked = false;
+            currentAnim.reset();
+        }
+    }
+
+    private void checkAttack() {
+        for (Skeleton skeleton : enemyManager.getSkeletons()) {
+            if (isInAttackRange(this, skeleton)) {
+                if (!skeleton.isBeingAttacked()) skeleton.takeHit(this);
+            }
+        }
+    }
+
+    @Override
     protected void updateHitbox() {
         if (currentDir == Direction.RIGHT) {
             hitBox.x = (float) pos.x + xDrawOffset;
@@ -107,23 +156,6 @@ public class Player extends Entity {
 
         // FOr debugging the hitBox
 //        drawHitbox(g);
-    }
-
-    private void attack() {
-        currentAnim = animations[ATTACK];
-        currentAnim.updateAnimationTick();
-        if (currentAnim.isAnimationCompleted()){
-            attack = false;
-            currentAnim.reset();
-        }
-    }
-
-    private void landing() {
-        currentAnim = animations[CROUCH];
-        if (currentAnim.isAnimationCompleted()) {
-            landing = false;
-            currentAnim.reset();
-        }
     }
 }
 

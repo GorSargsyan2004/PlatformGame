@@ -8,23 +8,32 @@ import utils.HelpMethods;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+
 import io.arxila.javatuples.Pair;
 
+
 public abstract class Entity {
-    private int health;
-    private int damage;
+    protected int health;
+    protected int damage;
+    protected ArrayList<Entity> attackers;
+    protected ArrayList<Long> attackersTimeAttackedInMillis;
     protected Animation[] animations;
     protected Rectangle2D.Float hitBox;
     protected int[][] lvlData;
 
     // Physics & State Variables
     protected boolean leftPressed, rightPressed, attack;
+    protected boolean attackChecked = false;
     protected boolean inAir = false;
     protected boolean landing = false;
     protected boolean onSlope = false;
+    protected boolean isIdle = false;
+    protected boolean isHurt = false;
     protected double ySpeed = 0;
     protected double gravity = 0.04;
     protected double jumpSpeed = -3.5;
+    protected int attackDistance;
 
     protected static float scale = Game.SCALE;
 
@@ -39,12 +48,18 @@ public abstract class Entity {
     public Point2D.Double pos;
     public double movementSpeed;
 
+    protected Animation currentAnim;
+    protected Direction currentDir;
+
     Entity(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
         this.health = health;
         this.damage = damage;
         this.pos = pos;
         this.movementSpeed = movementSpeed;
         this.lvlData = lvlData;
+
+        attackers = new ArrayList<>();
+        attackersTimeAttackedInMillis = new ArrayList<>();
 
         this.hitBox = null;
     }
@@ -73,6 +88,109 @@ public abstract class Entity {
         if (jump && !inAir && !landing) {
             this.inAir = true;
             this.ySpeed = this.jumpSpeed;
+        }
+    }
+
+    protected void takeHit(Entity entity) {
+        attackersTimeAttackedInMillis.add(System.currentTimeMillis());
+        attackers.add(entity);
+    }
+
+    public void changeHealth(int value) {
+        health += value;
+        if (health <= 0) health = 0;
+    }
+
+    protected boolean checkForTakingHit() {
+        if (!isBeingAttacked()) return false;
+
+        boolean hitTaken = false;
+        for (int i = attackers.size() - 1; i >= 0; i--) {
+            Entity attacker = attackers.get(i);
+            if (isInAttackRange(attacker, this)) {
+                if (System.currentTimeMillis() - attackersTimeAttackedInMillis.get(i) >= 1000) {
+                    changeHealth(-attacker.damage);
+                    attackers.remove(i);
+                    attackersTimeAttackedInMillis.remove(i);
+                    hitTaken = true;
+                }
+            } else if (System.currentTimeMillis() - attackersTimeAttackedInMillis.get(i) >= 1000) {
+                attackers.remove(i);
+                attackersTimeAttackedInMillis.remove(i);
+            }
+        }
+        return hitTaken;
+    }
+
+    protected void takeHit(Animation takeHit) {
+        attack = false;
+        isIdle = false;
+        attackChecked = false;
+        
+        // Reset all animations to ensure a clean start for the takeHit animation
+        for (Animation anim : animations)
+            if (anim != null) anim.reset();
+
+        isHurt = true;
+        currentAnim = takeHit;
+        currentAnim.updateAnimationTick();
+        if (currentAnim.isAnimationCompleted()){
+            isHurt = false;
+            currentAnim.reset();
+        }
+    }
+
+    protected void attack(Animation attackAnimation) {
+        currentAnim = attackAnimation;
+        currentAnim.updateAnimationTick();
+        if (currentAnim.isAnimationCompleted()){
+            attack = false;
+            isIdle = true;
+            attackChecked = false;
+            currentAnim.reset();
+        }
+    }
+
+    protected void idle(Animation idleAnimation) {
+        currentAnim = idleAnimation;
+        currentAnim.updateAnimationTick();
+        if (currentAnim.isAnimationCompleted()){
+            isIdle = false;
+            currentAnim.reset();
+        }
+    }
+
+    protected boolean isInAttackRange(Entity attacker, Entity attacked) {
+        Rectangle2D.Float a = attacker.hitBox;
+        Rectangle2D.Float b = attacked.hitBox;
+
+        float centerX_A = a.x + a.width / 2;
+        float centerX_B = b.x + b.width / 2;
+        float centerY_A = a.y + a.height / 2;
+        float centerY_B = b.y + b.height / 2;
+
+        float distX = Math.abs(centerX_A - centerX_B);
+        float distY = Math.abs(centerY_A - centerY_B);
+
+        // Distance between edges (negative if hitboxes overlap)
+        float xDiff = distX - (a.width + b.width) / 2;
+        float yDiff = distY - (a.height + b.height) / 2;
+
+        // Use the attacker's reach (attacker.attackDistance).
+        // xDiff/yDiff is the empty space between hitboxes.
+        return (xDiff <= attacker.attackDistance && yDiff <= attacker.attackDistance / 2);
+    }
+
+    protected boolean isBeingAttacked() {
+        return !attackers.isEmpty();
+    }
+
+    protected void landing(Animation landingAnimation) {
+        currentAnim = landingAnimation;
+        currentAnim.updateAnimationTick();
+        if (currentAnim.isAnimationCompleted()) {
+            landing = false;
+            currentAnim.reset();
         }
     }
 

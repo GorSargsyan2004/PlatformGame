@@ -16,6 +16,7 @@ public class Animation {
     private int width, height, quantity, x, y, dist;
     private BufferedImage[] images, flippedImages;
     private String path;
+    private boolean completed = false;
 
     private BufferedImage source;
 
@@ -119,8 +120,10 @@ public class Animation {
         if (aniTick >= aniSpeed) {
             aniTick = 0;
             aniIndex++;
-            if (aniIndex >= quantity)
+            if (aniIndex >= quantity) {
                 aniIndex = 0;
+                completed = true;
+            }
         }
     }
 
@@ -135,13 +138,13 @@ public class Animation {
     }
 
     public boolean isAnimationCompleted() {
-        if (aniIndex == quantity-1) return true;
-        return false;
+        return completed;
     }
 
     public void reset() {
         aniTick = 0;
         aniIndex = 0;
+        completed = false;
     }
 
     public void modifySpeed(int value) {

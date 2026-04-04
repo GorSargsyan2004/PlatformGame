@@ -44,4 +44,8 @@ public class EnemyManager {
         }
         skeletons.add(skeleton);
     }
+
+    public ArrayList<Skeleton> getSkeletons() {
+        return skeletons;
+    }
 }

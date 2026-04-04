@@ -37,7 +37,7 @@ public class Playing extends State implements Statemethods{
         em.summonSkeleton(Direction.RIGHT);
 
         // Entities
-        player = new Player(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), Game.SCALE, getLevelData());
+        player = new Player(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), Game.SCALE, getLevelData(), em);
     }
 
     @Override
