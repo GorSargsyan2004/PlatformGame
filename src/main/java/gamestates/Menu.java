@@ -13,7 +13,7 @@ public class Menu extends State implements Statemethods {
     private MenuButton[] buttons = new MenuButton[2];
     private static final int Y_POS_OF_BUTTONS = 150;
     private static final int Y_POS_OF_BACKGROUND = 80;
-    private BufferedImage backgroundImg;
+    private BufferedImage backgroundImg, backgroundImgMenu;
     private int menuX, menuY, menuWidth, menuHeight;
 
     public Menu(Game game) {
@@ -25,6 +25,7 @@ public class Menu extends State implements Statemethods {
 
     private void loadBackground() {
         backgroundImg = LoadSave.getSave(LoadSave.MENU_BACKGROUND);
+        backgroundImgMenu = LoadSave.getSave(LoadSave.BACKGROUND_MENU);
         menuWidth = (int) (backgroundImg.getWidth() / 1.5 * Game.SCALE);
         menuHeight = (int) (backgroundImg.getHeight() / 1.5 * Game.SCALE);
 
@@ -45,6 +46,7 @@ public class Menu extends State implements Statemethods {
 
     @Override
     public void draw(Graphics g) {
+        g.drawImage(backgroundImgMenu, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
         g.drawImage(backgroundImg, menuX, menuY, menuWidth, menuHeight, null);
 
         for (MenuButton mb : buttons)

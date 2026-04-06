@@ -16,7 +16,7 @@ public class Skeleton extends Enemy{
     public Skeleton(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
         super(health, damage, pos, movementSpeed, lvlData);
 
-        this.attackDistance = (int) (20 * SCALE);
+        this.attackDistance = (int) (30 * SCALE);
 
         this.entityHeight = 50;
         this.entityWidth = 40;
