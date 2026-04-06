@@ -8,6 +8,7 @@ import java.awt.geom.Point2D;
 
 public abstract class Enemy extends Entity{
     protected long timePlayerInRange = 0;
+    int deathScore;
 
     Enemy (int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
         super(health, damage, pos, movementSpeed, lvlData);
@@ -103,5 +104,13 @@ public abstract class Enemy extends Entity{
             }
         }
         return false;
+    }
+
+    /**
+     * Returns the socre for killing the enemy.
+     * @return the score for killing the enemy.
+     */
+    public int getDeathScore() {
+        return deathScore;
     }
 }
