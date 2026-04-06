@@ -2,7 +2,6 @@ package entities;
 
 import animations.Animation;
 import animations.Direction;
-import main.Game;
 import utils.LoadSave;
 
 import java.awt.*;
@@ -36,7 +35,7 @@ public class Player extends Entity {
         super(health, damage, pos, movementSpeed, lvlData);
         this.enemyManager = enemyManager;
         this.maxHealth = health;
-        this.attackDistance = (int) (25 * SCALE);
+        this.attackDistance = (int) (35 * SCALE);
         this.statusBarImg = LoadSave.getSave(LoadSave.STATUS_BAR);
         this.canWalkOffScreen = false;
 

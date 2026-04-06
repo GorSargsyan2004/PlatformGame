@@ -2,6 +2,7 @@ package main;
 
 import entities.Player;
 import gamestates.Gamestate;
+import gamestates.Login;
 import gamestates.Menu;
 import gamestates.Playing;
 import levels.LevelManager;
@@ -17,6 +18,7 @@ public class Game implements Runnable{
 
     private Playing playing;
     private Menu menu;
+    private Login login;
 
     // CONSTANTS
     public static final int FPS_SET = 120;
@@ -41,12 +43,16 @@ public class Game implements Runnable{
     }
 
     private void initClasses() {
+        login = new Login(this);
         menu = new Menu(this);
         playing = new Playing(this);
     }
 
     private void update() {
         switch (Gamestate.state) {
+            case LOGIN -> {
+                login.update();
+            }
             case PLAYING -> {
                 playing.update();
             }
@@ -59,6 +65,9 @@ public class Game implements Runnable{
         }
     }
 
+    public Login getLogin() {
+        return login;
+    }
     public Menu getMenu() {
         return menu;
     }

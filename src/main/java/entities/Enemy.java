@@ -49,7 +49,7 @@ public abstract class Enemy extends Entity{
             if (timePlayerInRange == 0) {
                 timePlayerInRange = System.currentTimeMillis();
                 if (!player.isAttackedBy(this)) player.takeHit(this);
-            } else if (System.currentTimeMillis() - timePlayerInRange >= 1000) {
+            } else if (System.currentTimeMillis() - timePlayerInRange >= 200) {
                 setAttack(true);
                 timePlayerInRange = 0;
             }

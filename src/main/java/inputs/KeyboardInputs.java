@@ -22,6 +22,9 @@ public class KeyboardInputs implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         switch (Gamestate.state) {
+            case LOGIN -> {
+                gamePanel.getGame().getLogin().keyPressed(e);
+            }
             case PLAYING -> {
                 gamePanel.getGame().getPlaying().keyPressed(e);
             }
@@ -34,6 +37,9 @@ public class KeyboardInputs implements KeyListener {
     @Override
     public void keyReleased(KeyEvent e) {
         switch (Gamestate.state) {
+            case LOGIN -> {
+                gamePanel.getGame().getLogin().keyReleased(e);
+            }
             case PLAYING -> {
                 gamePanel.getGame().getPlaying().keyReleased(e);
             }

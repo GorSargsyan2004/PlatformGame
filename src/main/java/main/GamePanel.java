@@ -2,6 +2,7 @@ package main;
 
 import entities.Player;
 import gamestates.Gamestate;
+import gamestates.Login;
 import inputs.KeyboardInputs;
 import inputs.MouseInputs;
 
@@ -38,6 +39,9 @@ public class GamePanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         switch (Gamestate.state) {
+            case LOGIN -> {
+                game.getLogin().draw(g);
+            }
             case PLAYING -> {
                 game.getPlaying().draw(g);
             }
