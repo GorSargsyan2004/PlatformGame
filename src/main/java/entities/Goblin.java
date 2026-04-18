@@ -21,7 +21,7 @@ public class Goblin extends Enemy {
         this.entityHeight = 35;
         this.entityWidth = 35;
 
-        this.xDrawOffset = 10;
+        this.xDrawOffset = 25;
         this.yDrawOffset = 10;
 
         initAnimations();
@@ -35,8 +35,8 @@ public class Goblin extends Enemy {
         animations = new Animation[anims.length];
         for (int i = 0; i < anims.length; i++) {
             if (i < 3)
-                animations[i] = new Animation("/Enemy/Goblin/"+anims[i]+".png", 58, 65, entityHeight, entityWidth, 4, 115);
-            else animations[i] = new Animation("/Enemy/Goblin/"+anims[i]+".png", 58, 55, entityHeight + 10, entityWidth + 53, 8, 62);
+                animations[i] = new Animation("/Enemy/Goblin/"+anims[i]+".png", 31, 55, entityHeight + 15, entityWidth + 53, 4, 62);
+            else animations[i] = new Animation("/Enemy/Goblin/"+anims[i]+".png", 31, 55, entityHeight + 15, entityWidth + 53, 8, 62);
         }
 
         currentAnim = animations[IDLE];

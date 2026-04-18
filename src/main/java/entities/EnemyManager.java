@@ -25,22 +25,16 @@ public class EnemyManager {
     }
 
     public void update() {
-        for (Skeleton skeleton : skeletons) {
+        skeletons.removeIf(skeleton -> {
             skeleton.update();
             skeleton.chase(playing.getPlayer());
-            if (skeleton.isDead) {
-                skeletons.remove(skeleton);
-                break;
-            }
-        }
-        for (Goblin goblin : goblins) {
+            return skeleton.isDead;
+        });
+        goblins.removeIf(goblin -> {
             goblin.update();
             goblin.chase(playing.getPlayer());
-            if (goblin.isDead) {
-                skeletons.remove(goblin);
-                break;
-            }
-        }
+            return goblin.isDead;
+        });
     }
 
     public void draw(Graphics g) {
