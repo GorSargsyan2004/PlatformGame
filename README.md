@@ -64,7 +64,7 @@ PlatformGame
 ![Idle.png](src/main/resources/Enemy/Goblin/Idle.png)
 ![Idle.png](src/main/resources/Enemy/Mushroom/Idle.png)
 ![Idle.png](src/main/resources/Enemy/Skeleton/Idle.png)
-![Flight.png](src/main/resources/Enemy/Flying%20eye/Flight.png)
+![Flight.png](src/main/resources/Enemy/Flying_eye/Flight.png)
 
 ---
 
