@@ -22,8 +22,8 @@ Take control of your hero with these intuitive commands:
 | **Move Left** | `A` |
 | **Move Right** | `D` |
 | **Jump** | `W` |
-| **Slide** | `S` |
-| **Dash** | `E` |
+| **Slide** Escape | `S` |
+| **Dash** Escape | `E` |
 | **Attack** | `Space` |
 | **Dash Attack** | `Tab` |
 | **Back to Menu** | `Esc` |
