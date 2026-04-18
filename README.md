@@ -33,7 +33,7 @@ Take control of your hero with these intuitive commands:
 ## 👾 Meet the Cast
 
 ### The Hero
-![Player](src/main/resources/Demo/Player.gif)
+![Player](src/main/resources/Demo/player.gif)
 *Agile, strong, and ready for any challenge.*
 
 ### The Monsters
