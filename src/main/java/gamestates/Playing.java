@@ -34,7 +34,7 @@ public class Playing extends State implements Statemethods{
         // TEMPORARY
         em = new EnemyManager(this);
         em.summonSkeleton(Direction.LEFT);
-        em.summonSkeleton(Direction.RIGHT);
+        em.summonGoblin(Direction.RIGHT);
 
         // Entities
         player = new Player(100, 50, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), Game.SCALE, getLevelData(), em);
