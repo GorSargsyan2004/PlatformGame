@@ -68,7 +68,7 @@ PlatformGame
         │   ├── ui             # Custom UI components like Menu Buttons
         │   └── utils          # Game constants, helper methods, and asset loaders
         └── resources
-            ├── demo.mp4       # Video demonstration of gameplay
+            ├── Demo           # Gif demonstrations of gameplay
             ├── Enemy          # Sprite sheets for all enemy types
             ├── GUI            # Assets for health bars and other overlays
             ├── Level          # Tilesets, backgrounds, and map data
