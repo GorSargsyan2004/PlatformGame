@@ -13,6 +13,7 @@ public class EnemyManager {
     private Playing playing;
     private ArrayList<Skeleton> skeletons = new ArrayList<>();
     private ArrayList<Goblin> goblins = new ArrayList<>();
+    private ArrayList<Mushroom> mushrooms = new ArrayList<>();
 
     private Point2D.Double  leftPos = new Point2D.Double(-100.0, GAME_HEIGHT - 12*TILES_SIZE),
                             rightPos = new Point2D.Double(GAME_WIDTH + 100.0, GAME_HEIGHT - 10*TILES_SIZE);
@@ -35,6 +36,11 @@ public class EnemyManager {
             goblin.chase(playing.getPlayer());
             return goblin.isDead;
         });
+        mushrooms.removeIf(mushroom -> {
+            mushroom.update();
+            mushroom.chase(playing.getPlayer());
+            return mushroom.isDead;
+        });
     }
 
     public void draw(Graphics g) {
@@ -42,14 +48,16 @@ public class EnemyManager {
             skeleton.draw(g);
         for (Goblin goblin : goblins)
             goblin.draw(g);
+        for (Mushroom mushroom : mushrooms)
+            mushroom.draw(g);
     }
 
     public void summonSkeleton(Direction dir) {
         Skeleton skeleton;
         if (dir == Direction.LEFT) {
-            skeleton = new Skeleton(120, 15, new Point2D.Double(leftPos.x, leftPos.y), SCALE/2, lvlData);
+            skeleton = new Skeleton(120, 15, new Point2D.Double(leftPos.x, leftPos.y), SCALE/2.2, lvlData);
         } else {
-            skeleton = new Skeleton(120, 15, new Point2D.Double(rightPos.x, rightPos.y), SCALE/2, lvlData);
+            skeleton = new Skeleton(120, 15, new Point2D.Double(rightPos.x, rightPos.y), SCALE/2.2, lvlData);
         }
         skeletons.add(skeleton);
     }
@@ -64,10 +72,23 @@ public class EnemyManager {
         goblins.add(goblin);
     }
 
+    public void summonMushroom(Direction dir) {
+        Mushroom mushroom;
+        if (dir == Direction.LEFT) {
+            mushroom = new Mushroom(70, 8, new Point2D.Double(leftPos.x, leftPos.y), SCALE/2.3, lvlData);
+        } else {
+            mushroom = new Mushroom(70, 8, new Point2D.Double(rightPos.x, rightPos.y), SCALE/2.3, lvlData);
+        }
+        mushrooms.add(mushroom);
+    }
+
     public ArrayList<Skeleton> getSkeletons() {
         return skeletons;
     }
     public ArrayList<Goblin> getGoblins() {
         return goblins;
+    }
+    public ArrayList<Mushroom> getMushrooms() {
+        return mushrooms;
     }
 }

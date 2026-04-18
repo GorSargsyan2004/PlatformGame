@@ -3,7 +3,6 @@ package gamestates;
 import animations.Direction;
 import entities.EnemyManager;
 import entities.Player;
-import entities.Skeleton;
 import levels.LevelManager;
 import main.Game;
 
@@ -33,7 +32,7 @@ public class Playing extends State implements Statemethods{
 
         // TEMPORARY
         em = new EnemyManager(this);
-        em.summonSkeleton(Direction.LEFT);
+        em.summonMushroom(Direction.LEFT);
         em.summonGoblin(Direction.RIGHT);
 
         // Entities
