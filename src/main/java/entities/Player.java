@@ -10,6 +10,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import static utils.Constants.PlayerConstants.*;
+import static utils.HelpMethods.CanMoveHere;
 
 public class Player extends Entity {
     private static final float SCALE = scale + 0.3f;
@@ -28,8 +29,20 @@ public class Player extends Entity {
     private int healthBarXStart = (int) (34 * scale);
     private int healthBarYStart = (int) (14 * scale);
 
+    private int dashAttackBarWidth = (int) (100 * scale);
+    private int dashAttackBarHeight = (int) (2 * scale);
+    private int dashAttackBarXStart = (int) (44 * scale);
+    private int dashAttackBarYStart = (int) (34 * scale);
+
     private int maxHealth;
     private int healthWidth = healthBarWidth;
+    private int dashAttackWidth = 0;
+    private final int maxDashAttackWidth = (int) (101 * scale);
+    private long dashAttackTimer = 0;
+
+    private boolean dashAttack = false;
+    private boolean slide = false;
+    private boolean dash = false;
 
     public Player(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData, EnemyManager enemyManager) {
         super(health, damage, pos, movementSpeed, lvlData);
@@ -51,7 +64,7 @@ public class Player extends Entity {
     }
 
     private void initAnimations() {
-        String[] anims = {"Run", "Idle", "Jump", "UptoFall", "Fall", "Crouch", "Hurt-Effect", "Attack", "Dash-Attack", "Death"};
+        String[] anims = {"Run", "Idle", "Jump", "UptoFall", "Fall", "Crouch", "Hurt-Effect", "Attack", "Dash-Attack", "Death", "Slide", "Dash"};
 
         animations = new Animation[anims.length];
 
@@ -62,6 +75,7 @@ public class Player extends Entity {
         animations[UP_TO_FALL].modifySpeed(1);
         animations[FALL].modifySpeed(1);
         animations[CROUCH].modifySpeed(5);
+        animations[DASH].modifySpeed(15);
 
         currentAnim = animations[IDLE];
         currentDir = Direction.RIGHT;
@@ -75,6 +89,7 @@ public class Player extends Entity {
     @Override
     public void update() {
         updateHealthBar();
+        updateDashAttackBar(10);
 
         // Player is dead, no other updates are needed
         if (isDead) return;
@@ -84,13 +99,23 @@ public class Player extends Entity {
         }
 
         // Action Locking
-        if (attack && inAir) {
+        if (attack && inAir && dashAttack) {
             attack = false;
             attackChecked = false;
         }
-        if (landing && attack) {
+        if (landing && attack && dashAttack) {
             attack = false;
             attackChecked = false;
+        }
+
+        if (slide) {
+            escape(animations[SLIDE]);
+            return;
+        }
+
+        if (dash) {
+            escape(animations[DASH]);
+            return;
         }
         
         // State Selection
@@ -106,6 +131,13 @@ public class Player extends Entity {
                 isHurt = false;
                 currentAnim.reset();
             }
+            updateHitbox();
+            return;
+        }
+
+        if (dashAttack) {
+            attack = true;
+            attack(animations[DASH_ATTACK]);
             updateHitbox();
             return;
         }
@@ -145,9 +177,79 @@ public class Player extends Entity {
         healthWidth = (int) ((health / (float)maxHealth) * healthBarWidth);
     }
 
+    private void updateDashAttackBar(int steps) {
+        if (dashAttackWidth >= maxDashAttackWidth) {
+            dashAttackWidth = maxDashAttackWidth;
+            return;
+        }
+        if (System.currentTimeMillis() - dashAttackTimer >= 1000) {
+            dashAttackWidth += (int)(((float)steps / maxDashAttackWidth) * dashAttackBarWidth);
+            dashAttackTimer = System.currentTimeMillis();
+        }
+    }
+
+    private void escape(Animation animation) {
+        currentAnim = animation;
+        boolean escape = slide || dash;
+        float xSpeed = (float) (movementSpeed * ((dash) ? 2 : 1.5));
+        if (currentDir == Direction.LEFT)
+            xSpeed *= -1;
+
+        // 1. Check if we hit a wall OR a slope from the side
+        boolean blocked = !CanMoveHere(new Point2D.Double(hitBox.x + xSpeed, hitBox.y), hitBox.width, hitBox.height, lvlData);
+        
+        if (!blocked) {
+            // Check front tiles for slopes (which CanMoveHere ignores)
+            float xCheck = (currentDir == Direction.RIGHT) ? hitBox.x + hitBox.width + xSpeed : hitBox.x + xSpeed;
+            float yCheckLower = hitBox.y + hitBox.height - 5;
+            float yCheckUpper = hitBox.y + 5;
+            
+            if (isTileBlocking(xCheck, yCheckLower) || isTileBlocking(xCheck, yCheckUpper)) {
+                blocked = true;
+            }
+        }
+
+        if (!blocked) {
+            pos.x += xSpeed;
+        } else {
+            // Hit a wall or slope: Snap to it and terminate the slide or dash
+            float currentXOffset = (currentDir == Direction.RIGHT) ? xDrawOffset : (currentAnim.getWidth() * SCALE - xDrawOffset - hitBox.width);
+            pos.x = utils.HelpMethods.GetEntityXPosNextToWall(hitBox, xSpeed) - currentXOffset;
+            escape = false;
+        }
+
+        // 2. Keep the player on the ground/slopes and check for falling
+        physicsUpdate(CROUCH);
+        if (inAir && !onSlope) escape = false;
+
+        currentAnim.updateAnimationTick();
+        if (currentAnim.isAnimationCompleted() || !escape) {
+            escape = false;
+            currentAnim.reset();
+        }
+
+        if (!escape) slide = dash = escape;
+        updateHitbox();
+    }
+
+
+
+    private boolean isTileBlocking(float x, float y) {
+        int xIndex = (int) (x / main.Game.TILES_SIZE);
+        int yIndex = (int) (y / main.Game.TILES_SIZE);
+        if (xIndex < 0 || xIndex >= main.Game.TILES_IN_WIDTH || yIndex < 0 || yIndex >= main.Game.TILES_IN_HEIGHT)
+            return false;
+        int tileValue = lvlData[yIndex][xIndex];
+        return tileValue != LoadSave.BLANK_TILE_ID;
+    }
+
     @Override
     protected void attack(Animation attackAnimation) {
         if (!attackChecked) {
+            if (dashAttack) {
+                damage *= 2;
+                attackDistance *= 2;
+            }
             checkAttack();
             attackChecked = true;
         }
@@ -155,6 +257,12 @@ public class Player extends Entity {
         currentAnim.updateAnimationTick();
         if (currentAnim.isAnimationCompleted()){
             attack = false;
+            if (dashAttack) {
+                damage /= 2;
+                attackDistance /= 2;
+                dashAttack = false;
+                dashAttackWidth = 0;
+            }
             isIdle = true;
             attackChecked = false;
             currentAnim.reset();
@@ -209,10 +317,48 @@ public class Player extends Entity {
         g.drawImage(statusBarImg, statusBarX, statusBarY, statusBarWidth, statusBarHeight, null);
         g.setColor(Color.RED);
         g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
+        if (dashAttackWidth >= maxDashAttackWidth)
+            g.setColor(Color.YELLOW);
+        else g.setColor(Color.getHSBColor(50, 25, 50));
+        g.fillRect(dashAttackBarXStart + statusBarX, dashAttackBarYStart + statusBarY, dashAttackWidth, dashAttackBarHeight);
     }
 
     public boolean isDead() {
         return isDead;
     }
-}
 
+    public boolean isDashAttack() {
+        return dashAttack;
+    }
+
+    public void setDashAttack(boolean dashAttack) {
+        if (dashAttack && dashAttackWidth >= maxDashAttackWidth)
+            this.dashAttack = true;
+    }
+
+    public boolean isSlide() {
+        return slide;
+    }
+
+    public void setSlide(boolean slide) {
+        if (slide && !this.slide) {
+            if (dashAttackWidth >= maxDashAttackWidth / 2) {
+                this.slide = true;
+                dashAttackWidth -= maxDashAttackWidth / 2;
+            }
+        } else if (!slide) {
+            this.slide = false;
+        }
+    }
+
+    public void setDash(boolean dash) {
+        if (dash && !this.dash) {
+            if (dashAttackWidth >= maxDashAttackWidth / 3) {
+                this.dash = true;
+                dashAttackWidth -= maxDashAttackWidth / 3;
+            }
+        } else if (!dash) {
+            this.dash = false;
+        }
+    }
+}
