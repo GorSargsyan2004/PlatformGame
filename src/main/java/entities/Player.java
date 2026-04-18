@@ -167,6 +167,11 @@ public class Player extends Entity {
                 if (!skeleton.isBeingAttacked()) skeleton.takeHit(this);
             }
         }
+        for (Goblin goblin : enemyManager.getGoblins()) {
+            if (isInAttackRange(this, goblin)) {
+                if (!goblin.isBeingAttacked()) goblin.takeHit(this);
+            }
+        }
     }
 
     @Override
