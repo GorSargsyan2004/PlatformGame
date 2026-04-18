@@ -24,6 +24,8 @@ public class Skeleton extends Enemy{
         this.xDrawOffset = 20;
         this.yDrawOffset = 10;
 
+        this.deathScore = (health + damage) / 2;
+
         initAnimations();
 
         initHitbox();

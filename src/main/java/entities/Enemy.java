@@ -90,24 +90,18 @@ public abstract class Enemy extends Entity{
 
         for (int i = 0; i < attackers.size(); i++) {
             Entity attacker = attackers.get(i);
-            if (isInAttackRange(attacker, this)) {
-                if (System.currentTimeMillis() - attackersTimeAttackedInMillis.get(i) >= 100) {
-                    changeHealth(-attacker.damage);
-                    attackers.remove(i);
-                    attackersTimeAttackedInMillis.remove(i);
-                    return true;
-                }
-            } else if (System.currentTimeMillis() - attackersTimeAttackedInMillis.get(i) >= 100) {
+            if (System.currentTimeMillis() - attackersTimeAttackedInMillis.get(i) >= 100) {
+                changeHealth(-attacker.damage);
                 attackers.remove(i);
                 attackersTimeAttackedInMillis.remove(i);
-                return false;
+                return true;
             }
         }
         return false;
     }
 
     /**
-     * Returns the socre for killing the enemy.
+     * Returns the score for killing the enemy.
      * @return the score for killing the enemy.
      */
     public int getDeathScore() {

@@ -27,12 +27,20 @@ public class Constants {
         public static final int SHIELD = 5;
     }
 
-    public static class GoblinConstants {
+    public static class GoblinAndMushroomConstants {
         public static final int TAKE_HIT = 0;
         public static final int DEATH = 1;
         public static final int IDLE = 2;
         public static final int RUN = 3;
         public static final int ATTACK = 4;
+    }
+
+    public static class FlyingEyeConstants {
+        public static final int ATTACK = 0;
+        public static final int FLIGHT = 1;
+        public static final int DEATH = 2;
+        public static final int TAKE_HIT = 3;
+
     }
 
     public static class UI {
