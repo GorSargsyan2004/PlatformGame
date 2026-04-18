@@ -33,25 +33,18 @@ Take control of your hero with these intuitive commands:
 ## 👾 Meet the Cast
 
 ### The Hero
-![Player](src/main/resources/Player/Idle/Warrior_Idle_1.png)
+![Player](src/main/resources/Demo/Player.gif)
 *Agile, strong, and ready for any challenge.*
 
 ### The Monsters
-| Goblin | Mushroom | Skeleton | Flying Eye |
-| :---: | :---: | :---: | :---: |
-| ![Goblin](src/main/resources/Enemy/Goblin/Idle.png) | ![Mushroom](src/main/resources/Enemy/Mushroom/Idle.png) | ![Skeleton](src/main/resources/Enemy/Skeleton/Idle.png) | ![Flying Eye](src/main/resources/Enemy/Flying_eye/Flight.png) |
-
+![Monsters](src/main/resources/Demo/monsters.gif)
 ---
 
 ## 📺 Gameplay Demo
 
 Experience the action in motion:
 
-<div align="center">
-  <video src="src/main/resources/demo.mp4" width="600" controls>
-    Your browser does not support the video tag.
-  </video>
-</div>
+![Gameplay Demo](src/main/resources/Demo/demo.gif)
 
 ---
 
