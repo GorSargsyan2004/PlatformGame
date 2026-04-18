@@ -15,6 +15,8 @@ public class Constants {
         public static final int ATTACK = 7;
         public static final int DASH_ATTACK = 8;
         public static final int DEATH = 9;
+        public static final int SLIDE = 10;
+        public static final int DASH = 11;
 
     }
 

@@ -92,6 +92,15 @@ public class Playing extends State implements Statemethods{
             case KeyEvent.VK_W:
                 player.setJump(true);
                 break;
+            case KeyEvent.VK_TAB:
+                player.setDashAttack(true);
+                break;
+            case KeyEvent.VK_S:
+                player.setSlide(true);
+                break;
+            case KeyEvent.VK_E:
+                player.setDash(true);
+                break;
             case KeyEvent.VK_ESCAPE:
                 Gamestate.state = Gamestate.MENU;
                 break;
