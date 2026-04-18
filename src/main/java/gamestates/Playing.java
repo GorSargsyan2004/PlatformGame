@@ -30,12 +30,14 @@ public class Playing extends State implements Statemethods{
         // Loading the level
         levelManager = new LevelManager(game);
 
-        // TEMPORARY
+        // TEMPORARY Enemies
         em = new EnemyManager(this);
         em.summonMushroom(Direction.LEFT);
         em.summonGoblin(Direction.RIGHT);
+        em.summonSkeleton(Direction.RIGHT);
+        em.summonFlyingEye(Direction.LEFT);
 
-        // Entities
+        // Player
         player = new Player(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), Game.SCALE, getLevelData(), em);
     }
 

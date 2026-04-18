@@ -177,6 +177,11 @@ public class Player extends Entity {
                 if (!mushroom.isBeingAttacked()) mushroom.takeHit(this);
             }
         }
+        for (FlyingEye flyingEye : enemyManager.getFlyingEyes()) {
+            if (isInAttackRange(this, flyingEye)) {
+                if (!flyingEye.isBeingAttacked()) flyingEye.takeHit(this);
+            }
+        }
     }
 
     @Override

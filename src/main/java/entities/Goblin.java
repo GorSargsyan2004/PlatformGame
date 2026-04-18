@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import static main.Game.SCALE;
-import static utils.Constants.GoblinConstants.*;
+import static utils.Constants.GoblinAndMushroomConstants.*;
 
 public class Goblin extends Enemy {
 
@@ -23,6 +23,8 @@ public class Goblin extends Enemy {
 
         this.xDrawOffset = 25;
         this.yDrawOffset = 10;
+
+        this.deathScore = (health + damage) / 2;
 
         initAnimations();
 

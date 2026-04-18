@@ -14,6 +14,7 @@ public class EnemyManager {
     private ArrayList<Skeleton> skeletons = new ArrayList<>();
     private ArrayList<Goblin> goblins = new ArrayList<>();
     private ArrayList<Mushroom> mushrooms = new ArrayList<>();
+    private ArrayList<FlyingEye> flyingEyes = new ArrayList<>();
 
     private Point2D.Double  leftPos = new Point2D.Double(-100.0, GAME_HEIGHT - 12*TILES_SIZE),
                             rightPos = new Point2D.Double(GAME_WIDTH + 100.0, GAME_HEIGHT - 10*TILES_SIZE);
@@ -41,6 +42,11 @@ public class EnemyManager {
             mushroom.chase(playing.getPlayer());
             return mushroom.isDead;
         });
+        flyingEyes.removeIf(flyingEye -> {
+            flyingEye.update();
+            flyingEye.chase(playing.getPlayer());
+            return flyingEye.isDead;
+        });
     }
 
     public void draw(Graphics g) {
@@ -50,6 +56,8 @@ public class EnemyManager {
             goblin.draw(g);
         for (Mushroom mushroom : mushrooms)
             mushroom.draw(g);
+        for (FlyingEye flyingEye : flyingEyes)
+            flyingEye.draw(g);
     }
 
     public void summonSkeleton(Direction dir) {
@@ -82,6 +90,16 @@ public class EnemyManager {
         mushrooms.add(mushroom);
     }
 
+    public void summonFlyingEye(Direction dir) {
+        FlyingEye flyingEye;
+        if (dir == Direction.LEFT) {
+            flyingEye = new FlyingEye(40, 6, new Point2D.Double(leftPos.x, leftPos.y - 100), SCALE/2, lvlData);
+        } else {
+            flyingEye = new FlyingEye(40, 6, new Point2D.Double(rightPos.x, rightPos.y - 100), SCALE/2, lvlData);
+        }
+        flyingEyes.add(flyingEye);
+    }
+
     public ArrayList<Skeleton> getSkeletons() {
         return skeletons;
     }
@@ -90,5 +108,8 @@ public class EnemyManager {
     }
     public ArrayList<Mushroom> getMushrooms() {
         return mushrooms;
+    }
+    public ArrayList<FlyingEye> getFlyingEyes() {
+        return flyingEyes;
     }
 }

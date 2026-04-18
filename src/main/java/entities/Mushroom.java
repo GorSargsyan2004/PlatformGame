@@ -9,7 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import static main.Game.SCALE;
-import static utils.Constants.GoblinConstants.*;
+import static utils.Constants.GoblinAndMushroomConstants.*;
 
 public class Mushroom extends Enemy {
 
@@ -23,6 +23,8 @@ public class Mushroom extends Enemy {
 
         this.xDrawOffset = 15;
         this.yDrawOffset = 10;
+
+        this.deathScore = (health + damage) / 2;
 
         initAnimations();
 
@@ -117,6 +119,6 @@ public class Mushroom extends Enemy {
                 (int)(currentAnim.getWidth()*SCALE), (int)(currentAnim.getHeight()*SCALE), null);
 
         // For debugging the hitBox
-        drawHitbox(g);
+//        drawHitbox(g);
     }
 }
