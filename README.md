@@ -1,71 +1,102 @@
-# 🎮 Platform Game
-_(working with the name of the game)_
+# 🎮 PlatformGame
 
-## A 2D game where the task is to survive as long as possible and get scores. The best score will be recorded.
+Welcome to **PlatformGame**, an immersive 2D side-scrolling experience where survival is the ultimate goal! Battle fierce monsters, master your agility, and climb the high-score leaderboard in this action-packed adventure.
 
 ---
 
-## The goals of the game are
-- Killing attacking monsters
-- Preventing the health from becoming zero
-- Getting aids to restore health
-- Resisting the attacks as much as possible
+## 🚀 Key Features
 
-```
+- **Dynamic Combat:** Engage with multiple types of enemies, each with unique behaviors and attack patterns.
+- **Advanced Mobility:** Master a diverse set of moves including Dash, Slide, and powerful Dash-Attacks to outmaneuver your foes.
+- **Progress Tracking:** Secure login system that records your best scores and progress.
+- **Rich Visuals:** Beautifully animated characters and detailed level environments featuring Goblins, Mushrooms, Skeletons, and more.
+
+---
+
+## 🕹️ Controls
+
+Take control of your hero with these intuitive commands:
+
+| Action | Key |
+| :--- | :--- |
+| **Move Left** | `A` |
+| **Move Right** | `D` |
+| **Jump** | `W` |
+| **Slide** | `S` |
+| **Dash** | `E` |
+| **Attack** | `Space` |
+| **Dash Attack** | `Tab` |
+| **Back to Menu** | `Esc` |
+
+---
+
+## 👾 Meet the Cast
+
+### The Hero
+![Player](src/main/resources/Player/Idle/Warrior_Idle_1.png)
+*Agile, strong, and ready for any challenge.*
+
+### The Monsters
+| Goblin | Mushroom | Skeleton | Flying Eye |
+| :---: | :---: | :---: | :---: |
+| ![Goblin](src/main/resources/Enemy/Goblin/Idle.png) | ![Mushroom](src/main/resources/Enemy/Mushroom/Idle.png) | ![Skeleton](src/main/resources/Enemy/Skeleton/Idle.png) | ![Flying Eye](src/main/resources/Enemy/Flying_eye/Flight.png) |
+
+---
+
+## 📺 Gameplay Demo
+
+Experience the action in motion:
+
+<div align="center">
+  <video src="src/main/resources/demo.mp4" width="600" controls>
+    Your browser does not support the video tag.
+  </video>
+</div>
+
+---
+
+## 📂 Project Structure
+
+```text
 PlatformGame
-├── README.md
-├── pom.xml
+├── data
+│   └── userInfo.txt          # Persistent storage for user credentials and scores
+├── pom.xml                   # Maven project configuration
 └── src
     └── main
         ├── java
-        │   ├── animations
-        │   │   ├── Animation.java
-        │   │   └── Direction.java
-        │   ├── entities
-        │   │   ├── Enemy.java
-        │   │   ├── EnemyManager.java
-        │   │   ├── Entity.java
-        │   │   ├── Player.java
-        │   │   └── Skeleton.java
-        │   ├── gamestates
-        │   │   ├── Gamestate.java
-        │   │   ├── Menu.java
-        │   │   ├── Playing.java
-        │   │   ├── State.java
-        │   │   └── Statemethods.java
-        │   ├── inputs
-        │   │   ├── KeyboardInputs.java
-        │   │   └── MouseInputs.java
-        │   ├── levels
-        │   │   ├── Level.java
-        │   │   └── LevelManager.java
-        │   ├── main
-        │   │   ├── Game.java
-        │   │   ├── GameAlgorithm.java
-        │   │   ├── GamePanel.java
-        │   │   ├── GameWindow.java
-        │   │   └── MainClass.java
-        │   ├── score_recorder
-        │   │   └── ScoreRecorder.java
-        │   ├── ui
-        │   │   └── MenuButton.java
-        │   └── utils
-        │       ├── Constants.java
-        │       ├── HelpMethods.java
-        │       ├── LevelEditor.java
-        │       └── LoadSave.java
+        │   ├── animations     # Logic for character animations and directions
+        │   ├── entities       # Core game objects: Player, Enemies (Goblins, Mushrooms, etc.)
+        │   ├── gamestates     # State machine management (Menu, Playing, Login)
+        │   ├── inputs         # Input handling for Keyboard and Mouse
+        │   ├── levels         # Level design, loading, and management
+        │   ├── longTermMemory # Data persistence logic (UserManager)
+        │   ├── main           # Game entry point and window orchestration
+        │   ├── ui             # Custom UI components like Menu Buttons
+        │   └── utils          # Game constants, helper methods, and asset loaders
         └── resources
+            ├── demo.mp4       # Video demonstration of gameplay
+            ├── Enemy          # Sprite sheets for all enemy types
+            ├── GUI            # Assets for health bars and other overlays
+            ├── Level          # Tilesets, backgrounds, and map data
+            ├── Menu           # Images for menus and buttons
+            └── Player         # Animation frames for the main character
 ```
 
-![Warrior_Idle_1.png](src/main/resources/Player/Idle/Warrior_Idle_1.png) The Player
-
----
-### Monsters
-![Idle.png](src/main/resources/Enemy/Goblin/Idle.png)
-![Idle.png](src/main/resources/Enemy/Mushroom/Idle.png)
-![Idle.png](src/main/resources/Enemy/Skeleton/Idle.png)
-![Flight.png](src/main/resources/Enemy/Flying_eye/Flight.png)
-
 ---
 
-![demo.mp4](src/main/resources/demo.mp4)
+## 🛠️ How to Run
+
+1. **Prerequisites:**
+   - Java 25 or higher
+   - Maven
+
+2. **Execution:**
+   ```bash
+   mvn compile
+   mvn exec:java -Dexec.mainClass="main.MainClass"
+   ```
+
+---
+
+*Enjoy the game and good luck surviving!* 🗡️🛡️
