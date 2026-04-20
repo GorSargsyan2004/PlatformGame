@@ -61,24 +61,29 @@ public abstract class Entity {
         attackers = new ArrayList<>();
         attackersTimeAttackedInMillis = new ArrayList<>();
 
-        this.hitBox = null;
+        // Initialize hitBox to avoid null pointer exceptions, though it will be properly sized in subclasses
+        this.hitBox = new Rectangle2D.Float((float)pos.x, (float)pos.y, 0, 0);
     }
 
     protected void drawHitbox(Graphics g) {
         // For debugging the hitbox
-        g.setColor(Color.RED);
-        g.drawRect((int)hitBox.x, (int)hitBox.y, (int)hitBox.width, (int)hitBox.height);
+        if (hitBox != null) {
+            g.setColor(Color.RED);
+            g.drawRect((int) hitBox.x, (int) hitBox.y, (int) hitBox.width, (int) hitBox.height);
+        }
     }
 
     protected void initHitbox() {
-        hitBox = null;
+        // To be overridden by subclasses
     }
 
     public void update() {}
 
     protected void updateHitbox() {
-        hitBox.x = (int)pos.x;
-        hitBox.y = (int)pos.y;
+        if (hitBox != null) {
+            hitBox.x = (float) pos.x;
+            hitBox.y = (float) pos.y;
+        }
     }
 
     public void setLeft(boolean left) { this.leftPressed = left; }
@@ -107,7 +112,7 @@ public abstract class Entity {
         boolean hitTaken = false;
         for (int i = attackers.size() - 1; i >= 0; i--) {
             Entity attacker = attackers.get(i);
-            if (isInAttackRange(attacker, this) && !attacker.isDead) {
+            if (attacker.hitBox != null && this.hitBox != null && isInAttackRange(attacker, this) && !attacker.isDead) {
                 if (System.currentTimeMillis() - attackersTimeAttackedInMillis.get(i) >= 1000) {
                     changeHealth(-attacker.damage);
                     attackers.remove(i);
@@ -129,8 +134,10 @@ public abstract class Entity {
             attackChecked = false;
             
             // Reset all animations to ensure a clean start for the takeHit animation
-            for (Animation anim : animations)
-                if (anim != null && !isDead) anim.reset();
+            if (animations != null) {
+                for (Animation anim : animations)
+                    if (anim != null && !isDead) anim.reset();
+            }
         }
 
         isHurt = true;
@@ -172,6 +179,7 @@ public abstract class Entity {
     }
 
     protected boolean isInAttackRange(Entity attacker, Entity attacked) {
+        if (attacker.hitBox == null || attacked.hitBox == null) return false;
         Rectangle2D.Float a = attacker.hitBox;
         Rectangle2D.Float b = attacked.hitBox;
 
@@ -210,6 +218,7 @@ public abstract class Entity {
     }
 
     protected void physicsUpdate(int crouchIndex) {
+        if (hitBox == null) return;
         // SLOPE LOGIC (Check ground below feet)
         float xCheck = hitBox.x + hitBox.width / 2;
         float yCheck = hitBox.y + hitBox.height;
@@ -261,7 +270,8 @@ public abstract class Entity {
                     // Only trigger landing animation if fall was significant (impact speed > 2.5)
                     if (ySpeed > 2.5) {
                         landing = true;
-                        animations[crouchIndex].reset();
+                        if (animations != null && crouchIndex >= 0 && crouchIndex < animations.length && animations[crouchIndex] != null)
+                            animations[crouchIndex].reset();
                     }
                     inAir = false;
                     ySpeed = 0;
@@ -295,7 +305,6 @@ public abstract class Entity {
         if (xSpeed != 0) {
             float nextX = hitBox.x + xSpeed;
             float nextY = hitBox.y;
-            // ... (rest of the method unchanged)
 
             // If on slope, calculate the new target Y to keep the player on the surface
             if (onSlope) {
@@ -327,34 +336,45 @@ public abstract class Entity {
             }
 
             if (canMove && !canWalkOffScreen) {
-                if (nextX < 0 || nextX + hitBox.width > Game.GAME_WIDTH)
+                // If moving outside left and already at or left of border, block.
+                // If moving outside right and already at or right of border, block.
+                // This allows entities summoned outside to walk IN.
+                if (xSpeed < 0 && nextX < 0 && hitBox.x <= 0)
+                    canMove = false;
+                else if (xSpeed > 0 && nextX + hitBox.width > Game.GAME_WIDTH && hitBox.x + hitBox.width >= Game.GAME_WIDTH)
                     canMove = false;
             }
 
             if (canMove) {
                 pos.x += xSpeed;
                 if (onSlope) pos.y = nextY - yDrawOffset;
-                currentAnim = animations[RUN];
+                currentAnim = (animations != null) ? animations[RUN] : currentAnim;
             } else {
                 // Blocked by a wall, snap to it
                 float currentXOffset = (currentDir == Direction.RIGHT) ? xDrawOffset : (currentAnim.getWidth() * SCALE - xDrawOffset - hitBox.width);
                 pos.x = utils.HelpMethods.GetEntityXPosNextToWall(hitBox, xSpeed) - currentXOffset;
-                currentAnim = animations[IDLE];
+                currentAnim = (animations != null) ? animations[IDLE] : currentAnim;
             }
             updateHitbox();
         } else {
-            currentAnim = animations[IDLE];
+            currentAnim = (animations != null) ? animations[IDLE] : currentAnim;
         }
         return Pair.of(currentAnim, currentDir);
     }
 
     protected void updateHitbox(Direction currentDir, Animation currentAnim, float SCALE) {
+        if (hitBox == null) return;
         if (currentDir == Direction.RIGHT) {
             hitBox.x = (float) pos.x + xDrawOffset;
         } else {
             hitBox.x = (float) pos.x + (currentAnim.getWidth() * SCALE - xDrawOffset - hitBox.width);
         }
         hitBox.y = (float)pos.y + yDrawOffset;
+    }
+
+    public Point2D.Double getCenter() {
+        if (hitBox == null) return new Point2D.Double(pos.x, pos.y);
+        return new Point2D.Double(hitBox.x + hitBox.width / 2, hitBox.y + hitBox.height / 2);
     }
 
     protected Pair<Animation, Direction> jump(Animation currentAnim, Direction currentDir, int JUMP, int UP_TO_FALL, int FALL, float SCALE) {
@@ -387,6 +407,13 @@ public abstract class Entity {
                 canMove = utils.HelpMethods.CanMoveHere(new Point2D.Double(nextX, hitBox.y), hitBox.width, hitBox.height, lvlData);
             }
 
+            if (canMove && !canWalkOffScreen) {
+                if (xSpeed < 0 && nextX < 0 && hitBox.x <= 0)
+                    canMove = false;
+                else if (xSpeed > 0 && nextX + hitBox.width > Game.GAME_WIDTH && hitBox.x + hitBox.width >= Game.GAME_WIDTH)
+                    canMove = false;
+            }
+
             if (canMove) {
                 pos.x += xSpeed;
             } else {
@@ -397,11 +424,11 @@ public abstract class Entity {
         }
 
         if (ySpeed < -0.5) {
-            currentAnim = animations[JUMP];
+            currentAnim = (animations != null) ? animations[JUMP] : currentAnim;
         } else if (ySpeed >= -0.5 && ySpeed < 0.5) {
-            currentAnim = animations[UP_TO_FALL];
+            currentAnim = (animations != null) ? animations[UP_TO_FALL] : currentAnim;
         } else {
-            currentAnim = animations[FALL];
+            currentAnim = (animations != null) ? animations[FALL] : currentAnim;
         }
 
         return Pair.of(currentAnim, currentDir);

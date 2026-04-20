@@ -17,7 +17,17 @@ public class Constants {
         public static final int DEATH = 9;
         public static final int SLIDE = 10;
         public static final int DASH = 11;
+    }
 
+    public static class KnightConstants {
+        public static final int IDLE = 0;
+        public static final int RUN = 1;
+        public static final int ATTACK_1 = 2;
+        public static final int ATTACK_2 = 3;
+        public static final int ATTACK_3 = 4;
+        public static final int DEATH = 5;
+        public static final int JUMP = 6;
+        public static final int HURT = 7;
     }
 
     public static class SkeletonConstants {

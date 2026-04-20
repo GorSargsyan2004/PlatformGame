@@ -8,21 +8,21 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-import static main.Game.SCALE;
 import static utils.Constants.GoblinAndMushroomConstants.*;
 
 public class Goblin extends Enemy {
+    private static final float SCALE = scale;
 
     Goblin(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
         super(health, damage, pos, movementSpeed, lvlData);
 
         this.attackDistance = (int) (15 * SCALE);
 
-        this.entityHeight = 35;
-        this.entityWidth = 35;
+        this.entityHeight = (int)(35 * SCALE);
+        this.entityWidth = (int)(35 * SCALE);
 
-        this.xDrawOffset = 25;
-        this.yDrawOffset = 10;
+        this.xDrawOffset = (int)(25 * SCALE);
+        this.yDrawOffset = (int)(10 * SCALE);
 
         this.deathScore = (health + damage) / 2;
 
@@ -37,8 +37,8 @@ public class Goblin extends Enemy {
         animations = new Animation[anims.length];
         for (int i = 0; i < anims.length; i++) {
             if (i < 3)
-                animations[i] = new Animation("/Enemy/Goblin/"+anims[i]+".png", 31, 55, entityHeight + 15, entityWidth + 53, 4, 62);
-            else animations[i] = new Animation("/Enemy/Goblin/"+anims[i]+".png", 31, 55, entityHeight + 15, entityWidth + 53, 8, 62);
+                animations[i] = new Animation("/Enemy/Goblin/"+anims[i]+".png", 31, 55, 50, 88, 4, 62);
+            else animations[i] = new Animation("/Enemy/Goblin/"+anims[i]+".png", 31, 55, 50, 88, 8, 62);
         }
 
         currentAnim = animations[IDLE];
