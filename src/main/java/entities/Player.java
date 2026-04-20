@@ -48,7 +48,7 @@ public class Player extends Entity {
         super(health, damage, pos, movementSpeed, lvlData);
         this.enemyManager = enemyManager;
         this.maxHealth = health;
-        this.attackDistance = (int) (35 * SCALE);
+        this.attackDistance = (int) (30 * SCALE);
         this.statusBarImg = LoadSave.getSave(LoadSave.STATUS_BAR);
         this.canWalkOffScreen = false;
 
@@ -99,12 +99,13 @@ public class Player extends Entity {
         }
 
         // Action Locking
-        if (attack && inAir && dashAttack) {
+        if ((attack || dashAttack) && inAir) {
             attack = false;
             attackChecked = false;
         }
-        if (landing && attack && dashAttack) {
+        if (landing && (attack || dashAttack)) {
             attack = false;
+            dashAttack = false;
             attackChecked = false;
         }
 

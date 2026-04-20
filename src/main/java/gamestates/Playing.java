@@ -1,6 +1,7 @@
 package gamestates;
 
 import animations.Direction;
+import entities.AllayManager;
 import entities.EnemyManager;
 import entities.Player;
 import levels.LevelManager;
@@ -16,6 +17,7 @@ import static main.Game.TILES_SIZE;
 
 public class Playing extends State implements Statemethods{
     private LevelManager levelManager;
+    private AllayManager am;
     private EnemyManager em;
 
     // ENTITIES
@@ -29,6 +31,10 @@ public class Playing extends State implements Statemethods{
     private void initClasses() {
         // Loading the level
         levelManager = new LevelManager(game);
+
+        // TEMPORARY Allays
+        am = new AllayManager(this);
+        am.summonKnight();
 
         // TEMPORARY Enemies
         em = new EnemyManager(this);
@@ -48,6 +54,7 @@ public class Playing extends State implements Statemethods{
             player.update();
         }
         em.update();
+        am.update();
     }
 
     @Override
@@ -55,6 +62,7 @@ public class Playing extends State implements Statemethods{
         levelManager.draw(g);
         player.draw(g);
         em.draw(g);
+        am.draw(g);
     }
 
     @Override
@@ -126,4 +134,7 @@ public class Playing extends State implements Statemethods{
     public Player getPlayer() {
         return player;
     }
+
+    public EnemyManager getEnemyManager() { return em; }
+    public AllayManager getAllayManager() { return am; }
 }

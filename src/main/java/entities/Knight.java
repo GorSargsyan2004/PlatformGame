@@ -7,24 +7,25 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
-import static utils.Constants.SkeletonConstants.*;
+import static utils.Constants.KnightConstants.*;
 
-public class Skeleton extends Enemy{
-    private static final float SCALE = scale;
+public class Knight extends Allay {
+    private static final float SCALE = scale + 0.2f;
+    private Random rnd;
+    private int attack_index = 0;
 
-    public Skeleton(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
+    Knight(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
         super(health, damage, pos, movementSpeed, lvlData);
-
+        rnd = new Random();
         this.attackDistance = (int) (30 * SCALE);
 
-        this.entityHeight = (int)(50 * SCALE);
-        this.entityWidth = (int)(40 * SCALE);
+        this.entityHeight = (int) (35 * SCALE);
+        this.entityWidth = (int) (25 * SCALE);
 
-        this.xDrawOffset = (int)(20 * SCALE);
-        this.yDrawOffset = (int)(10 * SCALE);
-
-        this.deathScore = (health + damage) / 2;
+        this.xDrawOffset = (int) (14 * SCALE);
+        this.yDrawOffset = (int) (10 * SCALE);
 
         initAnimations();
 
@@ -32,13 +33,18 @@ public class Skeleton extends Enemy{
     }
 
     private void initAnimations() {
-        String[] anims = {"Attack", "Death", "Idle", "Take_Hit", "Walk", "Shield"};
+        String[] anims = {"IDLE", "RUN", "ATTACK_1", "ATTACK_2", "ATTACK_3", "DEATH", "JUMP", "HURT"};
 
         animations = new Animation[anims.length];
-        animations[ATTACK] = new Animation("/Enemy/Skeleton/"+anims[ATTACK]+".png", 40, 40, 60, 100, 8, 50);
-        for (int i = 1; i < animations.length; i++)
-            animations[i] = new Animation("/Enemy/Skeleton/"+anims[i]+".png", 40, 40, 60, 100, 4, 50);
 
+        animations[ATTACK_1] = new Animation("/Allay/Knight/"+anims[ATTACK_1]+".png", 23, 16, 45, 50, 6, 46);
+        animations[ATTACK_2] = new Animation("/Allay/Knight/"+anims[ATTACK_2]+".png", 23, 16, 45, 50, 5, 46);
+        animations[ATTACK_3] = new Animation("/Allay/Knight/"+anims[ATTACK_3]+".png", 23, 16, 45, 50, 6, 46);
+        animations[IDLE] = new Animation("/Allay/Knight/"+anims[IDLE]+".png", 23, 16, 45, 50, 7, 46);
+        animations[RUN] = new Animation("/Allay/Knight/"+anims[RUN]+".png", 23, 16, 45, 50, 8, 46);
+        animations[DEATH] = new Animation("/Allay/Knight/"+anims[DEATH]+".png", 23, 16, 45, 50, 12, 46);
+        animations[JUMP] = new Animation("/Allay/Knight/"+anims[JUMP]+".png", 23, 16, 45, 50, 5, 46);
+        animations[HURT] = new Animation("/Allay/Knight/"+anims[HURT]+".png", 23, 16, 45, 50, 4, 46);
 
         currentAnim = animations[IDLE];
         currentDir = Direction.RIGHT;
@@ -51,6 +57,10 @@ public class Skeleton extends Enemy{
 
     @Override
     public void update() {
+        if (!attack) attack_index = 0;
+        if (attack && attack_index == 0)
+           attack_index = rnd.nextInt(ATTACK_1, ATTACK_3 + 1);
+
         if (health <= 0) {
             dead(animations[DEATH]);
             return;
@@ -61,7 +71,7 @@ public class Skeleton extends Enemy{
 
         // State Selection
         if (checkForTakingHit()) {
-            takeHit(animations[TAKE_HIT]);
+            takeHit(animations[HURT]);
         } else if (isHurt) {
             currentAnim.updateAnimationTick();
             if (currentAnim.isAnimationCompleted()) {
@@ -71,26 +81,22 @@ public class Skeleton extends Enemy{
         } else if (isIdle) {
             idle(animations[IDLE]);
         } else if (attack) {
-            attack(animations[ATTACK]);
-        } else if (isOutOfBorders(currentAnim.getWidth())) {
-            updateFromCorners(animations[WALK]);
-            ySpeed = 0;
-            inAir = false;
+            attack(animations[attack_index]);
         } else if (landing) {
-            landing(animations[SHIELD]);
+            landing(animations[RUN]);
         } else if (inAir) {
-            var pair = jump(currentAnim, currentDir, WALK, WALK, WALK, SCALE);
+            var pair = jump(currentAnim, currentDir, JUMP, JUMP, JUMP, SCALE);
             currentAnim = pair.value0();
             currentDir = pair.value1();
         } else {
-            var pair = run(currentAnim, currentDir, WALK, IDLE, SCALE);
+            var pair = run(currentAnim, currentDir, RUN, IDLE, SCALE);
             currentAnim = pair.value0();
             currentDir = pair.value1();
         }
 
         // Physics & Gravity Update
-        if (!isOutOfBorders(currentAnim.getWidth()) && !isIdle && !attack && !isHurt) {
-            physicsUpdate(TAKE_HIT);
+        if (!isIdle && !attack && !isHurt) {
+            physicsUpdate(HURT);
         }
 
         // Update Visuals

@@ -12,6 +12,7 @@ public abstract class Enemy extends Entity{
 
     Enemy (int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
         super(health, damage, pos, movementSpeed, lvlData);
+        this.canWalkOffScreen = false;
     }
 
     protected boolean isOutOfBorders(int spriteWidth) {
@@ -35,7 +36,7 @@ public abstract class Enemy extends Entity{
     }
 
     protected void chase(Entity player) {
-        if (player.isDead) return;
+        if (player == null || player.isDead) return;
 
         if (isIdle || attack) {
             setLeft(false);
@@ -71,7 +72,7 @@ public abstract class Enemy extends Entity{
             setRight(false);
             setLeft(true);
         }
-        }
+    }
 
     @Override
     protected void attack(Animation attackAnimation) {

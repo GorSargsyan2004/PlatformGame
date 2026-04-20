@@ -12,16 +12,18 @@ import static main.Game.SCALE;
 import static utils.Constants.FlyingEyeConstants.*;
 
 public class FlyingEye extends FlyingEnemy {
+    private static final float SCALE = scale;
+
     FlyingEye(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
         super(health, damage, pos, movementSpeed, lvlData);
 
         this.attackDistance = (int) (30 * SCALE);
 
-        this.entityHeight = 35;
-        this.entityWidth = 35;
+        this.entityHeight = (int) (35 * SCALE);
+        this.entityWidth = (int) (35 * SCALE);
 
-        this.xDrawOffset = 12;
-        this.yDrawOffset = 15;
+        this.xDrawOffset = (int) (12 * SCALE);
+        this.yDrawOffset = (int) (15 * SCALE);
 
         this.deathScore = (health + damage) / 2;
 
@@ -35,8 +37,8 @@ public class FlyingEye extends FlyingEnemy {
 
         animations = new Animation[anims.length];
         for (int i = 0; i < animations.length; i++) {
-            if (i < 2) animations[i] = new Animation("/Enemy/Flying_eye/"+anims[i]+".png", 50, 57, entityHeight + 10, entityWidth + 15, 8, 100);
-            else animations[i] =  new Animation("/Enemy/Flying_eye/"+anims[i]+".png", 50, 57, entityHeight + 10, entityWidth + 15, 4, 100);
+            if (i < 2) animations[i] = new Animation("/Enemy/Flying_eye/"+anims[i]+".png", 50, 57, 45, 50, 8, 100);
+            else animations[i] =  new Animation("/Enemy/Flying_eye/"+anims[i]+".png", 50, 57, 45, 50, 4, 100);
         }
 
 

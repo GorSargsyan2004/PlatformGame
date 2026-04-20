@@ -11,17 +11,20 @@ import static main.Game.*;
 
 public class EnemyManager {
     private Playing playing;
-    private ArrayList<Skeleton> skeletons = new ArrayList<>();
-    private ArrayList<Goblin> goblins = new ArrayList<>();
-    private ArrayList<Mushroom> mushrooms = new ArrayList<>();
-    private ArrayList<FlyingEye> flyingEyes = new ArrayList<>();
+    private int[][] lvlData;
+    private AllayManager am;
+
+    private final ArrayList<Skeleton> skeletons = new ArrayList<>();
+    private final ArrayList<Goblin> goblins = new ArrayList<>();
+    private final ArrayList<Mushroom> mushrooms = new ArrayList<>();
+    private final ArrayList<FlyingEye> flyingEyes = new ArrayList<>();
 
     private Point2D.Double  leftPos = new Point2D.Double(-100.0, GAME_HEIGHT - 12*TILES_SIZE),
                             rightPos = new Point2D.Double(GAME_WIDTH + 100.0, GAME_HEIGHT - 10*TILES_SIZE);
-    private int[][] lvlData;
 
     public EnemyManager(Playing playing) {
         this.playing = playing;
+        this.am = playing.getAllayManager();
 
         lvlData = playing.getLevelData();
     }
@@ -29,22 +32,26 @@ public class EnemyManager {
     public void update() {
         skeletons.removeIf(skeleton -> {
             skeleton.update();
-            skeleton.chase(playing.getPlayer());
+            Entity target = am.getClosestAllayOrPlayer(skeleton.pos);
+            skeleton.chase(target);
             return skeleton.isDead;
         });
         goblins.removeIf(goblin -> {
             goblin.update();
-            goblin.chase(playing.getPlayer());
+            Entity target = am.getClosestAllayOrPlayer(goblin.pos);
+            goblin.chase(target);
             return goblin.isDead;
         });
         mushrooms.removeIf(mushroom -> {
             mushroom.update();
-            mushroom.chase(playing.getPlayer());
+            Entity target = am.getClosestAllayOrPlayer(mushroom.pos);
+            mushroom.chase(target);
             return mushroom.isDead;
         });
         flyingEyes.removeIf(flyingEye -> {
             flyingEye.update();
-            flyingEye.chase(playing.getPlayer());
+            Entity target = am.getClosestAllayOrPlayer(flyingEye.pos);
+            flyingEye.chase(target);
             return flyingEye.isDead;
         });
     }
@@ -111,5 +118,41 @@ public class EnemyManager {
     }
     public ArrayList<FlyingEye> getFlyingEyes() {
         return flyingEyes;
+    }
+
+    public Enemy getClosestEnemy(Point2D.Double pos) {
+        Enemy closest = null;
+        double minDist = Double.MAX_VALUE;
+
+        for (Skeleton skeleton : skeletons) {
+            double dist = pos.distance(skeleton.getCenter());
+            if (dist < minDist) {
+                closest = skeleton;
+                minDist = dist;
+            }
+        }
+        for (Goblin goblin : goblins) {
+            double dist = pos.distance(goblin.getCenter());
+            if (dist < minDist) {
+                closest = goblin;
+                minDist = dist;
+            }
+        }
+        for (Mushroom mushroom : mushrooms) {
+            double dist = pos.distance(mushroom.getCenter());
+            if (dist < minDist) {
+                closest = mushroom;
+                minDist = dist;
+            }
+        }
+        for (FlyingEye flyingEye : flyingEyes) {
+            double dist = pos.distance(flyingEye.getCenter());
+            if (dist < minDist) {
+                closest = flyingEye;
+                minDist = dist;
+            }
+        }
+
+        return closest;
     }
 }

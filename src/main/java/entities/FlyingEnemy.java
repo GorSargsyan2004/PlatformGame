@@ -34,7 +34,7 @@ public class FlyingEnemy extends Enemy {
 
     @Override
     protected void chase(Entity player) {
-        if (player.isDead || isDead || health <= 0) return;
+        if (player == null || player.isDead || isDead || health <= 0) return;
 
         if (attack) {
             // Face the player while attacking
@@ -128,7 +128,17 @@ public class FlyingEnemy extends Enemy {
 
         // Move X
         if (HelpMethods.CanMoveHere(new Point2D.Double(hitBox.x + targetVelX, hitBox.y), hitBox.width, hitBox.height, lvlData)) {
-            if (!wasInsideX || (hitBox.x + targetVelX >= 0 && hitBox.x + targetVelX + hitBox.width <= Game.GAME_WIDTH)) {
+            boolean canMoveX = true;
+            if (wasInsideX) {
+                if (hitBox.x + targetVelX < 0 || hitBox.x + targetVelX + hitBox.width > Game.GAME_WIDTH)
+                    canMoveX = false;
+            } else {
+                // If outside, only allow moving towards the screen
+                if (hitBox.x < 0 && targetVelX < 0) canMoveX = false;
+                else if (hitBox.x + hitBox.width > Game.GAME_WIDTH && targetVelX > 0) canMoveX = false;
+            }
+
+            if (canMoveX) {
                 pos.x += targetVelX;
             } else {
                 targetVelX *= -1;
@@ -139,7 +149,17 @@ public class FlyingEnemy extends Enemy {
 
         // Move Y
         if (HelpMethods.CanMoveHere(new Point2D.Double(hitBox.x, hitBox.y + targetVelY), hitBox.width, hitBox.height, lvlData)) {
-            if (!wasInsideY || (hitBox.y + targetVelY >= 0 && hitBox.y + targetVelY + hitBox.height <= Game.GAME_HEIGHT)) {
+            boolean canMoveY = true;
+            if (wasInsideY) {
+                if (hitBox.y + targetVelY < 0 || hitBox.y + targetVelY + hitBox.height > Game.GAME_HEIGHT)
+                    canMoveY = false;
+            } else {
+                // If outside, only allow moving towards the screen
+                if (hitBox.y < 0 && targetVelY < 0) canMoveY = false;
+                else if (hitBox.y + hitBox.height > Game.GAME_HEIGHT && targetVelY > 0) canMoveY = false;
+            }
+
+            if (canMoveY) {
                 pos.y += targetVelY;
             } else {
                 targetVelY *= -1;

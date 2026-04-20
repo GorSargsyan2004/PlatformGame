@@ -8,21 +8,21 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-import static main.Game.SCALE;
 import static utils.Constants.GoblinAndMushroomConstants.*;
 
 public class Mushroom extends Enemy {
+    private static final float SCALE = scale;
 
     Mushroom(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData) {
         super(health, damage, pos, movementSpeed, lvlData);
 
         this.attackDistance = (int) (20 * SCALE);
 
-        this.entityHeight = 35;
-        this.entityWidth = 25;
+        this.entityHeight = (int)(35 * SCALE);
+        this.entityWidth = (int)(25 * SCALE);
 
-        this.xDrawOffset = 15;
-        this.yDrawOffset = 10;
+        this.xDrawOffset = (int)(15 * SCALE);
+        this.yDrawOffset = (int)(10 * SCALE);
 
         this.deathScore = (health + damage) / 2;
 
@@ -37,8 +37,8 @@ public class Mushroom extends Enemy {
         animations = new Animation[anims.length];
         for (int i = 0; i < anims.length; i++) {
             if (i < 3)
-                animations[i] = new Animation("/Enemy/Mushroom/"+anims[i]+".png", 45, 55, entityHeight + 15, entityWidth + 35, 4, 90);
-            else animations[i] = new Animation("/Enemy/Mushroom/"+anims[i]+".png", 45, 55, entityHeight + 15, entityWidth + 35, 8, 90);
+                animations[i] = new Animation("/Enemy/Mushroom/"+anims[i]+".png", 45, 55, 50, 60, 4, 90);
+            else animations[i] = new Animation("/Enemy/Mushroom/"+anims[i]+".png", 45, 55, 50, 60, 8, 90);
         }
 
         currentAnim = animations[IDLE];
