@@ -1,4 +1,4 @@
-package longTermMemory;
+package long_term_memory;
 import java.io.PrintWriter;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;
@@ -12,6 +12,7 @@ public class UserManager {
     private String username;
     private String password;
     private int score;
+    private int currScore = 0;
     private final String fileLocation;
     private boolean loggedIn;
 
@@ -108,6 +109,44 @@ public class UserManager {
         return score;
     }
 
+    public int getCurrentScore() {
+        if(!loggedIn){
+            System.out.println("Before getting the score please log in or register.");
+            System.exit(0);
+        }
+        return score;
+    }
+
+    /**
+     * precondition: before using this method, the user should be already registered/logged in.
+     * Adds scores to the current score to store the current score of the user.
+     */
+    public void addToCurrScore(int adder) {
+        if(!loggedIn){
+            System.out.println("Before getting the score please log in or register.");
+            System.exit(0);
+        }
+        currScore += adder;
+    }
+
+    /**
+     * precondition: before using this method, the user should be already registered/logged in.
+     * Returns current score of the user.
+     */
+    public int getCurrScore() {
+        if(!loggedIn){
+            System.out.println("Before getting the score please log in or register.");
+            System.exit(0);
+        }
+        return currScore;
+    }
+
+    /**
+     * precondition: before using this method, the user should be already registered/logged in.
+     * Returns weather the user passed the best score and will have now new best score.
+     */
+    public boolean isPassedBestScore() { return currScore > score; }
+
     /**
      * precondition: before using this method, the user should be already registered/logged in. This will modify the user's own best score.
      * Sets the given score as the best recorded score, no matter if it is larger than the previous best recorded score.
@@ -151,6 +190,11 @@ public class UserManager {
         pw.print(wholeUserInfo.toString());
         pw.close();
     }
+
+    public void setRecord() {
+        if (isPassedBestScore()) score = currScore;
+    }
+
     /**
      * precondition: before using this method, the user should be already registered/logged in. This will modify the user's own best score.
      * Compares the given score with the best recorded score, and if the given score is larger than the best recorded score, it updates the best recorded score.

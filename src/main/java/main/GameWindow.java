@@ -8,7 +8,7 @@ public class GameWindow {
     private JFrame jframe;
 
     GameWindow(GamePanel gamePanel) {
-        this.jframe = new JFrame();
+        this.jframe = new JFrame("PlatformGame");
         jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jframe.add(gamePanel);
         jframe.setLocationRelativeTo(null);

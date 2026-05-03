@@ -1,7 +1,7 @@
 package entities;
 
 import animations.Animation;
-import animations.Direction;
+import utils.Direction;
 import main.Game;
 import utils.HelpMethods;
 

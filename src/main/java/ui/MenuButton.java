@@ -1,7 +1,7 @@
 package ui;
 
 import animations.Animation;
-import animations.Direction;
+import utils.Direction;
 import gamestates.Gamestate;
 
 import java.awt.*;

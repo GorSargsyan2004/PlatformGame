@@ -1,13 +1,11 @@
 package animations;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
 import main.Game;
+import utils.Direction;
 
 import static utils.LoadSave.getSave;
 
