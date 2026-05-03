@@ -72,7 +72,7 @@ public class UserManager {
         String userLineInStorage;
         String usernameInStorage;
         String passwordInStorage;
-        String[] userLineComponents = new String[3];
+        String[] userLineComponents;
         while(sc.hasNextLine()){
             userLineInStorage = sc.nextLine();
             userLineComponents = userLineInStorage.split(":");
@@ -93,20 +93,6 @@ public class UserManager {
         }
         sc.close();
         return false;
-    }
-
-
-    /**
-     * precondition: before using this method, the user should be already registered/logged in. This will return the user's own best score.
-     * Returns the best recorded score of the user.
-     * @return the best recorded score of the user.
-     */
-    public int getScore() {
-        if(!loggedIn){
-            System.out.println("Before getting the score please log in or register.");
-            System.exit(0);
-        }
-        return score;
     }
 
     public int getCurrentScore() {
@@ -148,6 +134,19 @@ public class UserManager {
     public boolean isPassedBestScore() { return currScore > score; }
 
     /**
+     * precondition: before using this method, the user should be already registered/logged in. This will return the user's own best score.
+     * Returns the best recorded score of the user.
+     * @return the best recorded score of the user.
+     */
+    public int getScore() {
+        if(!loggedIn){
+            System.out.println("Before getting the score please log in or register.");
+            System.exit(0);
+        }
+        return score;
+    }
+
+    /**
      * precondition: before using this method, the user should be already registered/logged in. This will modify the user's own best score.
      * Sets the given score as the best recorded score, no matter if it is larger than the previous best recorded score.
      * @param score The score to be set as the best recorded score.
@@ -173,8 +172,8 @@ public class UserManager {
             String currentUsername = currentLine.split(":")[0];
             if(currentUsername.equals(username)){
                 this.score=score;
-                wholeUserInfo.append(username+":"+password+":"+this.score+"\n");
-            }else{
+                wholeUserInfo.append(username).append(":").append(password).append(":").append(this.score).append("\n");
+            } else {
                 wholeUserInfo.append(currentLine).append("\n");
             }
         }
@@ -192,7 +191,7 @@ public class UserManager {
     }
 
     public void setRecord() {
-        if (isPassedBestScore()) score = currScore;
+        if (isPassedBestScore()) setScore(currScore);
     }
 
     /**
