@@ -3,6 +3,7 @@ package entities;
 import animations.Animation;
 import gamestates.Login;
 import long_term_memory.UserManager;
+import long_term_memory.UserManagerExceptions.NotRegisteredOrLoggedInException;
 import utils.Direction;
 import utils.LoadSave;
 
@@ -52,12 +53,17 @@ public class Player extends Entity {
     private boolean slide = false;
     private boolean dash = false;
 
+    private int defaultDamage;
+    private int defaultAttackDistance;
+
     public Player(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData, EnemyManager enemyManager, UserManager userManager) {
         super(health, damage, pos, movementSpeed, lvlData);
         this.enemyManager = enemyManager;
         this.userManager = userManager;
         this.maxHealth = health;
+        this.defaultDamage = damage;
         this.attackDistance = (int) (30 * SCALE);
+        this.defaultAttackDistance = this.attackDistance;
         this.statusBarImg = LoadSave.getSave(LoadSave.STATUS_BAR);
         this.canWalkOffScreen = false;
         this.gameStartTime = System.currentTimeMillis();
@@ -111,12 +117,19 @@ public class Player extends Entity {
         // Action Locking
         if ((attack || dashAttack) && inAir) {
             attack = false;
+            dashAttack = false;
             attackChecked = false;
         }
         if (landing && (attack || dashAttack)) {
             attack = false;
             dashAttack = false;
             attackChecked = false;
+        }
+
+        // Safety reset for damage and attack distance
+        if (!attack && !dashAttack) {
+            damage = defaultDamage;
+            attackDistance = defaultAttackDistance;
         }
 
         if (slide) {
@@ -258,8 +271,11 @@ public class Player extends Entity {
     protected void attack(Animation attackAnimation) {
         if (!attackChecked) {
             if (dashAttack) {
-                damage *= 2;
-                attackDistance *= 2;
+                damage = defaultDamage * 2;
+                attackDistance = defaultAttackDistance * 2;
+            } else {
+                damage = defaultDamage;
+                attackDistance = defaultAttackDistance;
             }
             checkAttack();
             attackChecked = true;
@@ -269,8 +285,8 @@ public class Player extends Entity {
         if (currentAnim.isAnimationCompleted()){
             attack = false;
             if (dashAttack) {
-                damage /= 2;
-                attackDistance /= 2;
+                damage = defaultDamage;
+                attackDistance = defaultAttackDistance;
                 dashAttack = false;
                 dashAttackWidth = 0;
             }
@@ -344,7 +360,11 @@ public class Player extends Entity {
         g.drawString("Time: " + timePassed, scoreAndTimeBarX + 10, scoreAndTimeBarY + 10);
         if (userManager.isPassedBestScore())
             g.setColor(Color.YELLOW);
-        g.drawString("Score: " + userManager.getCurrScore(), scoreAndTimeBarX + 10, scoreAndTimeBarY + 30);
+        try {
+            g.drawString("Score: " + userManager.getCurrScore(), scoreAndTimeBarX + 10, scoreAndTimeBarY + 30);
+        } catch (NotRegisteredOrLoggedInException e) {
+            g.drawString("Score: N/A", scoreAndTimeBarX + 10, scoreAndTimeBarY + 30);
+        }
     }
 
     public boolean isDead() {
@@ -387,10 +407,18 @@ public class Player extends Entity {
     }
 
     public void addScore(int adder) {
-        userManager.addToCurrScore(adder);
+        try {
+            userManager.addToCurrScore(adder);
+        } catch (NotRegisteredOrLoggedInException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     public void saveData() {
-        if (userManager.isPassedBestScore()) userManager.setRecord();
+        try {
+            if (userManager.isPassedBestScore()) userManager.setRecord();
+        } catch (NotRegisteredOrLoggedInException e) {
+            System.err.println(e.getMessage());
+        }
     }
 }

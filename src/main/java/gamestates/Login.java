@@ -2,6 +2,7 @@ package gamestates;
 
 import main.Game;
 import long_term_memory.UserManager;
+import long_term_memory.UserManagerExceptions.UserManagerException;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -68,10 +69,6 @@ public class Login extends State implements Statemethods {
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    @Override
     public void mousePressed(MouseEvent e) {
         if (usernameField.contains(e.getPoint())) {
             usernameActive = true;
@@ -85,22 +82,30 @@ public class Login extends State implements Statemethods {
     }
 
     private void login() {
-        if (userManager.login(username.toString(), password.toString())) {
-            Gamestate.state = Gamestate.MENU;
-        } else {
-            message = "Login failed!";
+        try {
+            if (userManager.login(username.toString(), password.toString())) {
+                Gamestate.state = Gamestate.MENU;
+            }
+        } catch (UserManagerException e) {
+            message = e.getMessage();
             messageColor = Color.RED;
         }
     }
 
     private void register() {
-        if (userManager.register(username.toString(), password.toString())) {
-            message = "Registration successful! You can now login.";
-            messageColor = Color.GREEN;
-        } else {
-            message = "Registration failed (User exists?)";
+        try {
+            if (userManager.register(username.toString(), password.toString())) {
+                message = "Registration successful! You can now login.";
+                messageColor = Color.GREEN;
+            }
+        } catch (UserManagerException e) {
+            message = e.getMessage();
             messageColor = Color.RED;
         }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
     }
 
     @Override
