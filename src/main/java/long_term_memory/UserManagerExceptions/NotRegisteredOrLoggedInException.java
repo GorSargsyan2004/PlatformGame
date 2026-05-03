@@ -1,4 +1,4 @@
-package longTermMemory.UserManagerExceptions;
+package long_term_memory.UserManagerExceptions;
 
 public class NotRegisteredOrLoggedInException extends UserManagerException {
     public NotRegisteredOrLoggedInException(){

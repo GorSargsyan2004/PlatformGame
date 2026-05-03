@@ -63,7 +63,7 @@ PlatformGame
         │   ├── gamestates     # State machine management (Menu, Playing, Login)
         │   ├── inputs         # Input handling for Keyboard and Mouse
         │   ├── levels         # Level design, loading, and management
-        │   ├── longTermMemory # Data persistence logic (UserManager)
+        │   ├── long_term_memory # Data persistence logic (UserManager)
         │   ├── main           # Game entry point and window orchestration
         │   ├── ui             # Custom UI components like Menu Buttons
         │   └── utils          # Game constants, helper methods, and asset loaders

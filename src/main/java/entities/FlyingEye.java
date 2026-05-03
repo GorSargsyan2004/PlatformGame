@@ -1,14 +1,13 @@
 package entities;
 
 import animations.Animation;
-import animations.Direction;
+import utils.Direction;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-import static main.Game.SCALE;
 import static utils.Constants.FlyingEyeConstants.*;
 
 public class FlyingEye extends FlyingEnemy {

@@ -3,8 +3,7 @@ entities
 gamestates
 inputs
 levels
-longTermMemory
-longTermMemory.UserManagerExceptions
+long_term_memory
 main
 ui
 utils

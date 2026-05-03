@@ -1,13 +1,9 @@
 package main;
 
-import entities.Player;
 import gamestates.Gamestate;
 import gamestates.Login;
 import gamestates.Menu;
 import gamestates.Playing;
-import levels.LevelManager;
-
-import java.awt.geom.Point2D;
 
 public class Game implements Runnable{
 
@@ -36,8 +32,6 @@ public class Game implements Runnable{
     Game() {
         initClasses();
 
-        gamePanel = new GamePanel(this);
-        gameWindow = new GameWindow(gamePanel);
         gamePanel.requestFocus();
         startGameLoop();
     }
@@ -46,6 +40,8 @@ public class Game implements Runnable{
         login = new Login(this);
         menu = new Menu(this);
         playing = new Playing(this);
+        gamePanel = new GamePanel(this);
+        gameWindow = new GameWindow(gamePanel);
     }
 
     private void update() {
@@ -60,6 +56,7 @@ public class Game implements Runnable{
                 menu.update();
             }
             case QUIT -> {
+                playing.getPlayer().saveData();
                 System.exit(0);
             }
         }

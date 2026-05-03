@@ -1,7 +1,9 @@
 package entities;
 
 import animations.Animation;
-import animations.Direction;
+import gamestates.Login;
+import long_term_memory.UserManager;
+import utils.Direction;
 import utils.LoadSave;
 
 import java.awt.*;
@@ -11,30 +13,36 @@ import java.awt.image.BufferedImage;
 
 import static utils.Constants.PlayerConstants.*;
 import static utils.HelpMethods.CanMoveHere;
+import long_term_memory.UserManager.*;
 
 public class Player extends Entity {
     private static final float SCALE = scale + 0.3f;
-    private EnemyManager enemyManager;
+    private final EnemyManager enemyManager;
+    private final UserManager userManager;
 
     // Status Bar UI
-    private BufferedImage statusBarImg;
+    private final BufferedImage statusBarImg;
 
-    private int statusBarWidth = (int) (192 * scale);
-    private int statusBarHeight = (int) (58 * scale);
-    private int statusBarX = (int) (10 * scale);
-    private int statusBarY = (int) (10 * scale);
+    private final int statusBarWidth = (int) (192 * scale);
+    private final int statusBarHeight = (int) (58 * scale);
+    private final int statusBarX = (int) (10 * scale);
+    private final int statusBarY = (int) (10 * scale);
 
-    private int healthBarWidth = (int) (150 * scale);
-    private int healthBarHeight = (int) (4 * scale);
-    private int healthBarXStart = (int) (34 * scale);
-    private int healthBarYStart = (int) (14 * scale);
+    private final int healthBarWidth = (int) (150 * scale);
+    private final int healthBarHeight = (int) (4 * scale);
+    private final int healthBarXStart = (int) (34 * scale);
+    private final int healthBarYStart = (int) (14 * scale);
 
-    private int dashAttackBarWidth = (int) (100 * scale);
-    private int dashAttackBarHeight = (int) (2 * scale);
-    private int dashAttackBarXStart = (int) (44 * scale);
-    private int dashAttackBarYStart = (int) (34 * scale);
+    private final int dashAttackBarWidth = (int) (100 * scale);
+    private final int dashAttackBarHeight = (int) (2 * scale);
+    private final int dashAttackBarXStart = (int) (44 * scale);
+    private final int dashAttackBarYStart = (int) (34 * scale);
 
-    private int maxHealth;
+    private final int scoreAndTimeBarX = (int) ((statusBarX + 10) * scale);
+    private final int scoreAndTimeBarY = (int) ((statusBarY + statusBarHeight + 10) * scale);
+    private final long gameStartTime;
+
+    private final int maxHealth;
     private int healthWidth = healthBarWidth;
     private int dashAttackWidth = 0;
     private final int maxDashAttackWidth = (int) (101 * scale);
@@ -44,13 +52,15 @@ public class Player extends Entity {
     private boolean slide = false;
     private boolean dash = false;
 
-    public Player(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData, EnemyManager enemyManager) {
+    public Player(int health, int damage, Point2D.Double pos, double movementSpeed, int[][] lvlData, EnemyManager enemyManager, UserManager userManager) {
         super(health, damage, pos, movementSpeed, lvlData);
         this.enemyManager = enemyManager;
+        this.userManager = userManager;
         this.maxHealth = health;
         this.attackDistance = (int) (30 * SCALE);
         this.statusBarImg = LoadSave.getSave(LoadSave.STATUS_BAR);
         this.canWalkOffScreen = false;
+        this.gameStartTime = System.currentTimeMillis();
 
         initAnimations();
 
@@ -315,6 +325,7 @@ public class Player extends Entity {
     }
 
     private void drawUI(Graphics g) {
+        // Status bar
         g.drawImage(statusBarImg, statusBarX, statusBarY, statusBarWidth, statusBarHeight, null);
         g.setColor(Color.RED);
         g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
@@ -322,6 +333,18 @@ public class Player extends Entity {
             g.setColor(Color.YELLOW);
         else g.setColor(Color.getHSBColor(50, 25, 50));
         g.fillRect(dashAttackBarXStart + statusBarX, dashAttackBarYStart + statusBarY, dashAttackWidth, dashAttackBarHeight);
+
+        // Score and Time
+        long timePassed = (System.currentTimeMillis() - gameStartTime) / 1000;
+        g.setColor(Color.WHITE);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        g.drawString("Time: " + timePassed, scoreAndTimeBarX + 10, scoreAndTimeBarY + 10);
+        if (userManager.isPassedBestScore())
+            g.setColor(Color.YELLOW);
+        g.drawString("Score: " + userManager.getCurrScore(), scoreAndTimeBarX + 10, scoreAndTimeBarY + 30);
     }
 
     public boolean isDead() {
@@ -361,5 +384,13 @@ public class Player extends Entity {
         } else if (!dash) {
             this.dash = false;
         }
+    }
+
+    public void addScore(int adder) {
+        userManager.addToCurrScore(adder);
+    }
+
+    public void saveData() {
+        if (userManager.isPassedBestScore()) userManager.setRecord();
     }
 }

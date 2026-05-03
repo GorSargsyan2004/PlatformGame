@@ -1,6 +1,6 @@
 package entities;
 
-import animations.Direction;
+import utils.Direction;
 import gamestates.Playing;
 
 import java.awt.*;
@@ -34,37 +34,53 @@ public class EnemyManager {
             skeleton.update();
             Entity target = am.getClosestAllayOrPlayer(skeleton.pos);
             skeleton.chase(target);
-            return skeleton.isDead;
+            if (skeleton.isDead) {
+                playing.getPlayer().addScore(skeleton.deathScore);
+                return true;
+            }
+            return false;
         });
         goblins.removeIf(goblin -> {
             goblin.update();
             Entity target = am.getClosestAllayOrPlayer(goblin.pos);
             goblin.chase(target);
-            return goblin.isDead;
+            if (goblin.isDead) {
+                playing.getPlayer().addScore(goblin.deathScore);
+                return true;
+            }
+            return false;
         });
         mushrooms.removeIf(mushroom -> {
             mushroom.update();
             Entity target = am.getClosestAllayOrPlayer(mushroom.pos);
             mushroom.chase(target);
-            return mushroom.isDead;
+            if (mushroom.isDead) {
+                playing.getPlayer().addScore(mushroom.deathScore);
+                return true;
+            }
+            return false;
         });
         flyingEyes.removeIf(flyingEye -> {
             flyingEye.update();
             Entity target = am.getClosestAllayOrPlayer(flyingEye.pos);
             flyingEye.chase(target);
-            return flyingEye.isDead;
+            if (flyingEye.isDead) {
+                playing.getPlayer().addScore(flyingEye.deathScore);
+                return true;
+            }
+            return false;
         });
     }
 
     public void draw(Graphics g) {
-        for (Skeleton skeleton : skeletons)
-            skeleton.draw(g);
-        for (Goblin goblin : goblins)
-            goblin.draw(g);
-        for (Mushroom mushroom : mushrooms)
-            mushroom.draw(g);
-        for (FlyingEye flyingEye : flyingEyes)
-            flyingEye.draw(g);
+        for (int i = 0; i < skeletons.size(); i++)
+            skeletons.get(i).draw(g);
+        for (int i = 0; i < goblins.size(); i++)
+            goblins.get(i).draw(g);
+        for (int i = 0; i < mushrooms.size(); i++)
+            mushrooms.get(i).draw(g);
+        for (int i = 0; i < flyingEyes.size(); i++)
+            flyingEyes.get(i).draw(g);
     }
 
     public void summonSkeleton(Direction dir) {
