@@ -1,11 +1,11 @@
 package gamestates;
 
-import animations.Direction;
 import entities.AllayManager;
 import entities.EnemyManager;
 import entities.Player;
 import levels.LevelManager;
 import main.Game;
+import main.GameAlgorithm;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -17,10 +17,9 @@ import static main.Game.TILES_SIZE;
 
 public class Playing extends State implements Statemethods{
     private LevelManager levelManager;
-    private AllayManager am;
-    private EnemyManager em;
-
-    // ENTITIES
+    private GameAlgorithm gameAlgorithm;
+    private AllayManager allayManager;
+    private EnemyManager enemyManager;
     private Player player;
 
     public Playing(Game game) {
@@ -32,37 +31,30 @@ public class Playing extends State implements Statemethods{
         // Loading the level
         levelManager = new LevelManager(game);
 
-        // TEMPORARY Allays
-        am = new AllayManager(this);
-        am.summonKnight();
+        // Allays
+        allayManager = new AllayManager(this);
 
-        // TEMPORARY Enemies
-        em = new EnemyManager(this);
-        em.summonMushroom(Direction.LEFT);
-        em.summonGoblin(Direction.RIGHT);
-        em.summonSkeleton(Direction.RIGHT);
-        em.summonFlyingEye(Direction.LEFT);
+        // Enemies
+        enemyManager = new EnemyManager(this);
 
         // Player
-        player = new Player(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), Game.SCALE, getLevelData(), em);
+        player = new Player(100, 20, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE),
+                            Game.SCALE, getLevelData(), enemyManager, game.getLogin().getUserManager());
+
+        // Game Algorithm
+        gameAlgorithm = new GameAlgorithm(this, GameAlgorithm.Difficulty.MODERATE);
     }
 
     @Override
     public void update() {
         levelManager.update();
-        if (!player.isDead()) {
-            player.update();
-        }
-        em.update();
-        am.update();
+        gameAlgorithm.update();
     }
 
     @Override
     public void draw(Graphics g) {
         levelManager.draw(g);
-        player.draw(g);
-        em.draw(g);
-        am.draw(g);
+        gameAlgorithm.draw(g);
     }
 
     @Override
@@ -130,11 +122,9 @@ public class Playing extends State implements Statemethods{
     public int[][] getLevelData() {
         return levelManager.getCurrentLevel().getLevelData();
     }
-
     public Player getPlayer() {
         return player;
     }
-
-    public EnemyManager getEnemyManager() { return em; }
-    public AllayManager getAllayManager() { return am; }
+    public EnemyManager getEnemyManager() { return enemyManager; }
+    public AllayManager getAllayManager() { return allayManager; }
 }

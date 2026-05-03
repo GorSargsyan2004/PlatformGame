@@ -3,7 +3,7 @@ entities
 gamestates
 inputs
 levels
-longTermMemory
+long_term_memory
 main
 ui
 utils

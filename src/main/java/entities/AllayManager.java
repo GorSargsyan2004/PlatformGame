@@ -1,6 +1,5 @@
 package entities;
 
-import animations.Direction;
 import gamestates.Playing;
 
 import java.awt.*;

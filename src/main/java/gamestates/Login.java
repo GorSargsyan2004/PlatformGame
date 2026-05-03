@@ -1,7 +1,7 @@
 package gamestates;
 
 import main.Game;
-import longTermMemory.UserManager;
+import long_term_memory.UserManager;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -9,9 +9,9 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 
 public class Login extends State implements Statemethods {
-    private UserManager userManager;
-    private StringBuilder username = new StringBuilder();
-    private StringBuilder password = new StringBuilder();
+    private final UserManager userManager;
+    private final StringBuilder username = new StringBuilder();
+    private final StringBuilder password = new StringBuilder();
     private boolean usernameActive = true;
     private Rectangle2D.Float usernameField, passwordField, loginBtn, registerBtn;
     private String message = "";
@@ -138,4 +138,6 @@ public class Login extends State implements Statemethods {
     @Override
     public void keyReleased(KeyEvent e) {
     }
+
+    public UserManager getUserManager() {return userManager;}
 }
