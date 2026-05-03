@@ -4,6 +4,7 @@ gamestates
 inputs
 levels
 longTermMemory
+longTermMemory.UserManagerExceptions
 main
 ui
 utils

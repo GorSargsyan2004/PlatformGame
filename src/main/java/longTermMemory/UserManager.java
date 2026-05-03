@@ -1,4 +1,6 @@
 package longTermMemory;
+import longTermMemory.UserManagerExceptions.*;
+
 import java.io.PrintWriter;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;
@@ -16,7 +18,6 @@ public class UserManager {
     private boolean loggedIn;
 
     //constructors
-
     /**
      *
      * @param fileLocation the location of the file where user info should be stored in this format line by line: username:password:score. Do not care about the format and do not change anything in the file, this class does it automatically.
@@ -26,15 +27,20 @@ public class UserManager {
         loggedIn = false;
     }
     //methods
+    private boolean formatCheck(String str){
+        return str.length() >= 4 && !str.contains(":");
+    }
 
     /**
-     *
      * @param username The username of the user.
      * @param password The password of the user.
-     * @return Ture if the registration was successful. Otherwise, returns false.
+     * @throws UserNameAlreadyExistsException If the given username already exists.
+     * @throws IncorrectFormatException If the username or password do not follow the formatting rules.
      */
-    public boolean register(String username, String password){
-        if(doesUsernameExist(username)) return false;
+    public void register(String username, String password) throws UserNameAlreadyExistsException, IncorrectFormatException{
+        if(!formatCheck(username)) throw new IncorrectFormatException("Username must contain at least 4 characters. ':' not allowed");
+        if(!formatCheck(password)) throw new IncorrectFormatException("Password must contain at least 4 characters. ':' not allowed");
+        if(doesUsernameExist(username)) throw new UserNameAlreadyExistsException("That username already exists.");
         this.username=username;
         this.password=password;
         this.score=0;
@@ -49,17 +55,16 @@ public class UserManager {
         pw.println(this.username+":"+this.password+":"+this.score);
         pw.close();
         loggedIn=true;
-        return true;
     }
 
     /**
-     *
      * @param username The username of the user.
      * @param password The password of the user.
-     * @return Ture if the login was successful. Otherwise, returns false.
+     * @throws UserNameDoesnotExistException if the given username does not exist.
+     * @throws PasswordMismatchException if the password does not match.
      */
-    public boolean login(String username, String password){
-        if(!doesUsernameExist(username)) return false;
+    public void login(String username, String password) throws UserNameDoesnotExistException, PasswordMismatchException{
+        if(!doesUsernameExist(username)) throw new UserNameDoesnotExistException("That username does not exist.");
         Scanner sc = null;
         try{
             sc = new Scanner(new FileInputStream(fileLocation));
@@ -84,14 +89,13 @@ public class UserManager {
                     this.score=Integer.parseInt(userLineComponents[2]);
                     sc.close();
                     loggedIn=true;
-                    return true;
+                }else{
+                    throw new PasswordMismatchException("Incorrect Password");
                 }
                 sc.close();
-                return false;
             }
         }
         sc.close();
-        return false;
     }
 
 
@@ -99,12 +103,10 @@ public class UserManager {
      * precondition: before using this method, the user should be already registered/logged in. This will return the user's own best score.
      * Returns the best recorded score of the user.
      * @return the best recorded score of the user.
+     * @throws NotRegisteredOrLoggedInException if the user is not registered or logged in.
      */
-    public int getScore() {
-        if(!loggedIn){
-            System.out.println("Before getting the score please log in or register.");
-            System.exit(0);
-        }
+    public int getScore() throws NotRegisteredOrLoggedInException{
+        if(!loggedIn) throw new NotRegisteredOrLoggedInException("The user is not registered or logged in.");
         return score;
     }
 
@@ -112,13 +114,10 @@ public class UserManager {
      * precondition: before using this method, the user should be already registered/logged in. This will modify the user's own best score.
      * Sets the given score as the best recorded score, no matter if it is larger than the previous best recorded score.
      * @param score The score to be set as the best recorded score.
+     * @throws NotRegisteredOrLoggedInException if the user is not registered or logged in.
      */
-    public void setScore(int score) {
-        if(!loggedIn){
-            System.out.println("Before setting the score please log in or register.");
-            return;
-        }
-
+    public void setScore(int score) throws NotRegisteredOrLoggedInException{
+        if(!loggedIn) throw new NotRegisteredOrLoggedInException("The user is not registered or logged in.");
         Scanner sc = null;
         try{
             sc = new Scanner(new FileInputStream(fileLocation));
@@ -156,7 +155,8 @@ public class UserManager {
      * Compares the given score with the best recorded score, and if the given score is larger than the best recorded score, it updates the best recorded score.
      * @param score the score to be compared, and if larger than the best recorded score, to be set.
      */
-    public void tryUpdateScore(int score) {
+    public void tryUpdateScore(int score) throws NotRegisteredOrLoggedInException {
+        if(!loggedIn) throw new NotRegisteredOrLoggedInException("The user is not registered or logged in.");
         if(score > this.score){
             setScore(score);
         }
@@ -188,12 +188,10 @@ public class UserManager {
      * precondition: before using this method, the user should be registered/logged in.
      * Returns the username of the user.
      * @return the username of the user.
+     * @throws NotRegisteredOrLoggedInException if the user is not registered or logged in.
      */
-    public String getUsername(){
-        if(!loggedIn){
-            System.out.println("Before getting the username please log in or register.");
-            System.exit(0);
-        }
+    public String getUsername() throws NotRegisteredOrLoggedInException{
+        if(!loggedIn) throw new NotRegisteredOrLoggedInException("The user is not registered or logged in.");
         return this.username;
     }
 
