@@ -1,4 +1,5 @@
 package long_term_memory;
+import long_term_memory.UserManagerExceptions.*;
 import java.io.PrintWriter;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;
@@ -34,8 +35,8 @@ public class UserManager {
      * @param password The password of the user.
      * @return Ture if the registration was successful. Otherwise, returns false.
      */
-    public boolean register(String username, String password){
-        if(doesUsernameExist(username)) return false;
+    public boolean register(String username, String password) throws UserNameAlreadyExistsException {
+        if(doesUsernameExist(username)) throw new UserNameAlreadyExistsException();
         this.username=username;
         this.password=password;
         this.score=0;
@@ -59,8 +60,8 @@ public class UserManager {
      * @param password The password of the user.
      * @return Ture if the login was successful. Otherwise, returns false.
      */
-    public boolean login(String username, String password){
-        if(!doesUsernameExist(username)) return false;
+    public boolean login(String username, String password) throws UserNameDoesnotExistException, PasswordMismatchException, IncorrectFormatException {
+        if(!doesUsernameExist(username)) throw new UserNameDoesnotExistException();
         Scanner sc = null;
         try{
             sc = new Scanner(new FileInputStream(fileLocation));
@@ -76,6 +77,10 @@ public class UserManager {
         while(sc.hasNextLine()){
             userLineInStorage = sc.nextLine();
             userLineComponents = userLineInStorage.split(":");
+            if (userLineComponents.length < 3) {
+                sc.close();
+                throw new IncorrectFormatException("Corrupted data in storage.");
+            }
             usernameInStorage = userLineComponents[0];
             passwordInStorage = userLineComponents[1];
             if(usernameInStorage.equals(username)){
@@ -88,17 +93,16 @@ public class UserManager {
                     return true;
                 }
                 sc.close();
-                return false;
+                throw new PasswordMismatchException();
             }
         }
         sc.close();
         return false;
     }
 
-    public int getCurrentScore() {
+    public int getCurrentScore() throws NotRegisteredOrLoggedInException {
         if(!loggedIn){
-            System.out.println("Before getting the score please log in or register.");
-            System.exit(0);
+            throw new NotRegisteredOrLoggedInException("Before getting the score please log in or register.");
         }
         return score;
     }
@@ -107,10 +111,9 @@ public class UserManager {
      * precondition: before using this method, the user should be already registered/logged in.
      * Adds scores to the current score to store the current score of the user.
      */
-    public void addToCurrScore(int adder) {
+    public void addToCurrScore(int adder) throws NotRegisteredOrLoggedInException {
         if(!loggedIn){
-            System.out.println("Before getting the score please log in or register.");
-            System.exit(0);
+            throw new NotRegisteredOrLoggedInException("Before getting the score please log in or register.");
         }
         currScore += adder;
     }
@@ -119,10 +122,9 @@ public class UserManager {
      * precondition: before using this method, the user should be already registered/logged in.
      * Returns current score of the user.
      */
-    public int getCurrScore() {
+    public int getCurrScore() throws NotRegisteredOrLoggedInException {
         if(!loggedIn){
-            System.out.println("Before getting the score please log in or register.");
-            System.exit(0);
+            throw new NotRegisteredOrLoggedInException("Before getting the score please log in or register.");
         }
         return currScore;
     }
@@ -138,10 +140,9 @@ public class UserManager {
      * Returns the best recorded score of the user.
      * @return the best recorded score of the user.
      */
-    public int getScore() {
+    public int getScore() throws NotRegisteredOrLoggedInException {
         if(!loggedIn){
-            System.out.println("Before getting the score please log in or register.");
-            System.exit(0);
+            throw new NotRegisteredOrLoggedInException("Before getting the score please log in or register.");
         }
         return score;
     }
@@ -151,10 +152,9 @@ public class UserManager {
      * Sets the given score as the best recorded score, no matter if it is larger than the previous best recorded score.
      * @param score The score to be set as the best recorded score.
      */
-    public void setScore(int score) {
+    public void setScore(int score) throws NotRegisteredOrLoggedInException {
         if(!loggedIn){
-            System.out.println("Before setting the score please log in or register.");
-            return;
+            throw new NotRegisteredOrLoggedInException("Before setting the score please log in or register.");
         }
 
         Scanner sc = null;
@@ -190,7 +190,7 @@ public class UserManager {
         pw.close();
     }
 
-    public void setRecord() {
+    public void setRecord() throws NotRegisteredOrLoggedInException {
         if (isPassedBestScore()) setScore(currScore);
     }
 
@@ -199,7 +199,7 @@ public class UserManager {
      * Compares the given score with the best recorded score, and if the given score is larger than the best recorded score, it updates the best recorded score.
      * @param score the score to be compared, and if larger than the best recorded score, to be set.
      */
-    public void tryUpdateScore(int score) {
+    public void tryUpdateScore(int score) throws NotRegisteredOrLoggedInException {
         if(score > this.score){
             setScore(score);
         }
@@ -232,10 +232,9 @@ public class UserManager {
      * Returns the username of the user.
      * @return the username of the user.
      */
-    public String getUsername(){
+    public String getUsername() throws NotRegisteredOrLoggedInException {
         if(!loggedIn){
-            System.out.println("Before getting the username please log in or register.");
-            System.exit(0);
+            throw new NotRegisteredOrLoggedInException("Before getting the username please log in or register.");
         }
         return this.username;
     }
