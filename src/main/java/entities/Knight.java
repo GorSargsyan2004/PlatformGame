@@ -40,6 +40,7 @@ public class Knight extends Allay {
         animations[ATTACK_1] = new Animation("/Allay/Knight/"+anims[ATTACK_1]+".png", 23, 16, 45, 50, 6, 46);
         animations[ATTACK_2] = new Animation("/Allay/Knight/"+anims[ATTACK_2]+".png", 23, 16, 45, 50, 5, 46);
         animations[ATTACK_3] = new Animation("/Allay/Knight/"+anims[ATTACK_3]+".png", 23, 16, 45, 50, 6, 46);
+
         animations[IDLE] = new Animation("/Allay/Knight/"+anims[IDLE]+".png", 23, 16, 45, 50, 7, 46);
         animations[RUN] = new Animation("/Allay/Knight/"+anims[RUN]+".png", 23, 16, 45, 50, 8, 46);
         animations[DEATH] = new Animation("/Allay/Knight/"+anims[DEATH]+".png", 23, 16, 45, 50, 12, 46);

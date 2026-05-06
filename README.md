@@ -17,16 +17,16 @@ Welcome to **PlatformGame**, an immersive 2D side-scrolling experience where sur
 
 Take control of your hero with these intuitive commands:
 
-| Action | Key |
-| :--- | :--- |
-| **Move Left** | `A` |
-| **Move Right** | `D` |
-| **Jump** | `W` |
-| **Slide** Escape | `S` |
-| **Dash** Escape | `E` |
-| **Attack** | `Space` |
-| **Dash Attack** | `Tab` |
-| **Back to Menu** | `Esc` |
+| Action | Key | Animation                                             |
+| :--- | :--- |:------------------------------------------------------|
+| **Move Left** | `A` | ![Animation](src/main/resources/Demo/run-left.gif)    |
+| **Move Right** | `D` | ![Animation](src/main/resources/Demo/run-right.gif)   |
+| **Jump** | `W` | ![Animation](src/main/resources/Demo/jump.gif)        |
+| **Slide** Escape | `S` | ![Animation](src/main/resources/Demo/slide.gif)       |
+| **Dash** Escape | `E` | ![Animation](src/main/resources/Demo/dash.gif)        |
+| **Attack** | `Space` | ![Animation](src/main/resources/Demo/attack.gif)      |
+| **Dash Attack** | `Tab` | ![Animation](src/main/resources/Demo/dash-attack.gif) |
+| **Back to Menu** | `Esc` | |
 
 ---
 
@@ -35,6 +35,10 @@ Take control of your hero with these intuitive commands:
 ### The Hero
 ![Player](src/main/resources/Demo/player.gif)
 *Agile, strong, and ready for any challenge.*
+
+### Knight (Allay)
+![Allay](src/main/resources/Demo/allay.gif)
+*Spawns when player needs some help.*
 
 ### The Monsters
 ![Monsters](src/main/resources/Demo/monsters.gif)
@@ -68,6 +72,7 @@ PlatformGame
         │   ├── ui             # Custom UI components like Menu Buttons
         │   └── utils          # Game constants, helper methods, and asset loaders
         └── resources
+            ├── Allay          # Allay entities - Knight
             ├── Demo           # Gif demonstrations of gameplay
             ├── Enemy          # Sprite sheets for all enemy types
             ├── GUI            # Assets for health bars and other overlays
