@@ -40,8 +40,13 @@ Take control of your hero with these intuitive commands:
 ![Allay](src/main/resources/Demo/allay.gif)
 *Spawns when player needs some help.*
 
+### Archer (Allay)
+![Archer](src/main/resources/Demo/archer.gif)
+*Nimble, fast, spawns to support knight.*
+
 ### The Monsters
 ![Monsters](src/main/resources/Demo/monsters.gif)
+![NightBorne](src/main/resources/Demo/night-borne.gif)
 ---
 
 ## 📺 Gameplay Demo
