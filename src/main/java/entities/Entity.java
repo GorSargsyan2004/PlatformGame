@@ -77,7 +77,9 @@ public abstract class Entity {
         // To be overridden by subclasses
     }
 
-    public void update() {}
+    public abstract void update();
+
+    public abstract void draw(Graphics g);
 
     protected void updateHitbox() {
         if (hitBox != null) {
@@ -178,7 +180,7 @@ public abstract class Entity {
         }
     }
 
-    protected boolean isInAttackRange(Entity attacker, Entity attacked) {
+    protected boolean isInAttackRange(Entity attacker, Entity attacked, int attackDistance) {
         if (attacker.hitBox == null || attacked.hitBox == null) return false;
         Rectangle2D.Float a = attacker.hitBox;
         Rectangle2D.Float b = attacked.hitBox;
@@ -197,7 +199,11 @@ public abstract class Entity {
 
         // Use the attacker's reach (attacker.attackDistance).
         // xDiff/yDiff is the empty space between hitboxes.
-        return (xDiff <= attacker.attackDistance && yDiff <= attacker.attackDistance / 2);
+        return (xDiff <= attackDistance && yDiff <= (float) attackDistance / 2);
+    }
+
+    protected boolean isInAttackRange(Entity attacker, Entity attacked) {
+        return isInAttackRange(attacker, attacked, attacker.attackDistance);
     }
 
     protected boolean isBeingAttacked() {

@@ -18,6 +18,7 @@ public class EnemyManager {
     private final ArrayList<Goblin> goblins = new ArrayList<>();
     private final ArrayList<Mushroom> mushrooms = new ArrayList<>();
     private final ArrayList<FlyingEye> flyingEyes = new ArrayList<>();
+    private final ArrayList<NightBorne> nightBornes = new ArrayList<>();
 
     private Point2D.Double  leftPos = new Point2D.Double(-100.0, GAME_HEIGHT - 12*TILES_SIZE),
                             rightPos = new Point2D.Double(GAME_WIDTH + 100.0, GAME_HEIGHT - 10*TILES_SIZE);
@@ -70,6 +71,16 @@ public class EnemyManager {
             }
             return false;
         });
+        nightBornes.removeIf(nightBorne -> {
+            nightBorne.update();
+            Entity target = am.getClosestAllayOrPlayer(nightBorne.pos);
+            nightBorne.chase(target);
+            if (nightBorne.isDead) {
+                playing.getPlayer().addScore(nightBorne.deathScore);
+                return true;
+            }
+            return false;
+        });
     }
 
     public void draw(Graphics g) {
@@ -81,6 +92,8 @@ public class EnemyManager {
             mushrooms.get(i).draw(g);
         for (int i = 0; i < flyingEyes.size(); i++)
             flyingEyes.get(i).draw(g);
+        for (int i = 0; i < nightBornes.size(); i++)
+            nightBornes.get(i).draw(g);
     }
 
     public void summonSkeleton(Direction dir) {
@@ -123,6 +136,16 @@ public class EnemyManager {
         flyingEyes.add(flyingEye);
     }
 
+    public void summonNightBorne(Direction dir) {
+        NightBorne nightBorne;
+        if (dir == Direction.LEFT) {
+            nightBorne = new NightBorne(120, 15, new Point2D.Double(leftPos.x, leftPos.y - 100), SCALE/1.5, lvlData);
+        } else {
+            nightBorne = new NightBorne(120, 15, new Point2D.Double(rightPos.x, rightPos.y - 100), SCALE/1.5, lvlData);
+        }
+        nightBornes.add(nightBorne);
+    }
+
     public ArrayList<Skeleton> getSkeletons() {
         return skeletons;
     }
@@ -134,6 +157,9 @@ public class EnemyManager {
     }
     public ArrayList<FlyingEye> getFlyingEyes() {
         return flyingEyes;
+    }
+    public ArrayList<NightBorne> getNightBornes() {
+        return nightBornes;
     }
 
     public Enemy getClosestEnemy(Point2D.Double pos) {
@@ -165,6 +191,13 @@ public class EnemyManager {
             double dist = pos.distance(flyingEye.getCenter());
             if (dist < minDist) {
                 closest = flyingEye;
+                minDist = dist;
+            }
+        }
+        for (NightBorne nightBorne : nightBornes) {
+            double dist = pos.distance(nightBorne.getCenter());
+            if (dist < minDist) {
+                closest = nightBorne;
                 minDist = dist;
             }
         }

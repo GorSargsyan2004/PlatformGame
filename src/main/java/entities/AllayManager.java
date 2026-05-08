@@ -9,10 +9,11 @@ import java.util.ArrayList;
 import static main.Game.*;
 
 public class AllayManager {
-    private Playing playing;
-    private int[][] lvlData;
+    private final Playing playing;
+    private final int[][] lvlData;
 
-    private ArrayList<Knight> knights = new ArrayList<>();
+    private final ArrayList<Knight> knights = new ArrayList<>();
+    private final ArrayList<Archer> archers = new ArrayList<>();
 
     public AllayManager(Playing playing) {
         this.playing = playing;
@@ -26,11 +27,18 @@ public class AllayManager {
             knight.chase(playing.getEnemyManager());
             return knight.isDead;
         });
+        archers.removeIf(archer -> {
+            archer.update();
+            archer.chaseAsShooter(playing.getEnemyManager());
+            return archer.isDead;
+        });
     }
 
     public void draw(Graphics g) {
         for (Knight knight : knights)
             knight.draw(g);
+        for (Archer archer : archers)
+            archer.draw(g);
     }
 
     public void summonKnight() {
@@ -39,8 +47,10 @@ public class AllayManager {
         knights.add(knight);
     }
 
-    public ArrayList<Knight> getKnights() {
-        return knights;
+    public void summonArcher() {
+        Archer archer;
+        archer = new Archer(80, 10, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), SCALE/2, lvlData);
+        archers.add(archer);
     }
 
     public Entity getClosestAllayOrPlayer(Point2D.Double pos) {
@@ -51,6 +61,13 @@ public class AllayManager {
             double dist = pos.distance(knight.getCenter());
             if (dist < minDist) {
                 closest = knight;
+                minDist = dist;
+            }
+        }
+        for (Archer archer : archers) {
+            double dist = pos.distance(archer.getCenter());
+            if (dist < minDist) {
+                closest = archer;
                 minDist = dist;
             }
         }

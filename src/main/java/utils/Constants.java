@@ -30,6 +30,21 @@ public class Constants {
         public static final int HURT = 7;
     }
 
+    public static class ArcherConstants {
+        public static final int DEATH = 0;
+        public static final int DASH = 1;
+        public static final int ATTACK = 2;
+        public static final int CLOSE_ATTACK = 3;
+        public static final int IDLE = 4;
+        public static final int JUMP = 5;
+        public static final int HURT = 6;
+        public static final int RUN = 7;
+        public static final int JUMPING = 8;
+        public static final int UP_TO_FALL = 9;
+        public static final int FALL = 10;
+        public static final int CROUCH = 11;
+    }
+
     public static class SkeletonConstants {
         public static final int ATTACK = 0;
         public static final int DEATH = 1;
@@ -52,7 +67,14 @@ public class Constants {
         public static final int FLIGHT = 1;
         public static final int DEATH = 2;
         public static final int TAKE_HIT = 3;
+    }
 
+    public static class NightBorneConstants {
+        public static final int ATTACK = 0;
+        public static final int DEATH = 1;
+        public static final int IDLE = 2;
+        public static final int HURT = 3;
+        public static final int RUN = 4;
     }
 
     public static class UI {
