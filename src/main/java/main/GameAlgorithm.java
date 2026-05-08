@@ -22,18 +22,22 @@ public class GameAlgorithm {
     }
 
     // Spawn Timers
-    private long spawnAllayTimer = System.currentTimeMillis();
+    private long spawnKnightTimer = System.currentTimeMillis();
+    private long spawnArcherTimer = System.currentTimeMillis();
     private long spawnSkeletonTimer = 0;
     private long spawnGoblinTimer = 0;
     private long spawnMushroomTimer = 0;
     private long spawnFlyingEyeTimer = 0;
+    private long spawnNightBorneTimer = 0;
 
     // Spawn Frequency in Milli Seconds
-    private int spawnAllayFrequency;
+    private int spawnKnightFrequency;
+    private int spawnArcherFrequency;
     private int spawnSkeletonFrequency;
     private int spawnGoblinFrequency;
     private int spawnMushroomFrequency;
     private int spawnFlyingEyeFrequency;
+    private int spawnNightBorneFrequency;
 
     private final Random rnd = new Random();
 
@@ -52,33 +56,41 @@ public class GameAlgorithm {
                 spawnGoblinFrequency = 15;
                 spawnMushroomFrequency = 45;
                 spawnFlyingEyeFrequency = 75;
+                spawnNightBorneFrequency = 100;
 
-                spawnAllayFrequency = 45;
+                spawnKnightFrequency = 45;
+                spawnArcherFrequency = 60;
             }
             case MODERATE -> {
                 spawnSkeletonFrequency = 45;
                 spawnGoblinFrequency = 8;
                 spawnMushroomFrequency = 35;
                 spawnFlyingEyeFrequency = 60;
+                spawnNightBorneFrequency = 85;
 
-                spawnAllayFrequency = 60;
+                spawnKnightFrequency = 60;
+                spawnArcherFrequency = 75;
             }
             case HARD -> {
                 spawnSkeletonFrequency = 30;
                 spawnGoblinFrequency = 5;
                 spawnMushroomFrequency = 35;
                 spawnFlyingEyeFrequency = 40;
+                spawnNightBorneFrequency = 70;
 
-                spawnAllayFrequency = 90;
+                spawnKnightFrequency = 90;
+                spawnArcherFrequency = 105;
             }
         }
 
-        // In milliseconds
+        // Convert to milliseconds
         spawnSkeletonFrequency *= 1_000;
         spawnGoblinFrequency *= 1_000;
         spawnMushroomFrequency *= 1_000;
         spawnFlyingEyeFrequency *= 1_000;
-        spawnAllayFrequency *= 1_000;
+        spawnNightBorneFrequency *= 1_000;
+        spawnKnightFrequency *= 1_000;
+        spawnArcherFrequency *= 1_000;
     }
 
     private void spawnEnemies() {
@@ -108,14 +120,26 @@ public class GameAlgorithm {
             enemyManager.summonSkeleton(getRndDir());
             if (spawnSkeletonFrequency > 6_000) spawnSkeletonFrequency -= 3_000;
         }
+        // NightBorne
+        if (currentTime - spawnNightBorneTimer >= spawnNightBorneFrequency) {
+            spawnNightBorneTimer = System.currentTimeMillis();
+            enemyManager.summonNightBorne(getRndDir());
+            if (spawnNightBorneFrequency > 10_000) spawnNightBorneFrequency -= 3_000;
+        }
     }
 
     private void spawnAllays() {
         // Knight
-        if (System.currentTimeMillis() - spawnAllayTimer >= spawnAllayFrequency) {
-            spawnAllayTimer = System.currentTimeMillis();
+        if (System.currentTimeMillis() - spawnKnightTimer >= spawnKnightFrequency) {
+            spawnKnightTimer = System.currentTimeMillis();
             allayManager.summonKnight();
-            spawnAllayFrequency += 2000;
+            spawnKnightFrequency += 2000;
+        }
+        // Archer
+        if (System.currentTimeMillis() - spawnArcherTimer >= spawnArcherFrequency) {
+            spawnArcherTimer = System.currentTimeMillis();
+            allayManager.summonArcher();
+            spawnArcherFrequency += 2000;
         }
     }
 

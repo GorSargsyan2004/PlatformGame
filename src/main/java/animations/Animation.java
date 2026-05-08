@@ -32,6 +32,19 @@ public class Animation {
         loadFlippedAnimation();
     }
 
+    public Animation(BufferedImage[] frames) {
+        this.path = null;
+        this.x = 0;
+        this.y = 0;
+        this. height = frames[0].getHeight();
+        this.width = frames[0].getWidth();
+        this.aniTick = 0;
+        this.quantity = frames.length;
+        aniSpeed = Game.UPS_SET / (quantity+2);
+        images = frames.clone();
+        loadFlippedAnimation();
+    }
+
     public Animation(String folderPath, String pattern) {
         ArrayList<BufferedImage> tempImages = new ArrayList<>();
         int index = 1;
@@ -151,5 +164,13 @@ public class Animation {
 
     public void modifySpeed(int value) {
         this.aniSpeed = Game.UPS_SET / (quantity + 2 + value);
+    }
+
+    public Animation getSubAnimation(int fromFrame, int toFrame) {
+        BufferedImage[] frames = new BufferedImage[toFrame - fromFrame + 1];
+        for (int i = fromFrame, j = 0; i <= toFrame; i++, j++)
+            frames[j] = images[i];
+
+        return new Animation(frames);
     }
 }

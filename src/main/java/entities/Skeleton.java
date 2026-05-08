@@ -112,6 +112,7 @@ public class Skeleton extends Enemy{
         hitBox.y = (float)pos.y + yDrawOffset;
     }
 
+    @Override
     public void draw(Graphics g) {
         BufferedImage imageToDraw = currentAnim.getAnimationImage(currentDir);
         g.drawImage(imageToDraw, (int)pos.x, (int)pos.y,

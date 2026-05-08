@@ -7,7 +7,7 @@ import utils.HelpMethods;
 import java.awt.geom.Point2D;
 import java.util.Random;
 
-public class FlyingEnemy extends Enemy {
+public abstract class FlyingEnemy extends Enemy {
     protected boolean isChasing = false;
     protected boolean isFlyingAround = true;
     protected boolean isEntering = true;

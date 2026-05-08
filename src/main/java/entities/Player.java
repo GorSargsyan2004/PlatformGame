@@ -1,7 +1,6 @@
 package entities;
 
 import animations.Animation;
-import gamestates.Login;
 import long_term_memory.UserManager;
 import long_term_memory.UserManagerExceptions.NotRegisteredOrLoggedInException;
 import utils.Direction;
@@ -256,8 +255,6 @@ public class Player extends Entity {
         updateHitbox();
     }
 
-
-
     private boolean isTileBlocking(float x, float y) {
         int xIndex = (int) (x / main.Game.TILES_SIZE);
         int yIndex = (int) (y / main.Game.TILES_SIZE);
@@ -315,6 +312,11 @@ public class Player extends Entity {
         for (FlyingEye flyingEye : enemyManager.getFlyingEyes()) {
             if (isInAttackRange(this, flyingEye)) {
                 if (!flyingEye.isBeingAttacked()) flyingEye.takeHit(this);
+            }
+        }
+        for (NightBorne nightBorne : enemyManager.getNightBornes()) {
+            if (isInAttackRange(this, nightBorne)) {
+                if (!nightBorne.isBeingAttacked()) nightBorne.takeHit(this);
             }
         }
     }
