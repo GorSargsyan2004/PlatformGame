@@ -24,11 +24,12 @@ public class GameAlgorithm {
     // Spawn Timers
     private long spawnKnightTimer = System.currentTimeMillis();
     private long spawnArcherTimer = System.currentTimeMillis();
-    private long spawnSkeletonTimer = 0;
+    private long spawnSkeletonTimer = System.currentTimeMillis();
     private long spawnGoblinTimer = 0;
     private long spawnMushroomTimer = 0;
-    private long spawnFlyingEyeTimer = 0;
-    private long spawnNightBorneTimer = 0;
+    private long spawnFlyingEyeTimer = System.currentTimeMillis();
+    private long spawnNightBorneTimer = System.currentTimeMillis();
+    private long spawnDarkKnightTimer = 0;
 
     // Spawn Frequency in Milli Seconds
     private int spawnKnightFrequency;
@@ -38,6 +39,7 @@ public class GameAlgorithm {
     private int spawnMushroomFrequency;
     private int spawnFlyingEyeFrequency;
     private int spawnNightBorneFrequency;
+    private int spawnDarkKnightFrequency;
 
     private final Random rnd = new Random();
 
@@ -57,6 +59,7 @@ public class GameAlgorithm {
                 spawnMushroomFrequency = 45;
                 spawnFlyingEyeFrequency = 75;
                 spawnNightBorneFrequency = 100;
+                spawnDarkKnightFrequency = 80;
 
                 spawnKnightFrequency = 45;
                 spawnArcherFrequency = 60;
@@ -67,6 +70,7 @@ public class GameAlgorithm {
                 spawnMushroomFrequency = 35;
                 spawnFlyingEyeFrequency = 60;
                 spawnNightBorneFrequency = 85;
+                spawnDarkKnightFrequency = 65;
 
                 spawnKnightFrequency = 60;
                 spawnArcherFrequency = 75;
@@ -77,6 +81,7 @@ public class GameAlgorithm {
                 spawnMushroomFrequency = 35;
                 spawnFlyingEyeFrequency = 40;
                 spawnNightBorneFrequency = 70;
+                spawnDarkKnightFrequency = 45;
 
                 spawnKnightFrequency = 90;
                 spawnArcherFrequency = 105;
@@ -91,6 +96,7 @@ public class GameAlgorithm {
         spawnNightBorneFrequency *= 1_000;
         spawnKnightFrequency *= 1_000;
         spawnArcherFrequency *= 1_000;
+        spawnDarkKnightFrequency *= 1_000;
     }
 
     private void spawnEnemies() {
@@ -125,6 +131,12 @@ public class GameAlgorithm {
             spawnNightBorneTimer = System.currentTimeMillis();
             enemyManager.summonNightBorne(getRndDir());
             if (spawnNightBorneFrequency > 10_000) spawnNightBorneFrequency -= 3_000;
+        }
+        // DarkKnight
+        if (currentTime - spawnDarkKnightTimer >= spawnDarkKnightFrequency) {
+            spawnDarkKnightTimer = System.currentTimeMillis();
+            enemyManager.summonDarkKnight(getRndDir());
+            if (spawnDarkKnightFrequency > 8_000) spawnDarkKnightFrequency -= 3_000;
         }
     }
 

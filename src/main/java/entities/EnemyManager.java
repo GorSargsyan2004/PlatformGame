@@ -19,6 +19,7 @@ public class EnemyManager {
     private final ArrayList<Mushroom> mushrooms = new ArrayList<>();
     private final ArrayList<FlyingEye> flyingEyes = new ArrayList<>();
     private final ArrayList<NightBorne> nightBornes = new ArrayList<>();
+    private final ArrayList<DarkKnight> darkKnights = new ArrayList<>();
 
     private Point2D.Double  leftPos = new Point2D.Double(-100.0, GAME_HEIGHT - 12*TILES_SIZE),
                             rightPos = new Point2D.Double(GAME_WIDTH + 100.0, GAME_HEIGHT - 10*TILES_SIZE);
@@ -81,6 +82,16 @@ public class EnemyManager {
             }
             return false;
         });
+        darkKnights.removeIf(darkKnight -> {
+            darkKnight.update();
+            Entity target = am.getClosestAllayOrPlayer(darkKnight.pos);
+            darkKnight.chase(target);
+            if (darkKnight.isDead) {
+                playing.getPlayer().addScore(darkKnight.deathScore);
+                return true;
+            }
+            return false;
+        });
     }
 
     public void draw(Graphics g) {
@@ -94,14 +105,16 @@ public class EnemyManager {
             flyingEyes.get(i).draw(g);
         for (int i = 0; i < nightBornes.size(); i++)
             nightBornes.get(i).draw(g);
+        for (int i = 0; i < darkKnights.size(); i++)
+            darkKnights.get(i).draw(g);
     }
 
     public void summonSkeleton(Direction dir) {
         Skeleton skeleton;
         if (dir == Direction.LEFT) {
-            skeleton = new Skeleton(120, 15, new Point2D.Double(leftPos.x, leftPos.y), SCALE/2.2, lvlData);
+            skeleton = new Skeleton(80, 15, new Point2D.Double(leftPos.x, leftPos.y), SCALE/2.2, lvlData);
         } else {
-            skeleton = new Skeleton(120, 15, new Point2D.Double(rightPos.x, rightPos.y), SCALE/2.2, lvlData);
+            skeleton = new Skeleton(80, 15, new Point2D.Double(rightPos.x, rightPos.y), SCALE/2.2, lvlData);
         }
         skeletons.add(skeleton);
     }
@@ -119,9 +132,9 @@ public class EnemyManager {
     public void summonMushroom(Direction dir) {
         Mushroom mushroom;
         if (dir == Direction.LEFT) {
-            mushroom = new Mushroom(70, 8, new Point2D.Double(leftPos.x, leftPos.y), SCALE/2.3, lvlData);
+            mushroom = new Mushroom(60, 8, new Point2D.Double(leftPos.x, leftPos.y), SCALE/2.3, lvlData);
         } else {
-            mushroom = new Mushroom(70, 8, new Point2D.Double(rightPos.x, rightPos.y), SCALE/2.3, lvlData);
+            mushroom = new Mushroom(60, 8, new Point2D.Double(rightPos.x, rightPos.y), SCALE/2.3, lvlData);
         }
         mushrooms.add(mushroom);
     }
@@ -146,21 +159,22 @@ public class EnemyManager {
         nightBornes.add(nightBorne);
     }
 
-    public ArrayList<Skeleton> getSkeletons() {
-        return skeletons;
+    public void summonDarkKnight(Direction dir) {
+        DarkKnight darkKnight;
+        if (dir == Direction.LEFT) {
+            darkKnight = new DarkKnight(100, 17, new Point2D.Double(leftPos.x, leftPos.y - 100), SCALE/1.8, lvlData);
+        } else {
+            darkKnight = new DarkKnight(100, 17, new Point2D.Double(rightPos.x, rightPos.y - 100), SCALE/1.8, lvlData);
+        }
+        darkKnights.add(darkKnight);
     }
-    public ArrayList<Goblin> getGoblins() {
-        return goblins;
-    }
-    public ArrayList<Mushroom> getMushrooms() {
-        return mushrooms;
-    }
-    public ArrayList<FlyingEye> getFlyingEyes() {
-        return flyingEyes;
-    }
-    public ArrayList<NightBorne> getNightBornes() {
-        return nightBornes;
-    }
+
+    public ArrayList<Skeleton> getSkeletons() {return skeletons;}
+    public ArrayList<Goblin> getGoblins() {return goblins;}
+    public ArrayList<Mushroom> getMushrooms() {return mushrooms;}
+    public ArrayList<FlyingEye> getFlyingEyes() {return flyingEyes;}
+    public ArrayList<NightBorne> getNightBornes() {return nightBornes;}
+    public ArrayList<DarkKnight> getDarkKnights() {return darkKnights;}
 
     public Enemy getClosestEnemy(Point2D.Double pos) {
         Enemy closest = null;
@@ -198,6 +212,13 @@ public class EnemyManager {
             double dist = pos.distance(nightBorne.getCenter());
             if (dist < minDist) {
                 closest = nightBorne;
+                minDist = dist;
+            }
+        }
+        for (DarkKnight darkKnight : darkKnights) {
+            double dist = pos.distance(darkKnight.getCenter());
+            if (dist < minDist) {
+                closest = darkKnight;
                 minDist = dist;
             }
         }
