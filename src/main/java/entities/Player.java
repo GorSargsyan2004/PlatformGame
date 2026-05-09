@@ -124,6 +124,9 @@ public class Player extends Entity {
             dashAttack = false;
             attackChecked = false;
         }
+        if (isHurt && inAir)
+            isHurt = false;
+
 
         // Safety reset for damage and attack distance
         if (!attack && !dashAttack) {
@@ -317,6 +320,11 @@ public class Player extends Entity {
         for (NightBorne nightBorne : enemyManager.getNightBornes()) {
             if (isInAttackRange(this, nightBorne)) {
                 if (!nightBorne.isBeingAttacked()) nightBorne.takeHit(this);
+            }
+        }
+        for (DarkKnight darkKnight : enemyManager.getDarkKnights()) {
+            if (isInAttackRange(this, darkKnight)) {
+                if (!darkKnight.isBeingAttacked()) darkKnight.takeHit(this);
             }
         }
     }

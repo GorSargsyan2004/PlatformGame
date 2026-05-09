@@ -47,6 +47,7 @@ Take control of your hero with these intuitive commands:
 ### The Monsters
 ![Monsters](src/main/resources/Demo/monsters.gif)
 ![NightBorne](src/main/resources/Demo/night-borne.gif)
+![DarkKnight](src/main/resources/Demo/dark-knight.gif)
 ---
 
 ## 📺 Gameplay Demo

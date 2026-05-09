@@ -77,6 +77,18 @@ public class Constants {
         public static final int RUN = 4;
     }
 
+    public static class DarkKnightConstants {
+        public static final int ATTACK = 0;
+        public static final int DEATH = 1;
+        public static final int IDLE = 2;
+        public static final int HURT = 3;
+        public static final int RUN = 4;
+        public static final int JUMP = 5;
+        public static final int UP_TO_FALL = 6;
+        public static final int FALL = 7;
+        public static final int CROUCH = 8;
+    }
+
     public static class UI {
         public static class Buttons {
             public static final int B_WIDTH_DEFAULT = 144;

@@ -78,6 +78,9 @@ public class Archer extends Allay {
             return;
         }
 
+        if (isHurt && inAir)
+            isHurt = false;
+
         // Reset escape state when landing
         if (isEscaping && !inAir && !landing) {
             isEscaping = false;
