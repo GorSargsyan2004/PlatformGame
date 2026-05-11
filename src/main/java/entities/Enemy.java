@@ -6,6 +6,14 @@ import main.Game;
 
 import java.awt.geom.Point2D;
 
+/**
+ * Represents the base abstract class for all enemy entities.
+ * <p>
+ * Enemies extend the {@link Entity} class and include common enemy behaviors such as
+ * chasing the player, attacking when in range, and handling death scores.
+ * They are generally restricted from walking off-screen.
+ * </p>
+ */
 public abstract class Enemy extends Entity{
     protected long timePlayerInRange = 0;
     int deathScore;
@@ -15,10 +23,20 @@ public abstract class Enemy extends Entity{
         this.canWalkOffScreen = false;
     }
 
+    /**
+     * Checks if the enemy is outside the game world borders.
+     * @param spriteWidth The width of the enemy's sprite for boundary checking.
+     * @return True if the enemy is out of bounds.
+     */
     protected boolean isOutOfBorders(int spriteWidth) {
         return (pos.x < 0 || pos.x > Game.GAME_WIDTH - spriteWidth);
     }
 
+    /**
+     * Handles behavior when the enemy hits the screen corners, forcing
+     * them to turn around.
+     * @param anim The animation to play while turning/moving away from corners.
+     */
     protected void updateFromCorners(Animation anim) {
         // Left Corner
         if (pos.x < 0) {
@@ -35,6 +53,11 @@ public abstract class Enemy extends Entity{
         }
     }
 
+    /**
+     * Common chasing behavior for ground enemies targeting the player.
+     * Manages movement, jumping over obstacles, and initiating attacks.
+     * @param player The player entity to chase.
+     */
     protected void chase(Entity player) {
         if (player == null || player.isDead) return;
 
@@ -74,6 +97,10 @@ public abstract class Enemy extends Entity{
         }
     }
 
+    /**
+     * Executes the enemy attack animation.
+     * @param attackAnimation The animation to play.
+     */
     @Override
     protected void attack(Animation attackAnimation) {
         currentAnim = attackAnimation;
@@ -85,6 +112,10 @@ public abstract class Enemy extends Entity{
         }
     }
 
+    /**
+     * Checks for incoming hits from the player or allies.
+     * @return True if a hit was successfully taken.
+     */
     @Override
     protected boolean checkForTakingHit() {
         if (!isBeingAttacked()) return false;
@@ -100,6 +131,7 @@ public abstract class Enemy extends Entity{
         }
         return false;
     }
+
 
     /**
      * Returns the score for killing the enemy.

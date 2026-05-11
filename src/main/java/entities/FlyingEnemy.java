@@ -7,6 +7,14 @@ import utils.HelpMethods;
 import java.awt.geom.Point2D;
 import java.util.Random;
 
+/**
+ * Represents a flying enemy entity with specialized movement patterns.
+ * <p>
+ * Flying enemies extend the {@link Enemy} class and implement complex aerial behaviors
+ * such as flying around, entering the screen towards the player, and chasing/attacking
+ * with omnidirectional movement.
+ * </p>
+ */
 public abstract class FlyingEnemy extends Enemy {
     protected boolean isChasing = false;
     protected boolean isFlyingAround = true;
@@ -27,11 +35,20 @@ public abstract class FlyingEnemy extends Enemy {
         resetStateTimer();
     }
 
+    /**
+     * Resets the timer for the current AI state (flying around vs chasing).
+     */
     private void resetStateTimer() {
         stateTimer = System.currentTimeMillis();
         stateDuration = (rnd.nextInt(11) + 5) * 1000; // 5 to 15 seconds
     }
 
+    /**
+     * Specialized chasing behavior for flying enemies.
+     * Implements a state machine with three phases: Entering, FlyingAround, and Chasing.
+     * Uses omnidirectional movement to target the player.
+     * @param player The entity to target.
+     */
     @Override
     protected void chase(Entity player) {
         if (player == null || player.isDead || isDead || health <= 0) return;
@@ -104,6 +121,11 @@ public abstract class FlyingEnemy extends Enemy {
         physicsUpdate();
     }
 
+    /**
+     * AI behavior for flying erratically around the player's position.
+     * Changes velocity at random intervals.
+     * @param player The entity to orbit/fly near.
+     */
     protected void flyAround(Entity player) {
         if (System.currentTimeMillis() - lastVelChange >= 1000 + rnd.nextInt(1000)) {
             targetVelX = (rnd.nextDouble() * 2 - 1) * movementSpeed;
@@ -122,6 +144,10 @@ public abstract class FlyingEnemy extends Enemy {
         }
     }
 
+    /**
+     * Handles specialized omnidirectional physics for flying enemies.
+     * Ignores gravity and checks for collisions in all movement directions.
+     */
     protected void physicsUpdate() {
         boolean wasInsideX = (hitBox.x >= 0 && hitBox.x + hitBox.width <= Game.GAME_WIDTH);
         boolean wasInsideY = (hitBox.y >= 0 && hitBox.y + hitBox.height <= Game.GAME_HEIGHT);
@@ -174,6 +200,9 @@ public abstract class FlyingEnemy extends Enemy {
         else if (targetVelX < 0) currentDir = Direction.LEFT;
     }
 
+    /**
+     * Synchronizes the hitbox with the current position, adjusting for facing direction.
+     */
     @Override
     protected void updateHitbox() {
         if (hitBox == null) return;
@@ -185,4 +214,5 @@ public abstract class FlyingEnemy extends Enemy {
         }
         hitBox.y = (float) pos.y + yDrawOffset;
     }
+
 }

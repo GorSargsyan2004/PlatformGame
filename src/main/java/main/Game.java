@@ -4,7 +4,13 @@ import gamestates.Gamestate;
 import gamestates.Login;
 import gamestates.Menu;
 import gamestates.Playing;
+import music.MusicPlayer;
 
+/**
+ * The Game class is the heart of the application. It manages the game loop,
+ * initializes main components, and handles state transitions.
+ * It implements Runnable to run the game loop in a separate thread.
+ */
 public class Game implements Runnable{
 
     // CLASSES
@@ -16,26 +22,44 @@ public class Game implements Runnable{
     private Menu menu;
     private Login login;
 
+    private Gamestate lastState = Gamestate.state;
+
     // CONSTANTS
+    /** Target Frames Per Second. */
     public static final int FPS_SET = 120;
+    /** Target Updates Per Second for game logic. */
     public static final int UPS_SET = 200;
 
+    /** Default size of a tile in pixels. */
     public final static int TILES_DEFAULT_SIZE = 24;
+    /** Scale factor for the game display. */
     public final static float SCALE = 1.0f;
+    /** Number of tiles across the width of the screen. */
     public final static int TILES_IN_WIDTH = 48;
+    /** Number of tiles across the height of the screen. */
     public final static int TILES_IN_HEIGHT = 24;
+    /** Actual size of a tile after scaling. */
     public final static int TILES_SIZE = (int)(TILES_DEFAULT_SIZE * SCALE);
+    /** Total width of the game window in pixels. */
     public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
+    /** Total height of the game window in pixels. */
     public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
 
 
+    /**
+     * Initializes the game, classes, and starts the game loop.
+     */
     Game() {
         initClasses();
 
         gamePanel.requestFocus();
+        handleMusicChange();
         startGameLoop();
     }
 
+    /**
+     * Initializes the main game states and UI components.
+     */
     private void initClasses() {
         login = new Login(this);
         menu = new Menu(this);
@@ -44,7 +68,15 @@ public class Game implements Runnable{
         gameWindow = new GameWindow(gamePanel);
     }
 
+    /**
+     * Updates the current game state based on Gamestate.state.
+     */
     private void update() {
+        if (lastState != Gamestate.state) {
+            handleMusicChange();
+            lastState = Gamestate.state;
+        }
+
         switch (Gamestate.state) {
             case LOGIN -> {
                 login.update();
@@ -62,26 +94,52 @@ public class Game implements Runnable{
         }
     }
 
+    /**
+     * Handles music transitions based on the current game state.
+     */
+    private void handleMusicChange() {
+        if (Gamestate.state == Gamestate.MENU || Gamestate.state == Gamestate.LOGIN) {
+            MusicPlayer.stopLevelMusic();
+            MusicPlayer.playMenuMusic();
+        } else if (Gamestate.state == Gamestate.PLAYING) {
+            MusicPlayer.pauseMenuMusic();
+            MusicPlayer.startLevelMusic();
+        }
+    }
+
+    /**
+     * Restarts the playing state and sets the game state to PLAYING.
+     */
     public void restartGame() {
+        login.getUserManager().resetCurrScore();
         playing = new Playing(this);
         Gamestate.state = Gamestate.PLAYING;
     }
 
+    /** @return The Login state object. */
     public Login getLogin() {
         return login;
     }
+    /** @return The Menu state object. */
     public Menu getMenu() {
         return menu;
     }
+    /** @return The Playing state object. */
     public Playing getPlaying() {
         return playing;
     }
 
+    /**
+     * Starts the game loop in a new thread.
+     */
     private void startGameLoop() {
         gameThread = new Thread(this);
         gameThread.start();
     }
 
+    /**
+     * The main game loop that controls updates and rendering to maintain a consistent FPS/UPS.
+     */
     @Override
     public void run() {
         double timePerFrame = 1000000000.0 / FPS_SET;

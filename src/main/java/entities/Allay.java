@@ -7,6 +7,13 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.net.IDN;
 
+/**
+ * Represents an Allay entity, which is a friendly or allied entity that can assist the player.
+ * <p>
+ * Allays extend the {@link Entity} class and include behaviors for chasing and attacking enemies,
+ * either through close-range combat or ranged shooting. They are restricted from walking off-screen.
+ * </p>
+ */
 public abstract class Allay extends Entity {
     protected long timeEnemyInRange = 0;
     protected int shootingDistance;
@@ -19,6 +26,12 @@ public abstract class Allay extends Entity {
         this.canWalkOffScreen = false;
     }
 
+    /**
+     * Specialized chasing behavior for ranged-capable Allays.
+     * Manages distance to the closest enemy, switching between movement,
+     * close-range attacking, and ranged shooting.
+     * @param em The EnemyManager to query for targets.
+     */
     protected void chaseAsShooter(EnemyManager em) {
         Enemy enemy = em.getClosestEnemy(pos);
 
@@ -69,6 +82,11 @@ public abstract class Allay extends Entity {
         }
     }
 
+    /**
+     * Basic chasing behavior for melee Allays.
+     * Attempts to reach the closest enemy and initiates an attack when in range.
+     * @param em The EnemyManager to query for targets.
+     */
     protected void chase(EnemyManager em) {
         Enemy enemy = em.getClosestEnemy(pos);
 
@@ -110,6 +128,10 @@ public abstract class Allay extends Entity {
         }
     }
 
+    /**
+     * Executes the melee attack animation.
+     * @param attackAnimation The animation to play.
+     */
     @Override
     protected void attack(Animation attackAnimation) {
         currentAnim = attackAnimation;
@@ -122,6 +144,10 @@ public abstract class Allay extends Entity {
         }
     }
 
+    /**
+     * Executes the shooting animation.
+     * @param attackAnimation The animation to play for shooting.
+     */
     protected void shoot(Animation attackAnimation) {
         currentAnim = attackAnimation;
         currentAnim.updateAnimationTick();
@@ -133,6 +159,11 @@ public abstract class Allay extends Entity {
         }
     }
 
+    /**
+     * Checks for incoming hits. Specialized for Allays to process
+     * hits from attackers.
+     * @return True if a hit was taken.
+     */
     @Override
     protected boolean checkForTakingHit() {
         if (!isBeingAttacked()) return false;
@@ -149,6 +180,9 @@ public abstract class Allay extends Entity {
         return false;
     }
 
+    /** @param b Sets whether the Allay is currently shooting. */
     public void setShooting(boolean b) {shooting = b;}
+    /** @param b Sets whether the Allay is currently dashing. */
     public void setDash(boolean b) {dash = b;}
+
 }

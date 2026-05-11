@@ -40,7 +40,7 @@ public class Player extends Entity {
 
     private final int scoreAndTimeBarX = (int) ((statusBarX + 10) * scale);
     private final int scoreAndTimeBarY = (int) ((statusBarY + statusBarHeight + 10) * scale);
-    private final long gameStartTime;
+    private long timeTick = 0;
 
     private final int maxHealth;
     private int healthWidth = healthBarWidth;
@@ -65,7 +65,6 @@ public class Player extends Entity {
         this.defaultAttackDistance = this.attackDistance;
         this.statusBarImg = LoadSave.getSave(LoadSave.STATUS_BAR);
         this.canWalkOffScreen = false;
-        this.gameStartTime = System.currentTimeMillis();
 
         initAnimations();
 
@@ -112,6 +111,8 @@ public class Player extends Entity {
             dead(animations[DEATH]);
             return;
         }
+
+        timeTick++;
 
         // Action Locking
         if ((attack || dashAttack) && inAir) {
@@ -361,7 +362,7 @@ public class Player extends Entity {
         g.fillRect(dashAttackBarXStart + statusBarX, dashAttackBarYStart + statusBarY, dashAttackWidth, dashAttackBarHeight);
 
         // Score and Time
-        long timePassed = (System.currentTimeMillis() - gameStartTime) / 1000;
+        long timePassed = timeTick / main.Game.UPS_SET;
         g.setColor(Color.WHITE);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,

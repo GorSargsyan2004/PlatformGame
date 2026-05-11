@@ -4,11 +4,18 @@ import main.Game;
 import long_term_memory.UserManager;
 import long_term_memory.UserManagerExceptions.UserManagerException;
 
+import utils.LoadSave;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 
+/**
+ * The Login class handles the login and registration process for the game.
+ * It provides fields for username and password entry and buttons for login and registration.
+ */
 public class Login extends State implements Statemethods {
     private final UserManager userManager;
     private final StringBuilder username = new StringBuilder();
@@ -17,13 +24,22 @@ public class Login extends State implements Statemethods {
     private Rectangle2D.Float usernameField, passwordField, loginBtn, registerBtn;
     private String message = "";
     private Color messageColor = Color.WHITE;
+    private BufferedImage backgroundLogin;
 
+    /**
+     * Constructs a new Login state.
+     * @param game The main game object.
+     */
     public Login(Game game) {
         super(game);
         userManager = new UserManager("data/userInfo.txt");
+        backgroundLogin = LoadSave.getSave(LoadSave.BACKGROUND_LOGIN);
         initBounds();
     }
 
+    /**
+     * Initializes the bounds for the input fields and buttons.
+     */
     private void initBounds() {
         int fieldWidth = 200;
         int fieldHeight = 30;
@@ -40,10 +56,18 @@ public class Login extends State implements Statemethods {
     public void update() {
     }
 
+    /**
+     * Draws the login screen, including input fields, labels, buttons, and messages.
+     * @param g The graphics object used for drawing.
+     */
     @Override
     public void draw(Graphics g) {
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT);
+        if (backgroundLogin != null) {
+            g.drawImage(backgroundLogin, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+        } else {
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT);
+        }
 
         g.setColor(Color.WHITE);
         g.drawString("Username:", (int) usernameField.x, (int) usernameField.y - 5);
@@ -68,6 +92,10 @@ public class Login extends State implements Statemethods {
         }
     }
 
+    /**
+     * Handles mouse press events to switch active fields or trigger button actions.
+     * @param e The mouse event.
+     */
     @Override
     public void mousePressed(MouseEvent e) {
         if (usernameField.contains(e.getPoint())) {
@@ -81,6 +109,9 @@ public class Login extends State implements Statemethods {
         }
     }
 
+    /**
+     * Attempts to log in the user with the entered username and password.
+     */
     private void login() {
         try {
             if (userManager.login(username.toString(), password.toString())) {
@@ -92,6 +123,9 @@ public class Login extends State implements Statemethods {
         }
     }
 
+    /**
+     * Attempts to register a new user with the entered username and password.
+     */
     private void register() {
         try {
             if (userManager.register(username.toString(), password.toString())) {
@@ -116,6 +150,10 @@ public class Login extends State implements Statemethods {
     public void mouseMoved(MouseEvent e) {
     }
 
+    /**
+     * Handles key press events for text entry, field switching, and triggering login.
+     * @param e The key event.
+     */
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_TAB) {
@@ -144,5 +182,9 @@ public class Login extends State implements Statemethods {
     public void keyReleased(KeyEvent e) {
     }
 
+    /**
+     * Returns the user manager.
+     * @return The user manager.
+     */
     public UserManager getUserManager() {return userManager;}
 }
