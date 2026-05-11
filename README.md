@@ -56,7 +56,7 @@ Take control of your hero with these intuitive commands:
 
 Experience the action in motion:
 
-![Gameplay Demo](src/main/resources/Demo/demo.gif)
+https://github.com/user-attachments/assets/eca8cc16-d923-409f-8041-d85c0243ebd7
 
 ---
 
@@ -93,17 +93,31 @@ PlatformGame
 
 ---
 
-## 🛠️ How to Run
+## 🛠️ How to Run & Build
 
-1. **Prerequisites:**
-   - Java 25 or higher
-   - Maven
+### 1. Prerequisites
+- **Java 25** or higher
+- **Maven**
 
-2. **Execution:**
-   ```bash
-   mvn compile
-   mvn exec:java -Dexec.mainClass="main.MainClass"
-   ```
+### 2. Run from Source (Development)
+```bash
+mvn compile
+mvn exec:java -Dexec.mainClass="main.MainClass"
+```
+
+### 3. Build Runnable JAR (Production)
+To create a standalone executable file:
+1.  **Package the project:**
+    ```bash
+    mvn package -DskipTests
+    ```
+2.  **Locate the executable:**
+    The runnable JAR is located at `target/PlatformGame-1.0-SNAPSHOT-jar-with-dependencies.jar`.
+3.  **Run the JAR:**
+    Move the JAR file to the root directory (so it can access the `data/` folder) and run:
+    ```bash
+    java -jar PlatformGame-1.0-SNAPSHOT-jar-with-dependencies.jar
+    ```
 
 ---
 
