@@ -6,6 +6,7 @@ import entities.Player;
 import levels.LevelManager;
 import main.Game;
 import main.GameAlgorithm;
+import music.MusicPlayer;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -43,6 +44,9 @@ public class Playing extends State implements Statemethods{
 
         // Game Algorithm
         gameAlgorithm = new GameAlgorithm(this, GameAlgorithm.Difficulty.MODERATE);
+
+        // Music
+        MusicPlayer.start();
     }
 
     @Override

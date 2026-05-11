@@ -62,6 +62,11 @@ public class Game implements Runnable{
         }
     }
 
+    public void restartGame() {
+        playing = new Playing(this);
+        Gamestate.state = Gamestate.PLAYING;
+    }
+
     public Login getLogin() {
         return login;
     }

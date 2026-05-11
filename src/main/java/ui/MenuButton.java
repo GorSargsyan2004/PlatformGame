@@ -13,7 +13,8 @@ import static utils.LoadSave.MENU_BUTTONS;
 public class MenuButton {
     // Buttons Indexes
     private static int PLAY = 0;
-    private static int BACK = 1;
+    private static int RESTART = 1;
+    private static int BACK = 2;
 
     private int xPos, yPos, index;
     private int xOffsetCenter = B_WIDTH / 2;
@@ -40,6 +41,8 @@ public class MenuButton {
         String pattern = "";
         if (index == PLAY)
             pattern = "play";
+        else if (index == RESTART)
+            pattern = "restart";
         else if (index == BACK)
             pattern = "back";
 

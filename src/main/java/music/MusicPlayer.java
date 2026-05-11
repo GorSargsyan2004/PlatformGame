@@ -1,18 +1,27 @@
+package music;
+
 import javax.sound.sampled.*;
-import java.io.File;
+import java.net.URL;
 
 public class MusicPlayer {
 
     private static final String[] TRACKS = {
-        "../../resources/tracks/track0.wav",
-        "../../resources/tracks/track1.wav",
-        "../../resources/tracks/track2.wav",
-        "../../resources/tracks/track3.wav",
-        "../../resources/tracks/track4.wav"  // loops forever, ironic is it not
+        "/tracks/track0.wav",
+        "/tracks/track1.wav",
+        "/tracks/track2.wav",
+        "/tracks/track3.wav",
+        "/tracks/track4.wav"  // loops forever, ironic is it not
     };
 
+    private static Thread musicThread;
+    private static Clip currentClip;
+
     public static void start() {
-        new Thread(() -> {
+        if (musicThread != null && musicThread.isAlive()) {
+            return;
+        }
+
+        musicThread = new Thread(() -> {
             try {
                 // Play track0 through track3 once each
                 for (int i = 0; i < TRACKS.length - 1; i++) {
@@ -21,26 +30,45 @@ public class MusicPlayer {
                 // Loop track4 forever
                 playAndWait(TRACKS[TRACKS.length - 1], true);
 
+            } catch (InterruptedException e) {
+                System.out.println("[MusicPlayer] Music thread interrupted.");
             } catch (Exception e) {
                 System.err.println("[MusicPlayer] Error: " + e.getMessage());
+                e.printStackTrace();
             }
-        }, "music-thread").start();
+        }, "music-thread");
+        musicThread.start();
+    }
+
+    public static void stop() {
+        if (musicThread != null) {
+            musicThread.interrupt();
+        }
+        if (currentClip != null && currentClip.isOpen()) {
+            currentClip.stop();
+            currentClip.close();
+        }
     }
 
     private static void playAndWait(String path, boolean loop) throws Exception {
-        File file = new File(path);
-        AudioInputStream stream = AudioSystem.getAudioInputStream(file);
+        URL url = MusicPlayer.class.getResource(path);
+        if (url == null) {
+            throw new RuntimeException("Could not find music file: " + path);
+        }
 
-        Clip clip = AudioSystem.getClip();
-        clip.open(stream);
+        AudioInputStream stream = AudioSystem.getAudioInputStream(url);
+        currentClip = AudioSystem.getClip();
+        currentClip.open(stream);
 
         if (loop) {
-            clip.loop(Clip.LOOP_CONTINUOUSLY);
+            currentClip.loop(Clip.LOOP_CONTINUOUSLY);
+            // Wait indefinitely for the looping clip
             Thread.sleep(Long.MAX_VALUE);
         } else {
-            clip.start();
-            Thread.sleep(clip.getMicrosecondLength() / 1000);
-            clip.close();
+            currentClip.start();
+            // Wait for the clip to finish
+            Thread.sleep(currentClip.getMicrosecondLength() / 1000);
+            currentClip.close();
         }
     }
 }

@@ -10,7 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 public class Menu extends State implements Statemethods {
-    private MenuButton[] buttons = new MenuButton[2];
+    private MenuButton[] buttons = new MenuButton[3];
     private static final int Y_POS_OF_BUTTONS = 150;
     private static final int Y_POS_OF_BACKGROUND = 80;
     private BufferedImage backgroundImg, backgroundImgMenu;
@@ -35,7 +35,8 @@ public class Menu extends State implements Statemethods {
 
     private void loadButtons() {
         buttons[0] = new MenuButton(Game.GAME_WIDTH / 2, (int)(Y_POS_OF_BUTTONS*Game.SCALE), 0, Gamestate.PLAYING);
-        buttons[1] = new MenuButton(Game.GAME_WIDTH / 2, (int)((Y_POS_OF_BUTTONS+100)*Game.SCALE), 1, Gamestate.QUIT);
+        buttons[1] = new MenuButton(Game.GAME_WIDTH / 2, (int)((Y_POS_OF_BUTTONS+100)*Game.SCALE), 1, Gamestate.PLAYING);
+        buttons[2] = new MenuButton(Game.GAME_WIDTH / 2, (int)((Y_POS_OF_BUTTONS+200)*Game.SCALE), 2, Gamestate.QUIT);
     }
 
     @Override
@@ -72,7 +73,11 @@ public class Menu extends State implements Statemethods {
     public void mouseReleased(MouseEvent e) {
         for (MenuButton mb : buttons) {
             if (isIn(e, mb) && mb.isMousePressed()) {
-                mb.applyGamestate();
+                if (mb == buttons[1]) {
+                    game.restartGame();
+                } else {
+                    mb.applyGamestate();
+                }
                 break;
             }
         }
