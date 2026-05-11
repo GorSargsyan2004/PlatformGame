@@ -12,26 +12,33 @@ import java.util.Random;
 import static utils.Direction.LEFT;
 import static utils.Direction.RIGHT;
 
+/**
+ * The GameAlgorithm class manages the spawning of enemies and allies based on difficulty.
+ * it also updates and draws the player, enemies, and allies.
+ */
 public class GameAlgorithm {
     private AllayManager allayManager;
     private EnemyManager enemyManager;
     private Player player;
 
+    /**
+     * Enum representing the possible difficulty levels.
+     */
     public enum Difficulty {
         EASY, MODERATE, HARD;
     }
 
-    // Spawn Timers
-    private long spawnKnightTimer = System.currentTimeMillis();
-    private long spawnArcherTimer = System.currentTimeMillis();
-    private long spawnSkeletonTimer = System.currentTimeMillis();
-    private long spawnGoblinTimer = 0;
-    private long spawnMushroomTimer = 0;
-    private long spawnFlyingEyeTimer = System.currentTimeMillis();
-    private long spawnNightBorneTimer = System.currentTimeMillis();
-    private long spawnDarkKnightTimer = 0;
+    // Spawn Timers (in ticks)
+    private int spawnKnightTimer = 0;
+    private int spawnArcherTimer = 0;
+    private int spawnSkeletonTimer = 0;
+    private int spawnGoblinTimer;
+    private int spawnMushroomTimer;
+    private int spawnFlyingEyeTimer = 0;
+    private int spawnNightBorneTimer = 0;
+    private int spawnDarkKnightTimer;
 
-    // Spawn Frequency in Milli Seconds
+    // Spawn Frequency in Ticks
     private int spawnKnightFrequency;
     private int spawnArcherFrequency;
     private int spawnSkeletonFrequency;
@@ -43,14 +50,35 @@ public class GameAlgorithm {
 
     private final Random rnd = new Random();
 
+    /**
+     * Constructs a GameAlgorithm with the specified playing state and difficulty.
+     *
+     * @param playing    The current playing state.
+     * @param difficulty The chosen difficulty level.
+     */
     public GameAlgorithm(Playing playing, Difficulty difficulty) {
         enemyManager = playing.getEnemyManager();
         allayManager = playing.getAllayManager();
         player = playing.getPlayer();
 
         initFrequencies(difficulty);
+        initTimers();
     }
 
+    /**
+     * Initializes the timers. Timers that should trigger immediately are set to their frequency.
+     */
+    private void initTimers() {
+        spawnGoblinTimer = spawnGoblinFrequency;
+        spawnMushroomTimer = spawnMushroomFrequency;
+        spawnDarkKnightTimer = spawnDarkKnightFrequency;
+    }
+
+    /**
+     * Initializes spawn frequencies based on the chosen difficulty.
+     *
+     * @param difficulty The difficulty level.
+     */
     private void initFrequencies(Difficulty difficulty) {
         switch (difficulty) {
             case EASY -> {
@@ -88,73 +116,88 @@ public class GameAlgorithm {
             }
         }
 
-        // Convert to milliseconds
-        spawnSkeletonFrequency *= 1_000;
-        spawnGoblinFrequency *= 1_000;
-        spawnMushroomFrequency *= 1_000;
-        spawnFlyingEyeFrequency *= 1_000;
-        spawnNightBorneFrequency *= 1_000;
-        spawnKnightFrequency *= 1_000;
-        spawnArcherFrequency *= 1_000;
-        spawnDarkKnightFrequency *= 1_000;
+        // Convert to ticks (UPS_SET is the number of updates per second)
+        spawnSkeletonFrequency *= Game.UPS_SET;
+        spawnGoblinFrequency *= Game.UPS_SET;
+        spawnMushroomFrequency *= Game.UPS_SET;
+        spawnFlyingEyeFrequency *= Game.UPS_SET;
+        spawnNightBorneFrequency *= Game.UPS_SET;
+        spawnKnightFrequency *= Game.UPS_SET;
+        spawnArcherFrequency *= Game.UPS_SET;
+        spawnDarkKnightFrequency *= Game.UPS_SET;
     }
 
+    /**
+     * Handles the logic for spawning various types of enemies at timed intervals.
+     */
     private void spawnEnemies() {
-        long currentTime = System.currentTimeMillis();
-
         // Goblin
-        if (currentTime - spawnGoblinTimer >= spawnGoblinFrequency) {
-            spawnGoblinTimer = System.currentTimeMillis();
+        spawnGoblinTimer++;
+        if (spawnGoblinTimer >= spawnGoblinFrequency) {
+            spawnGoblinTimer = 0;
             enemyManager.summonGoblin(getRndDir());
-            if (spawnGoblinFrequency > 6_000) spawnGoblinFrequency -= 3_000;
+            if (spawnGoblinFrequency > 6 * Game.UPS_SET) spawnGoblinFrequency -= 3 * Game.UPS_SET;
         }
         // Flying Eye
-        if (currentTime - spawnFlyingEyeTimer >= spawnFlyingEyeFrequency) {
-            spawnFlyingEyeTimer = System.currentTimeMillis();
+        spawnFlyingEyeTimer++;
+        if (spawnFlyingEyeTimer >= spawnFlyingEyeFrequency) {
+            spawnFlyingEyeTimer = 0;
             enemyManager.summonFlyingEye(LEFT);
-            if (spawnFlyingEyeFrequency > 5_000) spawnFlyingEyeFrequency -= 2_000;
+            if (spawnFlyingEyeFrequency > 5 * Game.UPS_SET) spawnFlyingEyeFrequency -= 2 * Game.UPS_SET;
         }
         // Mushroom
-        if (currentTime - spawnMushroomTimer >= spawnMushroomFrequency) {
-            spawnMushroomTimer = System.currentTimeMillis();
+        spawnMushroomTimer++;
+        if (spawnMushroomTimer >= spawnMushroomFrequency) {
+            spawnMushroomTimer = 0;
             enemyManager.summonMushroom(getRndDir());
-            if (spawnMushroomFrequency > 6_000) spawnMushroomFrequency -= 3_000;
+            if (spawnMushroomFrequency > 6 * Game.UPS_SET) spawnMushroomFrequency -= 3 * Game.UPS_SET;
         }
         // Skeleton
-        if (currentTime - spawnSkeletonTimer >= spawnSkeletonFrequency) {
-            spawnSkeletonTimer = System.currentTimeMillis();
+        spawnSkeletonTimer++;
+        if (spawnSkeletonTimer >= spawnSkeletonFrequency) {
+            spawnSkeletonTimer = 0;
             enemyManager.summonSkeleton(getRndDir());
-            if (spawnSkeletonFrequency > 6_000) spawnSkeletonFrequency -= 3_000;
+            if (spawnSkeletonFrequency > 6 * Game.UPS_SET) spawnSkeletonFrequency -= 3 * Game.UPS_SET;
         }
         // NightBorne
-        if (currentTime - spawnNightBorneTimer >= spawnNightBorneFrequency) {
-            spawnNightBorneTimer = System.currentTimeMillis();
+        spawnNightBorneTimer++;
+        if (spawnNightBorneTimer >= spawnNightBorneFrequency) {
+            spawnNightBorneTimer = 0;
             enemyManager.summonNightBorne(getRndDir());
-            if (spawnNightBorneFrequency > 10_000) spawnNightBorneFrequency -= 3_000;
+            if (spawnNightBorneFrequency > 10 * Game.UPS_SET) spawnNightBorneFrequency -= 3 * Game.UPS_SET;
         }
         // DarkKnight
-        if (currentTime - spawnDarkKnightTimer >= spawnDarkKnightFrequency) {
-            spawnDarkKnightTimer = System.currentTimeMillis();
+        spawnDarkKnightTimer++;
+        if (spawnDarkKnightTimer >= spawnDarkKnightFrequency) {
+            spawnDarkKnightTimer = 0;
             enemyManager.summonDarkKnight(getRndDir());
-            if (spawnDarkKnightFrequency > 8_000) spawnDarkKnightFrequency -= 3_000;
+            if (spawnDarkKnightFrequency > 8 * Game.UPS_SET) spawnDarkKnightFrequency -= 3 * Game.UPS_SET;
         }
     }
 
+    /**
+     * Handles the logic for spawning various types of allies at timed intervals.
+     */
     private void spawnAllays() {
         // Knight
-        if (System.currentTimeMillis() - spawnKnightTimer >= spawnKnightFrequency) {
-            spawnKnightTimer = System.currentTimeMillis();
+        spawnKnightTimer++;
+        if (spawnKnightTimer >= spawnKnightFrequency) {
+            spawnKnightTimer = 0;
             allayManager.summonKnight();
-            spawnKnightFrequency += 2000;
+            spawnKnightFrequency += 2 * Game.UPS_SET;
         }
         // Archer
-        if (System.currentTimeMillis() - spawnArcherTimer >= spawnArcherFrequency) {
-            spawnArcherTimer = System.currentTimeMillis();
+        spawnArcherTimer++;
+        if (spawnArcherTimer >= spawnArcherFrequency) {
+            spawnArcherTimer = 0;
             allayManager.summonArcher();
-            spawnArcherFrequency += 2000;
+            spawnArcherFrequency += 2 * Game.UPS_SET;
         }
     }
 
+    /**
+     * Updates player, enemy manager, allay manager, and handles spawns.
+     */
     public void update() {
         if (!player.isDead())
             player.update();
@@ -166,12 +209,22 @@ public class GameAlgorithm {
         spawnAllays();
     }
 
+    /**
+     * Draws the player, enemies, and allies.
+     *
+     * @param g The Graphics object used for drawing.
+     */
     public void draw(Graphics g) {
         player.draw(g);
         enemyManager.draw(g);
         allayManager.draw(g);
     }
 
+    /**
+     * Returns a random direction (LEFT or RIGHT).
+     *
+     * @return A random Direction.
+     */
     private Direction getRndDir() {
         if (rnd.nextInt(2) == 0) return LEFT;
         return RIGHT;

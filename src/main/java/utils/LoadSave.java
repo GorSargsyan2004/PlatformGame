@@ -11,6 +11,10 @@ import static levels.LevelManager.TILESET_WIDTH;
 import static main.Game.TILES_IN_HEIGHT;
 import static main.Game.TILES_IN_WIDTH;
 
+/**
+ * The LoadSave class provides static utility methods for loading images
+ * and level data from the project's resources.
+ */
 public class LoadSave {
     public static final String LEVEL_ATLAS = "/Level/oak_woods_tileset.png";
     public static final String LEVEL_DATA = "/Level/map.png";
@@ -21,8 +25,16 @@ public class LoadSave {
     public static final String MENU_BUTTONS = "/Menu/Buttons/";
     public static final String MENU_BACKGROUND = "/Menu/menu_background.png";
     public static final String BACKGROUND_MENU = "/Menu/background_menu.png";
+    public static final String BACKGROUND_LOGIN = "/Demo/background_login.jpeg";
     public static final String STATUS_BAR = "/GUI/health_power_bar.png";
 
+    /**
+     * Loads a BufferedImage from the specified resource path.
+     *
+     * @param path The resource path to the image file.
+     * @return The loaded BufferedImage, or null if the resource was not found.
+     * @throws RuntimeException If an error occurs during image reading.
+     */
     public static BufferedImage getSave(String path) {
         InputStream is = LoadSave.class.getResourceAsStream(path);
         BufferedImage img = null;
@@ -42,6 +54,12 @@ public class LoadSave {
         return img;
     }
 
+    /**
+     * Reads the level data from the map image.
+     * Each pixel's red channel corresponds to a tile ID in the tileset.
+     *
+     * @return A 2D array representing the tile indices of the level.
+     */
     public static int[][] getLevelData() {
         int[][] lvlData = new int[TILES_IN_HEIGHT][TILES_IN_WIDTH];
         BufferedImage img = getSave(LEVEL_DATA);

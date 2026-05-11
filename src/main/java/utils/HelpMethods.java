@@ -5,7 +5,20 @@ import main.Game;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+/**
+ * The HelpMethods class contains static utility methods for collision detection,
+ * movement validation, and coordinate adjustments.
+ */
 public class HelpMethods {
+    /**
+     * Checks if an entity can move to a specific position without colliding with solid tiles.
+     *
+     * @param pos     The top-left position of the entity.
+     * @param width   The width of the entity's hitbox.
+     * @param height  The height of the entity's hitbox.
+     * @param lvlData The level data used for collision checks.
+     * @return true if movement is possible, false otherwise.
+     */
     public static boolean CanMoveHere(Point2D.Double pos, float width, float height, int[][] lvlData) {
         if (!IsSolid(pos.x, pos.y, lvlData))
             if (!IsSolid(pos.x + width - 1, pos.y + height - 1, lvlData))
@@ -16,6 +29,15 @@ public class HelpMethods {
         return false;
     }
 
+    /**
+     * Checks if an entity can move on a slope, ignoring bottom-corner solid checks.
+     *
+     * @param pos     The top-left position of the entity.
+     * @param width   The width of the entity's hitbox.
+     * @param height  The height of the entity's hitbox.
+     * @param lvlData The level data used for collision checks.
+     * @return true if movement is possible, false otherwise.
+     */
     public static boolean CanMoveHereOnSlope(Point2D.Double pos, float width, float height, int[][] lvlData) {
         // Only check top and middle corners for walls. Skip bottom feet to allow walking over slopes and ground under them.
         if (!IsSolid(pos.x, pos.y, lvlData)) // Top Left
@@ -26,6 +48,14 @@ public class HelpMethods {
         return false;
     }
 
+    /**
+     * Checks if a specific pixel coordinate is solid (part of a wall or roof).
+     *
+     * @param x       The x-coordinate in pixels.
+     * @param y       The y-coordinate in pixels.
+     * @param lvlData The level data used for collision checks.
+     * @return true if the coordinate is solid, false otherwise.
+     */
     private static boolean IsSolid(double x, double y, int[][] lvlData) {
         if (y < 0 || y >= Game.GAME_HEIGHT)
             return true;
@@ -48,6 +78,12 @@ public class HelpMethods {
         return true;
     }
 
+    /**
+     * Determines if a tile index represents a slope.
+     *
+     * @param tileValue The tile index.
+     * @return true if it is a slope, false otherwise.
+     */
     public static boolean IsSlope(int tileValue) {
         int[] slopes = {105, 106, 107, 108, 147, 148, 149, 150};
         for (int s : slopes)
@@ -55,6 +91,13 @@ public class HelpMethods {
         return false;
     }
 
+    /**
+     * Calculates the y-offset for an entity standing on a slope tile.
+     *
+     * @param x         The absolute x-coordinate of the entity.
+     * @param tileValue The index of the slope tile.
+     * @return The local y-coordinate relative to the top of the tile.
+     */
     public static float GetSlopeY(float x, int tileValue) {
         float xInTile = x % Game.TILES_SIZE;
 
@@ -75,6 +118,13 @@ public class HelpMethods {
         return 0;
     }
 
+    /**
+     * Calculates the horizontal position next to a wall when a collision occurs.
+     *
+     * @param hitBox The current hitbox of the entity.
+     * @param xSpeed The current horizontal speed.
+     * @return The adjusted x-coordinate.
+     */
     public static float GetEntityXPosNextToWall(Rectangle2D.Float hitBox, float xSpeed) {
         if (xSpeed > 0) {
             // Moving Right: Snap to the left edge of the blocking tile
@@ -89,6 +139,13 @@ public class HelpMethods {
         }
     }
 
+    /**
+     * Calculates the vertical position under a roof or above a floor when a collision occurs.
+     *
+     * @param hitBox The current hitbox of the entity.
+     * @param ySpeed The current vertical speed.
+     * @return The adjusted y-coordinate.
+     */
     public static float GetEntityYPosUnderRoofOrAboveFloor(Rectangle2D.Float hitBox, float ySpeed) {
         if (ySpeed > 0) {
             // Falling: Snap to the top edge of the blocking tile

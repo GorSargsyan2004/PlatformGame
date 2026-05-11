@@ -12,6 +12,14 @@ import java.util.ArrayList;
 
 import io.arxila.javatuples.Pair;
 
+/**
+ * Represents the base abstract class for all game entities.
+ * <p>
+ * This class provides fundamental properties and behaviors shared by all entities,
+ * such as health, damage, position, movement, animations, and hitboxes.
+ * Subclasses must implement {@link #update()} and {@link #draw(Graphics)}.
+ * </p>
+ */
 public abstract class Entity {
     protected int health;
     protected int damage;
@@ -65,6 +73,10 @@ public abstract class Entity {
         this.hitBox = new Rectangle2D.Float((float)pos.x, (float)pos.y, 0, 0);
     }
 
+    /**
+     * Draws the entity's hitbox for debugging purposes.
+     * @param g The graphics context to draw on.
+     */
     protected void drawHitbox(Graphics g) {
         // For debugging the hitbox
         if (hitBox != null) {
@@ -73,14 +85,30 @@ public abstract class Entity {
         }
     }
 
+    /**
+     * Initializes the entity's hitbox. This should be overridden by subclasses
+     * to set the specific dimensions and offsets of the hitbox.
+     */
     protected void initHitbox() {
         // To be overridden by subclasses
     }
 
+    /**
+     * Updates the entity's logic, including physics, state, and animation ticks.
+     * Must be implemented by subclasses.
+     */
     public abstract void update();
 
+    /**
+     * Draws the entity on the screen.
+     * Must be implemented by subclasses.
+     * @param g The graphics context to draw on.
+     */
     public abstract void draw(Graphics g);
 
+    /**
+     * Synchronizes the hitbox position with the entity's current world position.
+     */
     protected void updateHitbox() {
         if (hitBox != null) {
             hitBox.x = (float) pos.x;
@@ -88,9 +116,17 @@ public abstract class Entity {
         }
     }
 
+    /** @param left Sets whether the entity is trying to move left. */
     public void setLeft(boolean left) { this.leftPressed = left; }
+    /** @param right Sets whether the entity is trying to move right. */
     public void setRight(boolean right) { this.rightPressed = right; }
+    /** @param attack Sets whether the entity is initiating an attack. */
     public void setAttack(boolean attack) { this.attack = attack; }
+
+    /**
+     * Initiates a jump if the entity is currently on the ground.
+     * @param jump True to trigger a jump.
+     */
     public void setJump(boolean jump) {
         if (jump && !inAir && !landing) {
             this.inAir = true;
@@ -98,16 +134,29 @@ public abstract class Entity {
         }
     }
 
+    /**
+     * Registers an attacker and the time of the attack.
+     * @param entity The entity that dealt the hit.
+     */
     protected void takeHit(Entity entity) {
         attackersTimeAttackedInMillis.add(System.currentTimeMillis());
         attackers.add(entity);
     }
 
+    /**
+     * Modifies the entity's health.
+     * @param value The amount to add to health (negative for damage).
+     */
     public void changeHealth(int value) {
         health += value;
         if (health <= 0) health = 0;
     }
 
+    /**
+     * Processes pending hits from attackers. Checks if attackers are still in range
+     * and if enough time has passed since the hit was registered.
+     * @return True if a hit was successfully processed and health was reduced.
+     */
     protected boolean checkForTakingHit() {
         if (!isBeingAttacked()) return false;
 
@@ -129,6 +178,10 @@ public abstract class Entity {
         return hitTaken;
     }
 
+    /**
+     * Updates the entity's state to "hurt" and plays the provided animation.
+     * @param takeHit The animation to play when taking a hit.
+     */
     protected void takeHit(Animation takeHit) {
         if (currentAnim != takeHit) {
             attack = false;
@@ -151,6 +204,10 @@ public abstract class Entity {
         }
     }
 
+    /**
+     * Updates the attack animation and resets state once completed.
+     * @param attackAnimation The animation to play for the attack.
+     */
     protected void attack(Animation attackAnimation) {
         currentAnim = attackAnimation;
         currentAnim.updateAnimationTick();
@@ -162,6 +219,10 @@ public abstract class Entity {
         }
     }
 
+    /**
+     * Updates the idle animation.
+     * @param idleAnimation The animation to play while idle.
+     */
     protected void idle(Animation idleAnimation) {
         currentAnim = idleAnimation;
         currentAnim.updateAnimationTick();
@@ -171,6 +232,10 @@ public abstract class Entity {
         }
     }
 
+    /**
+     * Plays the death animation and locks the entity in its final frame.
+     * @param deadAnimation The animation to play upon death.
+     */
     protected void dead(Animation deadAnimation) {
         currentAnim = deadAnimation;
         currentAnim.updateAnimationTick();
@@ -180,6 +245,13 @@ public abstract class Entity {
         }
     }
 
+    /**
+     * Utility to check if an attacked entity is within a certain distance of an attacker.
+     * @param attacker The entity performing the attack.
+     * @param attacked The entity being targeted.
+     * @param attackDistance The maximum distance allowed for the attack.
+     * @return True if within range.
+     */
     protected boolean isInAttackRange(Entity attacker, Entity attacked, int attackDistance) {
         if (attacker.hitBox == null || attacked.hitBox == null) return false;
         Rectangle2D.Float a = attacker.hitBox;
@@ -202,18 +274,34 @@ public abstract class Entity {
         return (xDiff <= attackDistance && yDiff <= (float) attackDistance / 2);
     }
 
+    /**
+     * Checks if an entity is within the attacker's default attack range.
+     * @param attacker The entity performing the attack.
+     * @param attacked The entity being targeted.
+     * @return True if within default range.
+     */
     protected boolean isInAttackRange(Entity attacker, Entity attacked) {
         return isInAttackRange(attacker, attacked, attacker.attackDistance);
     }
 
+    /** @return True if the entity has registered attackers waiting to be processed. */
     protected boolean isBeingAttacked() {
         return !attackers.isEmpty();
     }
 
+    /**
+     * Checks if this entity is currently being targeted by a specific entity.
+     * @param entity The potential attacker.
+     * @return True if that entity is in the attackers list.
+     */
     protected boolean isAttackedBy(Entity entity) {
         return attackers.contains(entity);
     }
 
+    /**
+     * Updates the landing animation state.
+     * @param landingAnimation The animation to play when hitting the ground.
+     */
     protected void landing(Animation landingAnimation) {
         currentAnim = landingAnimation;
         currentAnim.updateAnimationTick();
@@ -223,6 +311,10 @@ public abstract class Entity {
         }
     }
 
+    /**
+     * Handles vertical physics, gravity, and collision with floors and slopes.
+     * @param crouchIndex Index of the crouch/landing animation to reset on impact.
+     */
     protected void physicsUpdate(int crouchIndex) {
         if (hitBox == null) return;
         // SLOPE LOGIC (Check ground below feet)
@@ -288,6 +380,16 @@ public abstract class Entity {
         }
     }
 
+    /**
+     * Handles horizontal movement logic, including direction switching, slope adjustments,
+     * and collision detection.
+     * @param currentAnim The current animation state.
+     * @param currentDir The current facing direction.
+     * @param RUN Index for the running animation.
+     * @param IDLE Index for the idle animation.
+     * @param SCALE Scale factor for drawing and hitbox calculations.
+     * @return A Pair containing the updated Animation and Direction.
+     */
     protected Pair<Animation, Direction> run(Animation currentAnim, Direction currentDir, int RUN, int IDLE, float SCALE) {
         float xSpeed = 0;
         Direction lastDir = currentDir;
@@ -368,6 +470,12 @@ public abstract class Entity {
         return Pair.of(currentAnim, currentDir);
     }
 
+    /**
+     * Updates the hitbox position based on the entity's facing direction and animation frame.
+     * @param currentDir Facing direction.
+     * @param currentAnim Current animation.
+     * @param SCALE Scale factor.
+     */
     protected void updateHitbox(Direction currentDir, Animation currentAnim, float SCALE) {
         if (hitBox == null) return;
         if (currentDir == Direction.RIGHT) {
@@ -378,11 +486,22 @@ public abstract class Entity {
         hitBox.y = (float)pos.y + yDrawOffset;
     }
 
+    /** @return The center point of the entity's hitbox in world coordinates. */
     public Point2D.Double getCenter() {
         if (hitBox == null) return new Point2D.Double(pos.x, pos.y);
         return new Point2D.Double(hitBox.x + hitBox.width / 2, hitBox.y + hitBox.height / 2);
     }
 
+    /**
+     * Handles movement and animation state while the entity is in the air.
+     * @param currentAnim Current animation.
+     * @param currentDir Facing direction.
+     * @param JUMP Index for jump animation.
+     * @param UP_TO_FALL Index for transition animation.
+     * @param FALL Index for falling animation.
+     * @param SCALE Scale factor.
+     * @return Updated Animation and Direction.
+     */
     protected Pair<Animation, Direction> jump(Animation currentAnim, Direction currentDir, int JUMP, int UP_TO_FALL, int FALL, float SCALE) {
         float xSpeed = 0;
         Direction lastDir = currentDir;
@@ -439,4 +558,5 @@ public abstract class Entity {
 
         return Pair.of(currentAnim, currentDir);
     }
+
 }

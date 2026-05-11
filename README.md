@@ -1,6 +1,8 @@
-# 🎮 PlatformGame
+# 🎮 Platform Game
 
-Welcome to **PlatformGame**, an immersive 2D side-scrolling experience where survival is the ultimate goal! Battle fierce monsters, master your agility, and climb the high-score leaderboard in this action-packed adventure.
+![Logo](src/main/resources/Demo/logo.gif)
+
+Welcome to **Oakheart Chronicles**, an immersive 2D side-scrolling experience where survival is the ultimate goal! Battle fierce monsters, master your agility, and climb the high-score leaderboard in this action-packed adventure.
 
 ---
 
@@ -75,6 +77,7 @@ PlatformGame
         │   ├── levels         # Level design, loading, and management
         │   ├── long_term_memory # Data persistence logic (UserManager)
         │   ├── main           # Game entry point and window orchestration
+        │   ├── music          # Responsible for playing music of the game
         │   ├── ui             # Custom UI components like Menu Buttons
         │   └── utils          # Game constants, helper methods, and asset loaders
         └── resources
@@ -85,6 +88,7 @@ PlatformGame
             ├── Level          # Tilesets, backgrounds, and map data
             ├── Menu           # Images for menus and buttons
             └── Player         # Animation frames for the main character
+            └── tracks         # Music tracks to play 
 ```
 
 ---

@@ -12,11 +12,20 @@ import java.awt.*;
 import static main.Game.GAME_HEIGHT;
 import static main.Game.GAME_WIDTH;
 
+/**
+ * The GamePanel class is the primary drawing surface for the game.
+ * It handles mouse and keyboard input and manages the main rendering loop via paintComponent.
+ */
 public class GamePanel extends JPanel {
 
     private MouseInputs mouseInputs;
     private Game game;
 
+    /**
+     * Constructs a GamePanel and initializes input listeners.
+     *
+     * @param game The main Game object.
+     */
     GamePanel(Game game) {
         this.game = game;
 
@@ -29,6 +38,9 @@ public class GamePanel extends JPanel {
         setFocusTraversalKeysEnabled(false);
     }
 
+    /**
+     * Sets the preferred size of the panel based on game dimensions.
+     */
     private void setPanelSize() {
         Dimension size = new Dimension(GAME_WIDTH, GAME_HEIGHT);
         setMinimumSize(size);
@@ -36,6 +48,11 @@ public class GamePanel extends JPanel {
         setMaximumSize(size);
     }
 
+    /**
+     * Overridden from JPanel to draw the game components based on the current state.
+     *
+     * @param g The Graphics object used for drawing.
+     */
     // < Paint Component >
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -52,6 +69,7 @@ public class GamePanel extends JPanel {
         }
     }
 
+    /** @return The main Game object. */
     public Game getGame() {
         return game;
     }

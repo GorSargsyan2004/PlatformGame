@@ -130,6 +130,13 @@ public class UserManager {
     }
 
     /**
+     * Resets the current score to 0.
+     */
+    public void resetCurrScore() {
+        currScore = 0;
+    }
+
+    /**
      * precondition: before using this method, the user should be already registered/logged in.
      * Returns weather the user passed the best score and will have now new best score.
      */

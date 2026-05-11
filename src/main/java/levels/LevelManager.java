@@ -11,6 +11,10 @@ import static main.Game.TILES_SIZE;
 import static utils.LoadSave.LEVEL_ATLAS;
 import static utils.LoadSave.getSave;
 
+/**
+ * The LevelManager class is responsible for loading, storing, and drawing the game levels.
+ * It manages the level sprites and background layers.
+ */
 public class LevelManager {
 
     private BufferedImage[] levelSprite;
@@ -18,9 +22,16 @@ public class LevelManager {
     private Game game;
     private Level levelOne;
 
+    /** The height of the tileset in terms of number of tiles. */
     public static final int TILESET_HEIGHT = 15;
+    /** The width of the tileset in terms of number of tiles. */
     public static final int TILESET_WIDTH = 21;
 
+    /**
+     * Constructs a new LevelManager and initializes the sprites and level data.
+     *
+     * @param game The main Game object.
+     */
     public LevelManager(Game game) {
         this.game = game;
         importSprites();
@@ -28,6 +39,9 @@ public class LevelManager {
         levelOne = new Level(LoadSave.getLevelData());
     }
 
+    /**
+     * Loads the background layers from the resources.
+     */
     private void loadBackgroundLayers() {
         backgroundLayers = new BufferedImage[3];
         backgroundLayers[0] = getSave(LoadSave.BACKGROUND_LAYER_1);
@@ -35,6 +49,9 @@ public class LevelManager {
         backgroundLayers[2] = getSave(LoadSave.BACKGROUND_LAYER_3);
     }
 
+    /**
+     * Imports and splits the level tileset into individual sprite images.
+     */
     private void importSprites() {
         BufferedImage img = getSave(LEVEL_ATLAS);
         levelSprite = new BufferedImage[TILESET_WIDTH * TILESET_HEIGHT];
@@ -46,6 +63,11 @@ public class LevelManager {
         }
     }
 
+    /**
+     * Draws the background and the current level tiles.
+     *
+     * @param g The Graphics object used for drawing.
+     */
     public void draw(Graphics g) {
         // Draw Background Layers
         for (BufferedImage img : backgroundLayers) {
@@ -64,10 +86,18 @@ public class LevelManager {
 
     }
 
+    /**
+     * Updates the level manager. (Currently no logic implemented)
+     */
     public void update() {
 
     }
 
+    /**
+     * Returns the currently active level.
+     *
+     * @return The current Level object.
+     */
     public Level getCurrentLevel() {
         return levelOne;
     }

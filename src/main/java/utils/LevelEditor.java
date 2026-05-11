@@ -12,6 +12,10 @@ import static main.Game.TILES_DEFAULT_SIZE;
 import static levels.LevelManager.TILESET_WIDTH;
 import static levels.LevelManager.TILESET_HEIGHT;
 
+/**
+ * The LevelEditor class is a standalone JFrame tool used for creating and editing game levels.
+ * It allows for selecting tiles from a tileset and painting them onto a grid, then saving the map as an image.
+ */
 public class LevelEditor extends JFrame {
 
     // --- Adjust these to match your game's grid size ---
@@ -27,6 +31,9 @@ public class LevelEditor extends JFrame {
     private JPanel tilesetPanel;
     private JSpinner idSpinner;
 
+    /**
+     * Constructs the LevelEditor, initializes components, and sets up the UI.
+     */
     public LevelEditor() {
         loadTiles();
         initMapData();
@@ -148,6 +155,9 @@ public class LevelEditor extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Loads tiles from the game's level atlas.
+     */
     private void loadTiles() {
         tilesetImg = LoadSave.getSave(LoadSave.LEVEL_ATLAS);
         if (tilesetImg == null) {
@@ -163,6 +173,9 @@ public class LevelEditor extends JFrame {
         }
     }
 
+    /**
+     * Initializes the map data with a default blank tile ID.
+     */
     private void initMapData() {
         for (int row = 0; row < TILES_IN_HEIGHT; row++) {
             for (int col = 0; col < TILES_IN_WIDTH; col++) {
@@ -171,6 +184,11 @@ public class LevelEditor extends JFrame {
         }
     }
 
+    /**
+     * Draws the level grid and the tiles on the canvas.
+     *
+     * @param g The Graphics object used for drawing.
+     */
     private void drawGrid(Graphics g) {
         for (int row = 0; row < TILES_IN_HEIGHT; row++) {
             for (int col = 0; col < TILES_IN_WIDTH; col++) {
@@ -191,6 +209,9 @@ public class LevelEditor extends JFrame {
         }
     }
 
+    /**
+     * Loads a map from a PNG file where the red channel represent tile IDs.
+     */
     private void loadMap() {
         JFileChooser fileChooser = new JFileChooser(".");
         fileChooser.setDialogTitle("Select map.png to load");
@@ -216,6 +237,9 @@ public class LevelEditor extends JFrame {
         }
     }
 
+    /**
+     * Saves the current map to a PNG file where the red channel represents tile IDs.
+     */
     private void saveMap() {
         BufferedImage img = new BufferedImage(TILES_IN_WIDTH, TILES_IN_HEIGHT, BufferedImage.TYPE_INT_RGB);
         for (int row = 0; row < TILES_IN_HEIGHT; row++) {
@@ -235,6 +259,11 @@ public class LevelEditor extends JFrame {
         }
     }
 
+    /**
+     * The main entry point for the LevelEditor tool.
+     *
+     * @param args Command line arguments.
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new LevelEditor());
     }
