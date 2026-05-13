@@ -35,8 +35,10 @@ public class UserManager {
      * @param password The password of the user.
      * @return Ture if the registration was successful. Otherwise, returns false.
      */
-    public boolean register(String username, String password) throws UserNameAlreadyExistsException {
+    public boolean register(String username, String password) throws UserNameAlreadyExistsException, IncorrectFormatException  {
         if(doesUsernameExist(username)) throw new UserNameAlreadyExistsException();
+        if(username.length()< 6 || password.length() < 6) throw new IncorrectFormatException("Username and password must be at least 6 characters.");
+        if(username.contains(":") || password.contains(":")) throw new IncorrectFormatException("':' is not allowed in username and password.");
         this.username=username;
         this.password=password;
         this.score=0;
