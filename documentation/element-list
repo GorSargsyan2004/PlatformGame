@@ -4,6 +4,8 @@ gamestates
 inputs
 levels
 long_term_memory
+long_term_memory.UserManagerExceptions
 main
+music
 ui
 utils
