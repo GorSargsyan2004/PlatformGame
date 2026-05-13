@@ -55,4 +55,12 @@ public class Leaderboard {
     public ArrayList<Player> getPlayersSorted() {
         return topPlayers;
     }
+
+    /**
+     * Updates the leaderboard arraylist. Recommended to implement this method every time the player goes to menu from the level, since they would like to instantly see their name in the leaderboard in case they beat a player there.
+     */
+    public void updateLeaderboard(){
+        topPlayers.clear();
+        addPlayersToTheList();
+    }
 }
