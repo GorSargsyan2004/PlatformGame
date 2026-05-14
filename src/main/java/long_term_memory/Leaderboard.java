@@ -1,8 +1,5 @@
 package long_term_memory;
 
-import long_term_memory.UserManagerExceptions.IncorrectFormatException;
-import long_term_memory.UserManagerExceptions.PasswordMismatchException;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;

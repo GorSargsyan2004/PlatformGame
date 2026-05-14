@@ -4,10 +4,14 @@ import main.Game;
 import ui.MenuButton;
 import utils.LoadSave;
 
+import long_term_memory.Leaderboard;
+import long_term_memory.Player;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 /**
  * The Menu class represents the main menu state of the game.
@@ -19,6 +23,8 @@ public class Menu extends State implements Statemethods {
     private static final int Y_POS_OF_BACKGROUND = 80;
     private BufferedImage backgroundImg, backgroundImgMenu;
     private int menuX, menuY, menuWidth, menuHeight;
+    /** The leaderboard object used to track and display top scores. */
+    private Leaderboard leaderboard;
 
     /**
      * Constructs a new Menu state.
@@ -29,6 +35,7 @@ public class Menu extends State implements Statemethods {
 
         loadButtons();
         loadBackground();
+        leaderboard = new Leaderboard("data/userInfo.txt");
     }
 
     /**
@@ -81,6 +88,43 @@ public class Menu extends State implements Statemethods {
 
         for (MenuButton mb : buttons)
             mb.draw(g);
+
+        drawLeaderboard(g);
+    }
+
+    /**
+     * Draws the leaderboard on the menu screen.
+     * @param g The graphics object used for drawing.
+     */
+    private void drawLeaderboard(Graphics g) {
+        ArrayList<Player> players = leaderboard.getPlayersSorted();
+        int lbWidth = (int) (200 * Game.SCALE);
+        int lbHeight = (int) (320 * Game.SCALE);
+        int lbX = menuX + menuWidth + (int) (20 * Game.SCALE);
+        int lbY = menuY;
+
+        // Background for leaderboard
+        g.setColor(new Color(0, 0, 0, 180));
+        g.fillRoundRect(lbX, lbY, lbWidth, lbHeight, 20, 20);
+        g.setColor(Color.WHITE);
+        g.drawRoundRect(lbX, lbY, lbWidth, lbHeight, 20, 20);
+
+        g.setFont(new Font("Arial", Font.BOLD, (int) (20 * Game.SCALE)));
+        g.drawString("Leaderboard", lbX + (int) (35 * Game.SCALE), lbY + (int) (30 * Game.SCALE));
+
+        g.setFont(new Font("Arial", Font.PLAIN, (int) (14 * Game.SCALE)));
+        for (int i = 0; i < Math.min(players.size(), 10); i++) {
+            Player p = players.get(i);
+            String text = (i + 1) + ". " + p.getName() + ": " + p.getScore();
+            g.drawString(text, lbX + (int) (20 * Game.SCALE), lbY + (int) (60 * Game.SCALE) + i * (int) (25 * Game.SCALE));
+        }
+    }
+
+    /**
+     * Refreshes the leaderboard data from the storage file.
+     */
+    public void updateLeaderboard() {
+        leaderboard.updateLeaderboard();
     }
 
     @Override
