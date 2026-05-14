@@ -74,6 +74,9 @@ public class Game implements Runnable{
     private void update() {
         if (lastState != Gamestate.state) {
             handleMusicChange();
+            if (Gamestate.state == Gamestate.MENU) {
+                menu.updateLeaderboard();
+            }
             lastState = Gamestate.state;
         }
 
