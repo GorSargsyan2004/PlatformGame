@@ -57,7 +57,7 @@ public class Menu extends State implements Statemethods {
     private void loadButtons() {
         buttons[0] = new MenuButton(Game.GAME_WIDTH / 2, (int)(Y_POS_OF_BUTTONS*Game.SCALE), 0, Gamestate.PLAYING);
         buttons[1] = new MenuButton(Game.GAME_WIDTH / 2, (int)((Y_POS_OF_BUTTONS+100)*Game.SCALE), 1, Gamestate.PLAYING);
-        buttons[2] = new MenuButton(Game.GAME_WIDTH / 2, (int)((Y_POS_OF_BUTTONS+200)*Game.SCALE), 2, Gamestate.QUIT);
+        buttons[2] = new MenuButton(Game.GAME_WIDTH / 2, (int)((Y_POS_OF_BUTTONS+200)*Game.SCALE), 2, Gamestate.LOGIN);
     }
 
     /**
@@ -173,20 +173,10 @@ public class Menu extends State implements Statemethods {
             mb.resetBools();
     }
 
-    /**
-     * Handles mouse move events to update the hover state of menu buttons.
-     * @param e The mouse event.
-     */
     @Override
     public void mouseMoved(MouseEvent e) {
-        for (MenuButton mb : buttons)
-            mb.setMouseOver(false);
-
         for (MenuButton mb : buttons) {
-            if (isIn(e, mb)) {
-                mb.setMouseOver(true);
-                break;
-            }
+            mb.setMouseOver(isIn(e, mb));
         }
     }
 

@@ -19,10 +19,12 @@ public class GameWindow {
     GameWindow(GamePanel gamePanel) {
         this.jframe = new JFrame("Oakheart Chronicles");
         jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        jframe.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
         jframe.add(gamePanel);
-        jframe.setLocationRelativeTo(null);
-        jframe.setResizable(false);
         jframe.pack();
+        jframe.setLocationRelativeTo(null);
         jframe.setVisible(true);
         jframe.addWindowFocusListener(new WindowFocusListener() {
             @Override

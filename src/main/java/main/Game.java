@@ -32,18 +32,29 @@ public class Game implements Runnable{
 
     /** Default size of a tile in pixels. */
     public final static int TILES_DEFAULT_SIZE = 24;
-    /** Scale factor for the game display. */
-    public final static float SCALE = 1.0f;
     /** Number of tiles across the width of the screen. */
     public final static int TILES_IN_WIDTH = 48;
     /** Number of tiles across the height of the screen. */
     public final static int TILES_IN_HEIGHT = 24;
+
+    /** Scale factor for the game display. */
+    public static final float SCALE;
     /** Actual size of a tile after scaling. */
-    public final static int TILES_SIZE = (int)(TILES_DEFAULT_SIZE * SCALE);
+    public static final int TILES_SIZE;
     /** Total width of the game window in pixels. */
-    public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
+    public static final int GAME_WIDTH;
     /** Total height of the game window in pixels. */
-    public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
+    public static final int GAME_HEIGHT;
+
+    static {
+        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        float scaleX = (float) screenSize.width / (TILES_IN_WIDTH * TILES_DEFAULT_SIZE);
+        float scaleY = (float) screenSize.height / (TILES_IN_HEIGHT * TILES_DEFAULT_SIZE);
+        SCALE = Math.min(scaleX, scaleY);
+        TILES_SIZE = (int)(TILES_DEFAULT_SIZE * SCALE);
+        GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
+        GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
+    }
 
 
     /**
@@ -102,7 +113,7 @@ public class Game implements Runnable{
      */
     private void handleMusicChange() {
         if (Gamestate.state == Gamestate.MENU || Gamestate.state == Gamestate.LOGIN) {
-            MusicPlayer.stopLevelMusic();
+            MusicPlayer.pauseLevelMusic();
             MusicPlayer.playMenuMusic();
         } else if (Gamestate.state == Gamestate.PLAYING) {
             MusicPlayer.pauseMenuMusic();
@@ -117,6 +128,7 @@ public class Game implements Runnable{
         login.getUserManager().resetCurrScore();
         playing = new Playing(this);
         Gamestate.state = Gamestate.PLAYING;
+        music.MusicPlayer.startLevelMusic();
     }
 
     /** @return The Login state object. */
@@ -130,6 +142,11 @@ public class Game implements Runnable{
     /** @return The Playing state object. */
     public Playing getPlaying() {
         return playing;
+    }
+    
+    /** @return The GamePanel object. */
+    public GamePanel getGamePanel() {
+        return gamePanel;
     }
 
     /**

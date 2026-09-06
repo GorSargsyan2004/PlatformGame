@@ -8,6 +8,8 @@ import main.Game;
 import main.GameAlgorithm;
 import music.MusicPlayer;
 
+import ui.MenuButton;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -26,6 +28,7 @@ public class Playing extends State implements Statemethods{
     private AllayManager allayManager;
     private EnemyManager enemyManager;
     private Player player;
+    private MenuButton restartButton, quitButton;
 
     /**
      * Constructs a new Playing state.
@@ -56,15 +59,23 @@ public class Playing extends State implements Statemethods{
         // Game Algorithm
         gameAlgorithm = new GameAlgorithm(this, GameAlgorithm.Difficulty.MODERATE);
 
+        int btnY = (int) (150 * Game.SCALE);
+        restartButton = new MenuButton(Game.GAME_WIDTH / 2, btnY, 1, Gamestate.PLAYING);
+        quitButton = new MenuButton(Game.GAME_WIDTH / 2, btnY + (int)(100 * Game.SCALE), 2, Gamestate.LOGIN);
     }
 
     /**
      * Updates the level and game algorithm.
      */
-    @Override
     public void update() {
-        levelManager.update();
-        gameAlgorithm.update();
+        if (player.isDead()) {
+            music.MusicPlayer.stopLevelMusic();
+            restartButton.update();
+            quitButton.update();
+        } else {
+            levelManager.update();
+            gameAlgorithm.update();
+        }
     }
 
     /**
@@ -75,6 +86,17 @@ public class Playing extends State implements Statemethods{
     public void draw(Graphics g) {
         levelManager.draw(g);
         gameAlgorithm.draw(g);
+        if (player.isDead()) {
+            g.setColor(new Color(0, 0, 0, 150));
+            g.fillRect(0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT);
+            g.setColor(Color.RED);
+            g.setFont(new Font("Arial", Font.BOLD, (int) (50 * Game.SCALE)));
+            String text = "GAME OVER";
+            int textWidth = g.getFontMetrics().stringWidth(text);
+            g.drawString(text, Game.GAME_WIDTH / 2 - textWidth / 2, (int) (100 * Game.SCALE));
+            restartButton.draw(g);
+            quitButton.draw(g);
+        }
     }
 
     @Override
@@ -84,18 +106,37 @@ public class Playing extends State implements Statemethods{
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+        if (player.isDead()) {
+            if (isIn(e, restartButton)) restartButton.setMousePressed(true);
+            else if (isIn(e, quitButton)) quitButton.setMousePressed(true);
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        if (player.isDead()) {
+            if (isIn(e, restartButton) && restartButton.isMousePressed()) {
+                game.restartGame();
+            } else if (isIn(e, quitButton) && quitButton.isMousePressed()) {
+                game.getLogin().clearUsername();
+                quitButton.applyGamestate();
+            }
+            restartButton.resetBools();
+            quitButton.resetBools();
+        }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        if (player.isDead()) {
+            restartButton.setMouseOver(false);
+            quitButton.setMouseOver(false);
+            if (isIn(e, restartButton)) restartButton.setMouseOver(true);
+            else if (isIn(e, quitButton)) quitButton.setMouseOver(true);
+        }
     }
+
+
 
     /**
      * Handles key press events for player movement and actions.

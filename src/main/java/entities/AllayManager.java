@@ -43,13 +43,13 @@ public class AllayManager {
 
     public void summonKnight() {
         Knight knight;
-        knight = new Knight(100, 15, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), SCALE/2, lvlData);
+        knight = new Knight(100, 15, new Point2D.Double(400.0, GAME_HEIGHT - 15*TILES_SIZE), SCALE/2, lvlData);
         knights.add(knight);
     }
 
     public void summonArcher() {
         Archer archer;
-        archer = new Archer(80, 10, new Point2D.Double(400.0, GAME_HEIGHT - 12*TILES_SIZE), SCALE/2, lvlData);
+        archer = new Archer(80, 10, new Point2D.Double(400.0, GAME_HEIGHT - 15*TILES_SIZE), SCALE/2, lvlData);
         archers.add(archer);
     }
 

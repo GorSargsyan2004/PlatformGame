@@ -24,15 +24,19 @@ public class MusicPlayer {
     private static Clip levelClip;
     private static Clip menuClip;
 
+    private static volatile boolean isLevelPaused = false;
+
     /**
      * Starts the level music player in a new thread if it's not already running.
      * It plays the first four tracks once and then loops the final track.
      */
     public static void startLevelMusic() {
         if (levelMusicThread != null && levelMusicThread.isAlive()) {
+            isLevelPaused = false;
             return;
         }
 
+        isLevelPaused = false;
         levelMusicThread = new Thread(() -> {
             try {
                 // Play track0 through track3 once each
@@ -58,6 +62,7 @@ public class MusicPlayer {
     public static void stopLevelMusic() {
         if (levelMusicThread != null) {
             levelMusicThread.interrupt();
+            levelMusicThread = null;
         }
         if (levelClip != null && levelClip.isOpen()) {
             levelClip.stop();
@@ -66,7 +71,21 @@ public class MusicPlayer {
     }
 
     /**
-     * Plays the menu track and loops it. If it was paused, it resumes from the last position.
+     * Pauses the level music.
+     */
+    public static void pauseLevelMusic() {
+        isLevelPaused = true;
+    }
+
+    /**
+     * Resumes the level music.
+     */
+    public static void resumeLevelMusic() {
+        isLevelPaused = false;
+    }
+
+    /**
+     * Plays the menu track and loops it. It always restarts from the beginning.
      */
     public static void playMenuMusic() {
         try {
@@ -79,11 +98,16 @@ public class MusicPlayer {
                 AudioInputStream stream = AudioSystem.getAudioInputStream(url);
                 menuClip = AudioSystem.getClip();
                 menuClip.open(stream);
-                menuClip.loop(Clip.LOOP_CONTINUOUSLY);
+                
+                if (menuClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+                    FloatControl gainControl = (FloatControl) menuClip.getControl(FloatControl.Type.MASTER_GAIN);
+                    gainControl.setValue(-9.5f); // Reduce volume by approx 3 times
+                }
             }
 
             if (!menuClip.isRunning()) {
-                menuClip.start();
+                menuClip.setMicrosecondPosition(0);
+                menuClip.loop(Clip.LOOP_CONTINUOUSLY);
             }
         } catch (Exception e) {
             System.err.println("[MusicPlayer] Error playing menu music: " + e.getMessage());
@@ -112,13 +136,40 @@ public class MusicPlayer {
         levelClip = AudioSystem.getClip();
         levelClip.open(stream);
 
+        if (path.endsWith("track1.wav")) {
+            if (levelClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+                FloatControl gainControl = (FloatControl) levelClip.getControl(FloatControl.Type.MASTER_GAIN);
+                gainControl.setValue(-4.43f);
+            }
+        }
+
         if (loop) {
             levelClip.loop(Clip.LOOP_CONTINUOUSLY);
-            Thread.sleep(Long.MAX_VALUE);
         } else {
             levelClip.start();
-            Thread.sleep(levelClip.getMicrosecondLength() / 1000);
-            levelClip.close();
         }
+
+        while (true) {
+            if (isLevelPaused) {
+                if (levelClip.isRunning()) {
+                    levelClip.stop();
+                }
+            } else {
+                if (!levelClip.isRunning()) {
+                    if (!loop && levelClip.getMicrosecondPosition() >= levelClip.getMicrosecondLength()) {
+                        break;
+                    }
+                    if (levelClip.getMicrosecondPosition() < levelClip.getMicrosecondLength()) {
+                        if (loop) {
+                            levelClip.loop(Clip.LOOP_CONTINUOUSLY);
+                        } else {
+                            levelClip.start();
+                        }
+                    }
+                }
+            }
+            Thread.sleep(50);
+        }
+        levelClip.close();
     }
 }

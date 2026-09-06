@@ -35,10 +35,14 @@ public class UserManager {
      * @param password The password of the user.
      * @return Ture if the registration was successful. Otherwise, returns false.
      */
+    // TODO: To recover password feature, uncomment the password related checks and signature changes here and in Login.java
     public boolean register(String username, String password) throws UserNameAlreadyExistsException, IncorrectFormatException  {
         if(doesUsernameExist(username)) throw new UserNameAlreadyExistsException();
-        if(username.length()< 6 || password.length() < 6) throw new IncorrectFormatException("Username and password must be at least 6 characters.");
-        if(username.contains(":") || password.contains(":")) throw new IncorrectFormatException("':' is not allowed in username and password.");
+        // To recover password feature, uncomment the lines below and remove the new ones
+        // if(username.length()< 6 || password.length() < 6) throw new IncorrectFormatException("Username and password must be at least 6 characters.");
+        // if(username.contains(":") || password.contains(":")) throw new IncorrectFormatException("':' is not allowed in username and password.");
+        if(username.length()< 6) throw new IncorrectFormatException("Username must be at least 6 characters.");
+        if(username.contains(":")) throw new IncorrectFormatException("':' is not allowed in username.");
         this.username=username;
         this.password=password;
         this.score=0;
@@ -86,16 +90,25 @@ public class UserManager {
             usernameInStorage = userLineComponents[0];
             passwordInStorage = userLineComponents[1];
             if(usernameInStorage.equals(username)){
-                if(passwordInStorage.equals(password)){
-                    this.username=username;
-                    this.password=password;
-                    this.score=Integer.parseInt(userLineComponents[2]);
-                    sc.close();
-                    loggedIn=true;
-                    return true;
-                }
+                // To recover password feature, uncomment the following block and remove the new assignments
+                // if(passwordInStorage.equals(password)){
+                //     this.username=username;
+                //     this.password=password;
+                //     this.score=Integer.parseInt(userLineComponents[2]);
+                //     sc.close();
+                //     loggedIn=true;
+                //     return true;
+                // }
+                // sc.close();
+                // throw new PasswordMismatchException();
+                
+                // New logic: ignore password
+                this.username=username;
+                this.password=password; // Dummy or actual password
+                this.score=Integer.parseInt(userLineComponents[2]);
                 sc.close();
-                throw new PasswordMismatchException();
+                loggedIn=true;
+                return true;
             }
         }
         sc.close();
@@ -118,6 +131,7 @@ public class UserManager {
             throw new NotRegisteredOrLoggedInException("Before getting the score please log in or register.");
         }
         currScore += adder;
+        tryUpdateScore(currScore);
     }
 
     /**
