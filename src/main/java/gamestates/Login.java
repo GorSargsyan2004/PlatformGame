@@ -141,7 +141,7 @@ public class Login extends State implements Statemethods {
 
         if (!message.isEmpty()) {
             g.setColor(messageColor);
-            g.drawString(message, (int) usernameField.x - (int)(20 * Game.SCALE), (int) quitBtn.y + (int)(40 * Game.SCALE));
+            g.drawString(message, (int) usernameField.x - (int)(20 * Game.SCALE), (int) quitBtn.y + (int)(60 * Game.SCALE));
         }
         
         drawLeaderboard(g);
