@@ -41,7 +41,7 @@ public class UserManager {
         // To recover password feature, uncomment the lines below and remove the new ones
         // if(username.length()< 6 || password.length() < 6) throw new IncorrectFormatException("Username and password must be at least 6 characters.");
         // if(username.contains(":") || password.contains(":")) throw new IncorrectFormatException("':' is not allowed in username and password.");
-        if(username.length()< 6) throw new IncorrectFormatException("Username must be at least 6 characters.");
+        if(username.length()< 3) throw new IncorrectFormatException("Username must be at least 3 characters.");
         if(username.contains(":")) throw new IncorrectFormatException("':' is not allowed in username.");
         this.username=username;
         this.password=password;
