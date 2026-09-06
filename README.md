@@ -56,7 +56,7 @@ Take control of your hero with these intuitive commands:
 
 Experience the action in motion:
 
-<video src="https://github.com/GorSargsyan2004/PlatformGame/issues/45#issue-5363945867" controls="controls" muted="muted" width="100%"></video>
+[<video src="https://github.com/GorSargsyan2004/PlatformGame/issues/45#issue-5363945867" controls="controls" muted="muted" width="100%"></video>](https://github.com/user-attachments/assets/f60a81a0-6576-4294-b810-13a2f0c93867)
 
 ---
 
