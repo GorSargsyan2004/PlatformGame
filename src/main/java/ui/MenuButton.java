@@ -101,11 +101,17 @@ public class MenuButton {
 
     /** @param mouseOver Sets whether the mouse is over the button. */
     public void setMouseOver(boolean mouseOver) {
+        if (mouseOver && !this.mouseOver) {
+            utils.LoadSave.playSound(utils.LoadSave.SOUND_HOVER);
+        }
         this.mouseOver = mouseOver;
     }
 
     /** @param mousePressed Sets whether the button is being pressed. */
     public void setMousePressed(boolean mousePressed) {
+        if (mousePressed && !this.mousePressed) {
+            utils.LoadSave.playSound(utils.LoadSave.SOUND_CLICK);
+        }
         this.mousePressed = mousePressed;
     }
 

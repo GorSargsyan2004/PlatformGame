@@ -44,6 +44,7 @@ public class Player extends Entity {
 
     private final int maxHealth;
     private int healthWidth = healthBarWidth;
+    private boolean deathSoundPlayed = false;
     private int dashAttackWidth = 0;
     private final int maxDashAttackWidth = (int) (101 * scale);
     private long dashAttackTimer = 0;
@@ -108,6 +109,10 @@ public class Player extends Entity {
         // Player is dead, no other updates are needed
         if (isDead) return;
         if (health <= 0) {
+            if (!deathSoundPlayed) {
+                utils.LoadSave.playSound(utils.LoadSave.SOUND_DEATH);
+                deathSoundPlayed = true;
+            }
             dead(animations[DEATH]);
             return;
         }
@@ -147,6 +152,7 @@ public class Player extends Entity {
         
         // State Selection
         if (checkForTakingHit()) {
+            utils.LoadSave.playSound(utils.LoadSave.SOUND_HURT);
             takeHit(animations[HURT]);
             updateHitbox();
             return;
@@ -363,18 +369,30 @@ public class Player extends Entity {
 
         // Score and Time
         long timePassed = timeTick / main.Game.UPS_SET;
+        String timeText;
+        if (timePassed >= 60) {
+            long minutes = timePassed / 60;
+            long seconds = timePassed % 60;
+            timeText = String.format("Time: %d:%02d", minutes, seconds);
+        } else {
+            timeText = "Time: " + timePassed;
+        }
+
         g.setColor(Color.WHITE);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        g.drawString("Time: " + timePassed, scoreAndTimeBarX + 10, scoreAndTimeBarY + 10);
+        Font originalFont = g.getFont();
+        g.setFont(new Font(originalFont.getName(), Font.BOLD, (int)(14 * scale)));
+
+        g.drawString(timeText, scoreAndTimeBarX + (int)(10 * scale), scoreAndTimeBarY + (int)(15 * scale));
         if (userManager.isPassedBestScore())
             g.setColor(Color.YELLOW);
         try {
-            g.drawString("Score: " + userManager.getCurrScore(), scoreAndTimeBarX + 10, scoreAndTimeBarY + 30);
+            g.drawString("Score: " + userManager.getCurrScore(), scoreAndTimeBarX + (int)(10 * scale), scoreAndTimeBarY + (int)(30 * scale));
         } catch (NotRegisteredOrLoggedInException e) {
-            g.drawString("Score: N/A", scoreAndTimeBarX + 10, scoreAndTimeBarY + 30);
+            g.drawString("Score: N/A", scoreAndTimeBarX + (int)(10 * scale), scoreAndTimeBarY + (int)(30 * scale));
         }
     }
 
@@ -387,8 +405,10 @@ public class Player extends Entity {
     }
 
     public void setDashAttack(boolean dashAttack) {
-        if (dashAttack && dashAttackWidth >= maxDashAttackWidth)
+        if (dashAttack && dashAttackWidth >= maxDashAttackWidth) {
             this.dashAttack = true;
+            utils.LoadSave.playSound(utils.LoadSave.SOUND_DASH_ATTACK);
+        }
     }
 
     public boolean isSlide() {
@@ -400,6 +420,7 @@ public class Player extends Entity {
             if (dashAttackWidth >= maxDashAttackWidth / 2) {
                 this.slide = true;
                 dashAttackWidth -= maxDashAttackWidth / 2;
+                utils.LoadSave.playSound(utils.LoadSave.SOUND_SLIDE);
             }
         } else if (!slide) {
             this.slide = false;
@@ -411,10 +432,27 @@ public class Player extends Entity {
             if (dashAttackWidth >= maxDashAttackWidth / 3) {
                 this.dash = true;
                 dashAttackWidth -= maxDashAttackWidth / 3;
+                utils.LoadSave.playSound(utils.LoadSave.SOUND_DASH);
             }
         } else if (!dash) {
             this.dash = false;
         }
+    }
+
+    @Override
+    public void setJump(boolean jump) {
+        if (jump && !inAir && !landing) {
+            utils.LoadSave.playSound(utils.LoadSave.SOUND_JUMP);
+        }
+        super.setJump(jump);
+    }
+
+    @Override
+    public void setAttack(boolean attack) {
+        if (attack && !this.attack && !inAir && !landing) {
+            utils.LoadSave.playSound(utils.LoadSave.SOUND_ATTACK);
+        }
+        super.setAttack(attack);
     }
 
     public void addScore(int adder) {

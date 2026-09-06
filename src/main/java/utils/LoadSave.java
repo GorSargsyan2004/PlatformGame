@@ -11,6 +11,12 @@ import static levels.LevelManager.TILESET_WIDTH;
 import static main.Game.TILES_IN_HEIGHT;
 import static main.Game.TILES_IN_WIDTH;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import java.net.URL;
+
 /**
  * The LoadSave class provides static utility methods for loading images
  * and level data from the project's resources.
@@ -27,6 +33,17 @@ public class LoadSave {
     public static final String BACKGROUND_MENU = "/Menu/background_menu.png";
     public static final String BACKGROUND_LOGIN = "/Demo/background_login.jpeg";
     public static final String STATUS_BAR = "/GUI/health_power_bar.png";
+
+    // Sounds
+    public static final String SOUND_HOVER = "/tracks/player/ui_hover.wav";
+    public static final String SOUND_CLICK = "/tracks/player/ui_click.wav";
+    public static final String SOUND_ATTACK = "/tracks/player/attack.wav";
+    public static final String SOUND_DASH_ATTACK = "/tracks/player/dash_attack.mp3";
+    public static final String SOUND_HURT = "/tracks/player/hurt.mp3";
+    public static final String SOUND_JUMP = "/tracks/player/jump.wav";
+    public static final String SOUND_DASH = "/tracks/player/dash.mp3";
+    public static final String SOUND_SLIDE = "/tracks/player/slide.mp3";
+    public static final String SOUND_DEATH = "/tracks/player/death.wav";
 
     /**
      * Loads a BufferedImage from the specified resource path.
@@ -52,6 +69,77 @@ public class LoadSave {
             }
         }
         return img;
+    }
+
+    /**
+     * Plays a sound from the specified resource path.
+     * @param path The resource path to the sound file.
+     */
+    public static void playSound(String path) {
+        if (path == null || path.trim().isEmpty()) return;
+        System.out.println("Triggering sound: " + path);
+        try {
+            URL url = LoadSave.class.getResource(path);
+            if (url != null) {
+                AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
+                AudioFormat baseFormat = audioIn.getFormat();
+                AudioFormat decodedFormat = new AudioFormat(
+                        AudioFormat.Encoding.PCM_SIGNED,
+                        baseFormat.getSampleRate(),
+                        16,
+                        baseFormat.getChannels(),
+                        baseFormat.getChannels() * 2,
+                        baseFormat.getSampleRate(),
+                        false
+                );
+                AudioInputStream decodedAudioIn;
+                try {
+                    decodedAudioIn = AudioSystem.getAudioInputStream(decodedFormat, audioIn);
+                } catch (IllegalArgumentException e) {
+                    if (baseFormat.getEncoding() == AudioFormat.Encoding.PCM_SIGNED) {
+                        byte[] bytes = audioIn.readAllBytes();
+                        int byteDepth = baseFormat.getSampleSizeInBits() / 8;
+                        if (byteDepth == 3 || byteDepth == 4) {
+                            byte[] outBytes = new byte[(bytes.length / byteDepth) * 2];
+                            int j = 0;
+                            for (int i = 0; i < bytes.length; i += byteDepth) {
+                                // Little Endian: take the 2 most significant bytes
+                                outBytes[j++] = bytes[i + byteDepth - 2];
+                                outBytes[j++] = bytes[i + byteDepth - 1];
+                            }
+                            java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(outBytes);
+                            decodedAudioIn = new AudioInputStream(bais, decodedFormat, outBytes.length / decodedFormat.getFrameSize());
+                        } else {
+                            throw e;
+                        }
+                    } else {
+                        throw e;
+                    }
+                }
+                
+                Clip clip = AudioSystem.getClip();
+                clip.open(decodedAudioIn);
+                
+                if (clip.isControlSupported(javax.sound.sampled.FloatControl.Type.MASTER_GAIN)) {
+                    javax.sound.sampled.FloatControl gainControl = 
+                        (javax.sound.sampled.FloatControl) clip.getControl(javax.sound.sampled.FloatControl.Type.MASTER_GAIN);
+                    // Reduce volume by half (-6.0f decibels roughly halves amplitude)
+                    gainControl.setValue(-6.0f);
+                }
+                
+                clip.addLineListener(event -> {
+                    if (event.getType() == javax.sound.sampled.LineEvent.Type.STOP) {
+                        clip.close();
+                    }
+                });
+                clip.start();
+            } else {
+                System.err.println("Sound file not found: " + path);
+            }
+        } catch (Exception e) {
+            System.err.println("Could not play sound: " + path);
+            e.printStackTrace();
+        }
     }
 
     /**

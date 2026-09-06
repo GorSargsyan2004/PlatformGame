@@ -39,8 +39,8 @@ public abstract class Entity {
     protected boolean isHurt = false;
     protected boolean isDead = false;
     protected double ySpeed = 0;
-    protected double gravity = 0.04;
-    protected double jumpSpeed = -3.5;
+    protected double gravity = 0.04 * Game.SCALE;
+    protected double jumpSpeed = -3.3 * Game.SCALE;
     protected int attackDistance;
 
     protected static float scale = Game.SCALE;
