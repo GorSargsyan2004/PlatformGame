@@ -56,7 +56,7 @@ Take control of your hero with these intuitive commands:
 
 Experience the action in motion:
 
-https://github.com/user-attachments/assets/eca8cc16-d923-409f-8041-d85c0243ebd7
+[https://github.com/user-attachments/assets/eca8cc16-d923-409f-8041-d85c0243ebd7](https://github.com/GorSargsyan2004/PlatformGame/issues/45#issue-5363945867)
 
 ---
 
